@@ -7,6 +7,7 @@
     "build": "next build",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
+    "db:seed": "NODE_ENV=development prisma db seed",
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
@@ -19,6 +20,9 @@
     "db:test:rm": "docker compose rm is-it-that-much-test-db -s -f -v",
     "db:test:up": "docker compose up is-it-that-much-test-db -d",
     "db:test:restart": "npm run db:test:rm && npm run db:test:up && sleep 1 && npm run prisma:test:deploy"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.6.0",
@@ -34,6 +38,7 @@
     "react-dom": "18.2.0",
     "server-only": "^0.0.1",
     "superjson": "^2.2.1",
+    "tsx": "^4.7.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

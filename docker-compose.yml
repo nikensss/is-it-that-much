@@ -8,6 +8,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: is-it-that-much-dev-db
+    volumes:
+      - ./db/docker-entrypoint-initdb:/docker-entrypoint-initdb.d/
   is-it-that-much-test-db:
     image: postgres:16
     ports:
@@ -16,3 +18,5 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: is-it-that-much-test-db
+    volumes:
+      - ./db/docker-entrypoint-initdb:/docker-entrypoint-initdb.d/
