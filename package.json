@@ -10,7 +10,15 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "prisma:dev:deploy": "prisma migrate deploy",
+    "db:dev:rm": "docker compose rm is-it-that-much-dev-db -s -f -v",
+    "db:dev:up": "docker compose up is-it-that-much-dev-db -d",
+    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && sleep 1 && npm run prisma:dev:deploy",
+    "prisma:test:deploy": "dotenv -e .env.test -- prisma migrate deploy",
+    "db:test:rm": "docker compose rm is-it-that-much-test-db -s -f -v",
+    "db:test:up": "docker compose up is-it-that-much-test-db -d",
+    "db:test:restart": "npm run db:test:rm && npm run db:test:up && sleep 1 && npm run prisma:test:deploy"
   },
   "dependencies": {
     "@prisma/client": "^5.6.0",
@@ -20,6 +28,7 @@
     "@trpc/next": "^10.43.6",
     "@trpc/react-query": "^10.43.6",
     "@trpc/server": "^10.43.6",
+    "dotenv-cli": "^7.3.0",
     "next": "^14.0.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",

@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  is-it-that-much-dev-db:
+    image: postgres:16
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: is-it-that-much-dev-db
+  is-it-that-much-test-db:
+    image: postgres:16
+    ports:
+      - 5436:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: is-it-that-much-test-db
