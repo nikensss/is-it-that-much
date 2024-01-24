@@ -17,6 +17,7 @@ model User {
   UserGroup    UsersGroups[]
   Expense      Expense[]
   ExpenseSplit ExpenseSplit[]
+  Category     Category[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -106,6 +107,9 @@ model Category {
   updatedAt DateTime @updatedAt
 
   ExpenseCategory ExpenseCategory[]
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
 
   @@index([name])
   @@map("categories")
