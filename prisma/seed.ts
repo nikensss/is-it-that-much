@@ -1,6 +1,7 @@
 import { db } from '../src/server/db';
 
 async function main() {
+  await db.expenseSplit.deleteMany({});
   await db.expense.deleteMany({});
   await db.usersGroups.deleteMany({});
   await db.group.deleteMany({});
@@ -42,22 +43,63 @@ async function main() {
     },
   });
 
+  // with the current setup, users only have two groups: everybody has group0,
+  // and then "even" users have group2 and "odd" users have group1;
+  // doing `user.UserGroup[i % user.UserGroup.length]` resulted in only using
+  // group0 and group1, so we have this array that says "user the first group,
+  // then the second group, and then the second group again"
+  const groupIndices = [0, 1, 1]; // we do this to make sure all groups have expenses
   for (let i = 0; i < 25; i++) {
-    const userIndex = randomInt(usersWithGroups.length);
-    const user = usersWithGroups[userIndex];
+    const user = usersWithGroups[i % usersWithGroups.length];
 
-    if (!user) throw new Error(`undefined user ${userIndex}`);
+    if (!user) throw new Error(`no user at index ${i % usersWithGroups.length}`);
     if (!user.UserGroup) throw new Error(`user ${user.name} has no groups`);
     if (user.UserGroup.length <= 0) throw new Error(`user ${user.name} has no groups`);
 
-    const groupIndex = randomInt(user.UserGroup.length);
+    const groupIndex = groupIndices[i % groupIndices.length];
+    if (typeof groupIndex !== 'number') throw new Error(`invalid group index ${groupIndex}`);
     const { group } = user.UserGroup[groupIndex] ?? {};
-    if (!group) throw new Error(`group ${groupIndex} undefined for user ${user.name}`);
+    if (!group) throw new Error(`group ${i % user.UserGroup.length} undefined for user ${user.name}`);
 
     const amount = (100 - i * Math.PI) * 100; // amount in cents
-    console.log({ amount });
     const expense = { name: `expense${i}`, amount, createdById: user.id, groupId: group.id };
     await db.expense.create({ data: expense });
+  }
+
+  const expenses = await db.expense.findMany({
+    include: {
+      group: {
+        include: {
+          UserGroup: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  for (const expense of expenses) {
+    const { amount, group } = expense;
+    if ((group?.UserGroup?.length || 0) <= 0) throw new Error(`group ${group?.id} has no users`);
+
+    // 1/3+1/6+1/8+3/8
+    const splits = [1 / 3, 1 / 6, 1 / 8, 3 / 8].map((proportion) => proportion * amount);
+    if (splits.reduce((a, c) => a + c) - amount > 0.01) throw new Error('total amount mismatch');
+    const totalUsers = group.UserGroup.length;
+
+    for (let i = 0; i < splits.length; i++) {
+      const split = splits[i];
+      if (!split) throw new Error(`no split at index ${i}`);
+
+      const userIndex = Math.floor((i / splits.length) * totalUsers);
+      const user = group.UserGroup[userIndex]?.user;
+      if (!user) throw new Error(`no user at index ${userIndex}`);
+
+      const expenseSplit = { expenseId: expense.id, userId: user.id, amount: split };
+      await db.expenseSplit.create({ data: expenseSplit });
+    }
   }
 }
 
@@ -68,7 +110,3 @@ main()
     await db.$disconnect();
     process.exit(1);
   });
-
-function randomInt(max: number, min = 0) {
-  return Math.floor(Math.random() * (max - min) + min);
-}

@@ -17,7 +17,6 @@ model User {
   UserGroup    UsersGroups[]
   Expense      Expense[]
   ExpenseSplit ExpenseSplit[]
-  Category     Category[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,6 +74,8 @@ model Expense {
 
   @@index([name])
   @@index([groupId])
+  @@index([createdAt])
+  @@index([createdById])
   @@map("expenses")
 }
 
@@ -94,22 +95,19 @@ model ExpenseSplit {
   @@unique([expenseId, userId])
   @@index([expenseId])
   @@index([userId])
+  @@index([createdAt])
   @@map("expense_splits")
 }
 
 model Category {
   id        String   @id @default(cuid())
-  name      String
+  name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  createdBy   User   @relation(fields: [createdById], references: [id])
-  createdById String
 
   ExpenseCategory ExpenseCategory[]
 
   @@index([name])
-  @@index([createdById])
   @@map("categories")
 }
 
