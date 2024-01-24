@@ -43,18 +43,19 @@ async function main() {
   });
 
   for (let i = 0; i < 25; i++) {
-    const userIndex = Math.floor(Math.random() * usersWithGroups.length);
+    const userIndex = randomInt(usersWithGroups.length);
     const user = usersWithGroups[userIndex];
 
     if (!user) throw new Error(`undefined user ${userIndex}`);
     if (!user.UserGroup) throw new Error(`user ${user.name} has no groups`);
     if (user.UserGroup.length <= 0) throw new Error(`user ${user.name} has no groups`);
 
-    const groupIndex = Math.floor(Math.random() * user.UserGroup.length);
+    const groupIndex = randomInt(user.UserGroup.length);
     const { group } = user.UserGroup[groupIndex] ?? {};
     if (!group) throw new Error(`group ${groupIndex} undefined for user ${user.name}`);
 
-    const amount = Math.floor(Math.random() * 100);
+    const amount = (100 - i * Math.PI) * 100; // amount in cents
+    console.log({ amount });
     const expense = { name: `expense${i}`, amount, createdById: user.id, groupId: group.id };
     await db.expense.create({ data: expense });
   }
@@ -67,3 +68,7 @@ main()
     await db.$disconnect();
     process.exit(1);
   });
+
+function randomInt(max: number, min = 0) {
+  return Math.floor(Math.random() * (max - min) + min);
+}
