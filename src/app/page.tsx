@@ -1,3 +1,4 @@
+import { ClerkLoaded, ClerkLoading, SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
 
@@ -11,7 +12,7 @@ export default async function Home() {
           <WalletIcon className="h-6 w-6" />
           <span className="sr-only">Expense Tracker</span>
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
+        <nav className="ml-auto flex items-center justify-center gap-4 sm:gap-6">
           <Link className="animate-underline text-sm font-medium" href="#">
             Features
           </Link>
@@ -24,6 +25,12 @@ export default async function Home() {
           <Link className="animate-underline text-sm font-medium" href="#">
             Contact
           </Link>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
         </nav>
       </header>
       <main className="flex-1">
@@ -38,12 +45,33 @@ export default async function Home() {
                   Our expense tracking service helps you keep a tab on your expenses with ease. Sign up now to get
                   started.
                 </p>
-                <Link
-                  className="my-4 inline-flex rounded-md px-8 py-2 text-lg font-medium shadow outline-none transition-colors dark:bg-gray-400 dark:hover:bg-gray-300"
-                  href="#"
-                >
-                  Sign Up
-                </Link>
+                <ClerkLoading>
+                  <button
+                    className="my-4 inline-flex rounded-md px-8 py-2 text-lg font-medium shadow outline-none transition-colors dark:bg-gray-400 dark:hover:bg-gray-300"
+                    disabled
+                  >
+                    Sign In
+                  </button>
+                </ClerkLoading>
+
+                <ClerkLoaded>
+                  <SignedIn>
+                    <Link
+                      className="my-4 inline-flex rounded-md px-8 py-2 text-lg font-medium shadow outline-none transition-colors dark:bg-gray-400 dark:hover:bg-gray-300"
+                      href="#"
+                    >
+                      Go to Dashboard
+                    </Link>
+                  </SignedIn>
+                  <SignedOut>
+                    <Link
+                      className="my-4 inline-flex rounded-md px-8 py-2 text-lg font-medium shadow outline-none transition-colors dark:bg-gray-400 dark:hover:bg-gray-300"
+                      href="#"
+                    >
+                      <SignUpButton />
+                    </Link>
+                  </SignedOut>
+                </ClerkLoaded>
               </div>
             </div>
           </div>
