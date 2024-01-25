@@ -7,7 +7,11 @@ async function main() {
   await db.group.deleteMany({});
   await db.user.deleteMany({});
 
-  await db.user.createMany({ data: Array.from({ length: 10 }).map((_, i) => ({ name: `user${i}` })) });
+  await db.user.createMany({
+    data: Array.from({ length: 10 }).map((_, i) => {
+      return { username: `user${i}`, externalId: `${9837 + i}` };
+    }),
+  });
 
   const users = await db.user.findMany();
 
@@ -53,13 +57,13 @@ async function main() {
     const user = usersWithGroups[i % usersWithGroups.length];
 
     if (!user) throw new Error(`no user at index ${i % usersWithGroups.length}`);
-    if (!user.UserGroup) throw new Error(`user ${user.name} has no groups`);
-    if (user.UserGroup.length <= 0) throw new Error(`user ${user.name} has no groups`);
+    if (!user.UserGroup) throw new Error(`user ${user.username} has no groups`);
+    if (user.UserGroup.length <= 0) throw new Error(`user ${user.username} has no groups`);
 
     const groupIndex = groupIndices[i % groupIndices.length];
     if (typeof groupIndex !== 'number') throw new Error(`invalid group index ${groupIndex}`);
     const { group } = user.UserGroup[groupIndex] ?? {};
-    if (!group) throw new Error(`group ${i % user.UserGroup.length} undefined for user ${user.name}`);
+    if (!group) throw new Error(`group ${i % user.UserGroup.length} undefined for user ${user.username}`);
 
     const amount = (100 - i * Math.PI) * 100; // amount in cents
     const expense = { name: `expense${i}`, amount, createdById: user.id, groupId: group.id };
