@@ -28,9 +28,6 @@ export default async function Home() {
           <SignedIn>
             <UserButton />
           </SignedIn>
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
         </nav>
       </header>
       <main className="flex-1">
