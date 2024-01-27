@@ -76,8 +76,8 @@ model Expense {
   group   Group  @relation(fields: [groupId], references: [id])
   groupId String
 
-  ExpenseSplit    ExpenseSplit[]
-  ExpenseCategory ExpenseCategory[]
+  ExpenseSplit       ExpenseSplit[]
+  ExpensesCategories ExpensesCategories[]
 
   @@index([name])
   @@index([groupId])
@@ -112,16 +112,15 @@ model Category {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  ExpenseCategory ExpenseCategory[]
-
-  createdBy   User   @relation(fields: [createdById], references: [id])
-  createdById String
+  createdBy          User                 @relation(fields: [createdById], references: [id])
+  createdById        String
+  ExpensesCategories ExpensesCategories[]
 
   @@index([name])
   @@map("categories")
 }
 
-model ExpenseCategory {
+model ExpensesCategories {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
