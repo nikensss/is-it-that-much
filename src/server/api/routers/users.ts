@@ -1,10 +1,6 @@
 import { auth, clerkClient, currentUser } from '@clerk/nextjs';
-import type { Prisma, PrismaClient } from '@prisma/client';
-import type { DefaultArgs } from '@prisma/client/runtime/library';
-
+import type { DB } from '~/server/db';
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
-
-export type DB = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
 
 const exists = async (db: DB): Promise<boolean> => {
   const { userId } = auth();
