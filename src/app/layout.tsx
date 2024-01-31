@@ -1,11 +1,10 @@
 import '~/styles/globals.css';
-
 import { Inter } from 'next/font/google';
-
 import { TRPCReactProvider } from '~/trpc/react';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Footer } from '~/app/_components/footer';
 import { NavBar } from '~/app/_components/navbar';
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -30,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </main>
             <Footer />
           </div>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
