@@ -16,24 +16,42 @@ async function main() {
   const users = await db.user.findMany();
 
   for (let i = 0; i < 3; i++) {
-    await db.group.create({ data: { name: `group${i}`, createdBy: { connect: users[i] } } });
+    const userId = users[i]?.id;
+    if (!userId) throw new Error(`no user at index ${i}`);
+
+    await db.group.create({ data: { name: `group${i}`, createdById: userId } });
   }
 
   const groups = await db.group.findMany();
 
   // add all to group0
-  for (const user of users) {
-    await db.usersGroups.create({ data: { user: { connect: user }, group: { connect: groups[0] } } });
+  for (const { id: userId } of users) {
+    const groupId = groups[0]?.id;
+    if (!groupId) throw new Error('no group id at group[0]');
+
+    await db.usersGroups.create({ data: { userId, groupId } });
   }
 
   // add odd to group1
   for (let i = 1; i < users.length; i += 2) {
-    await db.usersGroups.create({ data: { user: { connect: users[i] }, group: { connect: groups[1] } } });
+    const groupId = groups[1]?.id;
+    if (!groupId) throw new Error('no group id at group[1]');
+
+    const userId = users[i]?.id;
+    if (!userId) throw new Error(`no user id for user at index ${i}`);
+
+    await db.usersGroups.create({ data: { userId, groupId } });
   }
 
   // add even to group2
   for (let i = 0; i < users.length; i += 2) {
-    await db.usersGroups.create({ data: { user: { connect: users[i] }, group: { connect: groups[2] } } });
+    const groupId = groups[2]?.id;
+    if (!groupId) throw new Error('no group id at group[1]');
+
+    const userId = users[i]?.id;
+    if (!userId) throw new Error(`no user id for user at index ${i}`);
+
+    await db.usersGroups.create({ data: { userId, groupId } });
   }
 
   // get users with groups (but get only the group id)
