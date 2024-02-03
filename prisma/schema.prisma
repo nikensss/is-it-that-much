@@ -13,11 +13,11 @@ datasource db {
 model User {
   id         String  @id @default(cuid())
   externalId String  @unique
-  username   String?
+  username   String? @unique
+  email      String? @unique
   firstName  String?
   lastName   String?
   imageUrl   String?
-  emailId    String?
 
   Group        Group[]
   UserGroup    UsersGroups[]

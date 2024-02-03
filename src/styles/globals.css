@@ -2,15 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-.animate-underline {
+.animated-underline,
+.animated-underline-span > span {
   position: relative;
 }
 
-.animate-underline::after {
+.animated-underline::after,
+.animated-underline-span > span::after {
   content: '';
   position: absolute;
   width: 100%;
-  height: 2px;
+  height: 1px;
   bottom: 0;
   left: 0;
   background-color: currentColor; /* Inherits text color */
@@ -19,6 +21,7 @@
   transform-origin: left;
 }
 
-.animate-underline:hover::after {
+.animated-underline:hover::after,
+.animated-underline-span:hover > span::after {
   transform: scaleX(1);
 }

@@ -9,7 +9,7 @@ async function main() {
 
   await db.user.createMany({
     data: Array.from({ length: 10 }).map((_, i) => {
-      return { username: `user${i}`, externalId: `${9837 + i}` };
+      return { username: `user${i}`, externalId: `${9837 + i}`, email: `user_${i}@email.com` };
     }),
   });
 

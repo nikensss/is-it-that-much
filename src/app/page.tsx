@@ -31,7 +31,7 @@ export default async function Home() {
                 <SignedIn>
                   <Link
                     className="my-4 inline-flex rounded-md px-8 py-2 text-lg font-medium shadow outline-none transition-colors dark:bg-gray-400 dark:hover:bg-gray-300"
-                    href="#"
+                    href="/dashboard"
                   >
                     Go to Dashboard
                   </Link>
