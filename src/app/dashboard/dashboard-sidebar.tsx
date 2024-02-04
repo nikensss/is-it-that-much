@@ -2,18 +2,18 @@ import Link from 'next/link';
 
 export default function DashboardSidebar() {
   return (
-    <aside className="flex w-64 flex-col border-r border-gray-200 bg-white dark:border-gray-600">
-      <div className="sticky top-16 flex flex-col gap-4 px-6 py-4">
-        <Link className="animated-underline-span text-lg font-medium" href="/dashboard/overview">
+    <aside className="flex w-full flex-col border-gray-200 bg-white max-md:border-b md:w-64 md:border-r dark:border-gray-600 ">
+      <div className="sticky top-16 flex gap-4 px-6 py-4 max-md:justify-around md:flex-col">
+        <Link className="animated-underline-span font-medium md:text-lg" href="/dashboard/overview">
           <span>Overview</span>
         </Link>
-        <Link className="animated-underline-span text-lg font-medium" href="#">
+        <Link className="animated-underline-span font-medium md:text-lg" href="#">
           <span>Groups</span>
         </Link>
-        <Link className="animated-underline-span text-lg font-medium underline-offset-4" href="#">
+        <Link className="animated-underline-span font-medium md:text-lg" href="#">
           <span>Friends</span>
         </Link>
-        <Link className="animated-underline-span text-lg font-medium underline-offset-4" href="#">
+        <Link className="animated-underline-span font-medium md:text-lg" href="#">
           <span>Settings</span>
         </Link>
       </div>

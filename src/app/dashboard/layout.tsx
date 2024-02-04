@@ -5,7 +5,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   await api.users.sync.mutate();
 
   return (
-    <div className="flex flex-1">
+    <div className="flex flex-1 max-md:flex-col">
       <DashboardSidebar />
       {children}
     </div>
