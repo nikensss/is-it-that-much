@@ -16,7 +16,7 @@ async function create(db: DB): Promise<ReturnType<DB['user']['create']> | null> 
     const clerkUser = await currentUser();
     if (!clerkUser) return null;
 
-    log.debug(`upserting user ${clerkUser.id} into db`);
+    log.debug(`creating user ${clerkUser.id} in db`);
 
     const userInDb = await db.user.create({
       data: {
@@ -29,8 +29,8 @@ async function create(db: DB): Promise<ReturnType<DB['user']['create']> | null> 
       },
     });
 
-    const updateUserResult = await clerk.users.updateUser(clerkUser.id, { externalId: userInDb.id });
-    log.debug('updated user in clerk', updateUserResult);
+    await clerk.users.updateUser(clerkUser.id, { externalId: userInDb.id });
+    log.debug('updated user in clerk');
 
     return userInDb;
   } catch (e) {
@@ -66,8 +66,8 @@ async function sync(db: DB): Promise<void> {
       where: { externalId: clerkUser.id },
     });
 
-    const updateUserResult = await clerk.users.updateUser(clerkUser.id, { externalId: userInDb.id });
-    log.debug('updated user in clerk', updateUserResult);
+    await clerk.users.updateUser(clerkUser.id, { externalId: userInDb.id });
+    log.debug('updated user in clerk');
   } catch (e) {
     log.error('error creating user', { e });
   }

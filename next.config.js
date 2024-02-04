@@ -6,6 +6,16 @@ import { withAxiom } from 'next-axiom';
 await import('./src/env.js');
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  redirects: () => {
+    return Promise.resolve([
+      {
+        source: '/dashboard',
+        destination: '/dashboard/summary',
+        permanent: true,
+      },
+    ]);
+  },
+};
 
 export default withAxiom(config);

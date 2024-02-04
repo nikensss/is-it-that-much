@@ -4,7 +4,7 @@ export default function Sidebar() {
   return (
     <aside className="flex w-64 flex-col border-r border-gray-200 bg-white dark:border-gray-600">
       <div className="sticky top-16 flex flex-col gap-4 px-6 py-4">
-        <Link className="animated-underline-span text-lg font-medium" href="#">
+        <Link className="animated-underline-span text-lg font-medium" href="/dashboard/summary">
           <span>Summary</span>
         </Link>
         <Link className="animated-underline-span text-lg font-medium" href="#">

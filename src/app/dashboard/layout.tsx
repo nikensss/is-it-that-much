@@ -1,14 +1,13 @@
 import Sidebar from '~/app/dashboard/sidebar';
-import Summary from '~/app/dashboard/summary';
 import { api } from '~/trpc/server';
 
-export default async function Page() {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   await api.users.sync.mutate();
 
   return (
     <div className="flex flex-1">
       <Sidebar />
-      <Summary />
+      {children}
     </div>
   );
 }
