@@ -1,4 +1,4 @@
-export default function DashboardSummary() {
+export default function DashboardOverview() {
   return (
     <main className="flex-1 overflow-auto bg-gray-100 p-4 md:p-6 lg:p-8 ">
       <section className="mt-4">
