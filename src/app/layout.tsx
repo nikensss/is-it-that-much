@@ -5,6 +5,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Footer } from '~/app/_components/footer';
 import { NavBar } from '~/app/_components/navbar';
 import { Analytics } from '@vercel/analytics/react';
+import { cn } from '~/lib/utils';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -21,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`font-sans ${inter.variable}`}>
+        <body className={cn('bg-background min-h-screen font-sans antialiased', inter.variable)}>
           <div className="flex min-h-screen flex-col">
             <NavBar />
             <main className="flex flex-1 justify-center">

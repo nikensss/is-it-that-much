@@ -1,6 +1,8 @@
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut } from '@clerk/nextjs';
+import { Loader2 } from 'lucide-react';
 import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
+import { Button } from '~/components/ui/button';
 
 export default async function Home() {
   noStore();
@@ -19,30 +21,25 @@ export default async function Home() {
                 started.
               </p>
               <ClerkLoading>
-                <button
-                  className="my-4 inline-flex rounded-md px-8 py-2 text-lg font-medium shadow outline-none transition-colors dark:bg-gray-400 dark:hover:bg-gray-300"
-                  disabled
-                >
-                  Sign in
-                </button>
+                <Button disabled className="pointer-events-none my-4">
+                  <Loader2 className="m-4 h-4 w-4 animate-spin" />
+                </Button>
               </ClerkLoading>
 
               <ClerkLoaded>
                 <SignedIn>
-                  <Link
-                    className="my-4 inline-flex rounded-md px-8 py-2 text-lg font-medium shadow outline-none transition-colors dark:bg-gray-400 dark:hover:bg-gray-300"
-                    href="/dashboard"
-                  >
-                    Go to Dashboard
-                  </Link>
+                  <Button asChild>
+                    <Link className="my-4" href="/dashboard">
+                      Go to Dashboard
+                    </Link>
+                  </Button>
                 </SignedIn>
                 <SignedOut>
-                  <Link
-                    className="my-4 inline-flex rounded-md px-8 py-2 text-lg font-medium shadow outline-none transition-colors dark:bg-gray-400 dark:hover:bg-gray-300"
-                    href="/sign-in"
-                  >
-                    Sign in
-                  </Link>
+                  <Button asChild>
+                    <Link className="my-4" href="/sign-in">
+                      Sign in
+                    </Link>
+                  </Button>
                 </SignedOut>
               </ClerkLoaded>
             </div>
