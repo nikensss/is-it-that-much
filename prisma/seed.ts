@@ -84,11 +84,18 @@ async function main() {
     if (!group) throw new Error(`group ${i % user.UserGroup.length} undefined for user ${user.username}`);
 
     const amount = (100 - i * Math.PI) * 100; // amount in cents
-    const expense = { name: `expense${i}`, amount, createdById: user.id, groupId: group.id };
-    await db.expense.create({ data: expense });
+    const expenseData = { name: `expense${i}`, amount };
+    const expense = await db.expense.create({ data: expenseData });
+    await db.sharedExpense.create({
+      data: {
+        expenseId: expense.id,
+        groupId: group.id,
+        createdById: user.id,
+      },
+    });
   }
 
-  const expenses = await db.expense.findMany({
+  const sharedExpenses = await db.sharedExpense.findMany({
     include: {
       group: {
         include: {
@@ -99,11 +106,15 @@ async function main() {
           },
         },
       },
+      expense: true,
     },
   });
 
-  for (const expense of expenses) {
-    const { amount, group } = expense;
+  for (const sharedExpense of sharedExpenses) {
+    const {
+      expense: { amount },
+      group,
+    } = sharedExpense;
     if ((group?.UserGroup?.length || 0) <= 0) throw new Error(`group ${group?.id} has no users`);
 
     // 1/3+1/6+1/8+3/8
@@ -119,7 +130,7 @@ async function main() {
       const user = group.UserGroup[userIndex]?.user;
       if (!user) throw new Error(`no user at index ${userIndex}`);
 
-      const expenseSplit = { expenseId: expense.id, userId: user.id, amount: split };
+      const expenseSplit = { sharedExpenseId: sharedExpense.id, userId: user.id, amount: split };
       await db.expenseSplit.create({ data: expenseSplit });
     }
   }

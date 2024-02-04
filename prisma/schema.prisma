@@ -11,22 +11,22 @@ datasource db {
 }
 
 model User {
-  id         String  @id @default(cuid())
-  externalId String  @unique
-  username   String? @unique
-  email      String? @unique
+  id         String   @id @default(cuid())
+  externalId String   @unique
+  username   String?  @unique
+  email      String?  @unique
   firstName  String?
   lastName   String?
   imageUrl   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  Group        Group[]
-  UserGroup    UsersGroups[]
-  Expense      Expense[]
-  ExpenseSplit ExpenseSplit[]
-  Category     Category[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  Group           Group[] // the groups the user created
+  UserGroup       UsersGroups[] // the groups the user is part of
+  PersonalExpense PersonalExpense[] // the personal expenses of the user 
+  SharedExpense   SharedExpense[] // the expenses the user added to groups
+  ExpenseSplit    ExpenseSplit[] // the expenses the user has to pay a part of
+  Category        Category[] // the categories the user created
 
   @@map("users")
 }
@@ -37,10 +37,10 @@ model Group {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdBy   User          @relation(fields: [createdById], references: [id])
-  createdById String
-  UserGroup   UsersGroups[]
-  Expense     Expense[]
+  createdBy     User            @relation(fields: [createdById], references: [id])
+  createdById   String
+  UserGroup     UsersGroups[]
+  SharedExpense SharedExpense[]
 
   @@index([name])
   @@map("groups")
@@ -63,12 +63,22 @@ model UsersGroups {
   @@map("users_groups")
 }
 
-model Expense {
-  id        String   @id @default(cuid())
-  name      String
-  amount    Int // amount in cents
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model PersonalExpense {
+  id String @id @default(cuid())
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  expense   Expense @relation(fields: [expenseId], references: [id])
+  expenseId String
+
+  @@index([userId])
+  @@index([expenseId])
+  @@map("personal_expenses")
+}
+
+model SharedExpense {
+  id String @id @default(cuid())
 
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String
@@ -76,13 +86,29 @@ model Expense {
   group   Group  @relation(fields: [groupId], references: [id])
   groupId String
 
-  ExpenseSplit       ExpenseSplit[]
+  expense   Expense @relation(fields: [expenseId], references: [id])
+  expenseId String
+
+  ExpenseSplit ExpenseSplit[]
+
+  @@index([createdById])
+  @@index([groupId])
+  @@map("shared_expenses")
+}
+
+model Expense {
+  id        String   @id @default(cuid())
+  name      String
+  amount    Int // amount in cents
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   ExpensesCategories ExpensesCategories[]
+  PersonalExpense    PersonalExpense[]
+  SharedExpense      SharedExpense[]
 
   @@index([name])
-  @@index([groupId])
   @@index([createdAt])
-  @@index([createdById])
   @@map("expenses")
 }
 
@@ -91,16 +117,16 @@ model ExpenseSplit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  expense   Expense @relation(fields: [expenseId], references: [id])
-  expenseId String
+  sharedExpense   SharedExpense @relation(fields: [sharedExpenseId], references: [id])
+  sharedExpenseId String
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
   amount Int // amount in cents
 
-  @@unique([expenseId, userId])
-  @@index([expenseId])
+  @@unique([sharedExpenseId, userId])
+  @@index([sharedExpenseId])
   @@index([userId])
   @@index([createdAt])
   @@map("expense_splits")
