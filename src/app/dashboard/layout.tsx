@@ -1,4 +1,4 @@
-import Sidebar from '~/app/dashboard/sidebar';
+import DashboardSidebar from '~/app/dashboard/dashboard-sidebar';
 import { api } from '~/trpc/server';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -6,7 +6,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="flex flex-1">
-      <Sidebar />
+      <DashboardSidebar />
       {children}
     </div>
   );

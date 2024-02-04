@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export default function Sidebar() {
+export default function DashboardSidebar() {
   return (
     <aside className="flex w-64 flex-col border-r border-gray-200 bg-white dark:border-gray-600">
       <div className="sticky top-16 flex flex-col gap-4 px-6 py-4">

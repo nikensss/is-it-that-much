@@ -1,6 +1,6 @@
 export default function DashboardOverview() {
   return (
-    <main className="flex-1 overflow-auto bg-gray-100 p-4 md:p-6 lg:p-8 ">
+    <main className="flex-1 overflow-auto bg-gray-100 p-4 md:p-6 lg:py-2 ">
       <section className="mt-4">
         <div className="grid gap-4 md:grid-cols-2 md:gap-6 lg:gap-8">
           <div className="rounded-md bg-white p-4 shadow-md ">
