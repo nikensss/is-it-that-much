@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export function NavBar() {
   return (
-    <header className="sticky top-0 z-50 flex h-16 items-center border-b border-b-black bg-white px-4 lg:px-6">
+    <header className="sticky top-0 z-50 flex h-16 items-center border-b border-b-black bg-white px-4 text-black lg:px-6">
       <Link className="flex items-center justify-center" href="/">
         <WalletIcon className="h-6 w-6" />
         <span className="sr-only">Expense Tracker</span>
