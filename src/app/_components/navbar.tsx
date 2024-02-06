@@ -1,30 +1,39 @@
 import { SignedIn, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
+import { Button } from '~/components/ui/button';
 
 export function NavBar() {
   return (
-    <header className="sticky top-0 z-50 flex h-16 items-center border-b border-b-black bg-white px-4 text-black lg:px-6">
+    <header className="sticky top-0 z-50 flex h-16 items-center border-b border-b-black bg-white px-4 text-black max-sm:justify-between lg:px-6">
       <Link className="flex items-center justify-center" href="/">
         <WalletIcon className="h-6 w-6" />
         <span className="sr-only">Expense Tracker</span>
       </Link>
-      <nav className="ml-auto flex items-center justify-center gap-4 sm:gap-6">
-        <Link className="animated-underline text-sm font-medium" href="#">
-          Features
-        </Link>
-        <Link className="animated-underline text-sm font-medium" href="#">
-          Pricing
-        </Link>
-        <Link className="animated-underline text-sm font-medium" href="#">
-          About
-        </Link>
-        <Link className="animated-underline text-sm font-medium" href="#">
-          Contact
-        </Link>
-        <SignedIn>
-          <UserButton afterSignOutUrl="/" />
-        </SignedIn>
+      <nav className="flex items-center justify-center md:ml-auto">
+        <Button asChild variant="ghost" className="max-sm:px-2">
+          <Link className="text-sm font-medium" href="#">
+            Features
+          </Link>
+        </Button>
+        <Button asChild className="max-sm:px-2" variant="ghost">
+          <Link className="text-sm font-medium" href="#">
+            Pricing
+          </Link>
+        </Button>
+        <Button asChild className="max-sm:px-2" variant="ghost">
+          <Link className="text-sm font-medium" href="#">
+            About
+          </Link>
+        </Button>
+        <Button asChild className="max-sm:px-2" variant="ghost">
+          <Link className="text-sm font-medium" href="#">
+            Contact
+          </Link>
+        </Button>
       </nav>
+      <SignedIn>
+        <UserButton afterSignOutUrl="/" />
+      </SignedIn>
     </header>
   );
 }
