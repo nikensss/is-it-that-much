@@ -34,26 +34,26 @@ export default function DashboardRegisterPersonalExpense() {
         <DialogTrigger asChild>
           <Button variant="outline">Register expense</Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="rounded-md max-sm:w-11/12">
           <DialogHeader>
             <DialogTitle>New expense</DialogTitle>
           </DialogHeader>
           <form onSubmit={onSubmit}>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">
+              <div className="grid grid-cols-10 items-center gap-4">
+                <Label htmlFor="description" className="col-span-3 text-right">
                   Description
                 </Label>
                 <Input
                   id="description"
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder={description}
-                  className="col-span-3"
+                  className="col-span-7"
                   minLength={3}
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="expense-amount" className="text-right">
+              <div className="grid grid-cols-10 items-center gap-4">
+                <Label htmlFor="expense-amount" className="col-span-3 text-right">
                   Amount
                 </Label>
                 <Input
@@ -63,7 +63,7 @@ export default function DashboardRegisterPersonalExpense() {
                   min={0.01}
                   onChange={(e) => setAmount(parseFloat(e.target.value))}
                   value={amount}
-                  className="col-span-3"
+                  className="col-span-7"
                 />
               </div>
             </div>
