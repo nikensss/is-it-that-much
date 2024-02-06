@@ -97,17 +97,17 @@ model SharedExpense {
 }
 
 model Expense {
-  id        String   @id @default(cuid())
-  name      String
-  amount    Int // amount in cents
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  description String
+  amount      Int // amount in cents
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   ExpensesCategories ExpensesCategories[]
   PersonalExpense    PersonalExpense[]
   SharedExpense      SharedExpense[]
 
-  @@index([name])
+  @@index([description])
   @@index([createdAt])
   @@map("expenses")
 }

@@ -27,7 +27,9 @@
   "dependencies": {
     "@clerk/nextjs": "4.29.5",
     "@prisma/client": "5.9.1",
+    "@radix-ui/react-dialog": "1.0.5",
     "@radix-ui/react-icons": "1.3.0",
+    "@radix-ui/react-label": "2.0.2",
     "@radix-ui/react-slot": "1.0.2",
     "@t3-oss/env-nextjs": "0.8.0",
     "@tanstack/react-query": "4.36.1",

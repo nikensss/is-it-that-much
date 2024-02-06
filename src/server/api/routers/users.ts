@@ -66,8 +66,10 @@ async function sync(db: DB): Promise<void> {
       where: { externalId: clerkUser.id },
     });
 
-    await clerk.users.updateUser(clerkUser.id, { externalId: userInDb.id });
-    log.debug('updated user in clerk');
+    if (userInDb.id !== clerkUser.externalId) {
+      await clerk.users.updateUser(clerkUser.id, { externalId: userInDb.id });
+      log.debug('updated user in clerk');
+    }
   } catch (e) {
     log.error('error creating user', { e });
   }

@@ -1,3 +1,5 @@
+import { DashboardRegisterExpense } from '~/app/dashboard/overview/register-expense';
+
 export default function DashboardOverview() {
   return (
     <main className="flex-1 overflow-auto bg-gray-100 p-4 md:p-6 lg:py-2 ">
@@ -22,15 +24,7 @@ export default function DashboardOverview() {
         </div>
       </section>
       <section className="mt-4">
-        <div className="rounded-md bg-white p-4 shadow-md ">
-          <h2 className="mb-2 text-lg font-bold">Register Expense</h2>
-          <form className="space-y-4">
-            <input className="w-full" placeholder="Cost" type="number" />
-            <button className="w-full" type="submit">
-              Register Expense
-            </button>
-          </form>
-        </div>
+        <DashboardRegisterExpense />
       </section>
       <section className="mt-4">
         <div className="rounded-md bg-white p-4 shadow-md ">
