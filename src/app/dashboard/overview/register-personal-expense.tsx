@@ -1,5 +1,6 @@
 'use client';
 
+import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';
@@ -12,33 +13,39 @@ export default function DashboardRegisterPersonalExpense() {
   const router = useRouter();
   const [description, setDescription] = useState(getRandomDescription());
   const [amount, setAmount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const registerExpense = api.personalExpenses.register.useMutation({
-    onSuccess: () => {
-      router.refresh();
-      setDescription(getRandomDescription());
-      setAmount(0);
-    },
+    onMutate: () => setIsLoading(true),
+    onSettled: () => setIsOpen(false),
+    onSuccess: () => router.refresh(),
   });
 
-  const onSubmit = () => {
-    return registerExpense.mutateAsync({
-      description,
-      amount,
-    });
+  const resetForm = () => {
+    setDescription(getRandomDescription());
+    setAmount(0);
+    setIsLoading(false);
   };
 
   return (
     <div className="flex justify-center rounded-md bg-white p-4 shadow-md">
-      <Dialog>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline">Register expense</Button>
+          <Button variant="outline" onClick={resetForm}>
+            Register expense
+          </Button>
         </DialogTrigger>
         <DialogContent className="rounded-md max-sm:w-11/12">
           <DialogHeader>
-            <DialogTitle>New expense</DialogTitle>
+            <DialogTitle>Register expense</DialogTitle>
           </DialogHeader>
-          <form onSubmit={onSubmit}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              return registerExpense.mutate({ description, amount });
+            }}
+          >
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-10 items-center gap-4">
                 <Label htmlFor="description" className="col-span-3 text-right">
@@ -68,7 +75,9 @@ export default function DashboardRegisterPersonalExpense() {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Register expense</Button>
+              <Button disabled={isLoading} type="submit">
+                {isLoading ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Save'}
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -79,96 +88,75 @@ export default function DashboardRegisterPersonalExpense() {
 
 function getRandomDescription(): string {
   const descriptions = [
-    'Groceries',
-    'Rent',
-    'Electricity',
-    'Water',
-    'Internet',
-    'Phone',
-    'Gas',
-    'Car',
-    'Health',
-    'Insurance',
-    'Taxes',
-    'Savings',
-    'Investments',
-    'Entertainment',
-    'Travel',
-    'Education',
-    'Clothing',
-    'Furniture',
-    'Electronics',
-    'Appliances',
-    'Home',
-    'Garden',
-    'Pets',
-    'Gifts',
-    'Donations',
-    'Loans',
-    'Subscriptions',
-    'Memberships',
-    'Music',
-    'Movies',
-    'Games',
-    'Software',
-    'Apps',
-    'Food',
-    'Drinks',
-    'Takeout',
-    'Fast Food',
-    'Restaurants',
-    'Bars',
-    'Cafes',
-    'Desserts',
-    'Snacks',
-    'Sweets',
-    'Health',
-    'Fitness',
-    'Sports',
-    'Hobbies',
-    'Gaming',
-    'Books',
-    'Education',
-    'School',
-    'College',
-    'University',
-    'Courses',
-    'Training',
-    'Workshops',
-    'Conferences',
-    'Seminars',
-    'Webinars',
-    'Events',
-    'Parties',
-    'Celebrations',
-    'Holidays',
-    'Vacations',
-    'Trips',
-    'Adventures',
-    'Podcasts',
-    'Audiobooks',
-    'Music',
-    'Instruments',
-    'Concerts',
-    'Shows',
-    'Festivals',
-    'Exhibitions',
-    'Museums',
-    'Galleries',
-    'Theater',
-    'Cinema',
-    'Movies',
-    'Films',
-    'TV',
-    'Series',
     'Actors',
-    'Directors',
-    'Writers',
-    'Producers',
-    'Cinematography',
-    'Music',
+    'Adventures',
+    'Appliances',
+    'Apps',
+    'Audiobooks',
+    'Bars',
+    'Books',
+    'Cafes',
+    'Car',
+    'Celebrations',
+    'Cinema',
+    'Clothing',
+    'College',
+    'Concerts',
+    'Conferences',
     'Costumes',
+    'Courses',
+    'Donations',
+    'Drinks',
+    'Education',
+    'Electricity',
+    'Electronics',
+    'Exhibitions',
+    'Festivals',
+    'Fitness',
+    'Food',
+    'Furniture',
+    'Games',
+    'Gaming',
+    'Garden',
+    'Gas',
+    'Groceries',
+    'Health',
+    'Hobbies',
+    'Holidays',
+    'Insurances',
+    'Internet',
+    'Investments',
     'Makeup',
+    'Memberships',
+    'Movies',
+    'Museums',
+    'Music',
+    'Netflix',
+    'Parties',
+    'Pets',
+    'Phone',
+    'Podcasts',
+    'Rent',
+    'Restaurants',
+    'Savings',
+    'School',
+    'Seminars',
+    'Shows',
+    'Snacks',
+    'Software',
+    'Sports',
+    'Sweets',
+    'TV',
+    'Takeout',
+    'Taxes',
+    'Theater',
+    'Training',
+    'Trips',
+    'University',
+    'Vacations',
+    'Water',
+    'Webinars',
+    'Workshops',
   ];
 
   return descriptions[Math.floor(Math.random() * descriptions.length)] ?? 'Concerts';
