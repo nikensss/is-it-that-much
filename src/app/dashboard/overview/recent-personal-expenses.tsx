@@ -1,3 +1,4 @@
+import Date from '~/app/_components/date';
 import { api } from '~/trpc/server';
 
 export default async function DashboardRecentPersonalExpenses() {
@@ -10,7 +11,9 @@ export default async function DashboardRecentPersonalExpenses() {
           {personalExpense.expense.description}:
           <span className="ml-4 text-xs text-gray-500 dark:text-gray-400">${personalExpense.expense.amount / 100}</span>
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">{personalExpense.expense.createdAt?.toString()}</p>
+        <div className="cursor-pointer select-all text-xs text-gray-500 dark:text-gray-400">
+          <Date date={personalExpense.expense.createdAt} />
+        </div>
       </div>
     );
   }
