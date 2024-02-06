@@ -4,13 +4,14 @@ import { Button } from '~/components/ui/button';
 
 export function NavBar() {
   return (
-    <header className="sticky top-0 z-50 flex h-16 items-center border-b border-b-black bg-white px-4 text-black max-sm:justify-between lg:px-6">
-      <Link className="flex items-center justify-center" href="/">
+    <header className="sticky top-0 z-50 flex h-16 items-center bg-white px-4 text-slate-50 max-sm:justify-between lg:px-6">
+      <div className="absolute bottom-1 left-1 right-1 top-1 z-0 rounded-md bg-slate-900"></div>
+      <Link className="z-10 flex items-center justify-center" href="/">
         <WalletIcon className="h-6 w-6" />
         <span className="sr-only">Expense Tracker</span>
       </Link>
-      <nav className="flex items-center justify-center md:ml-auto">
-        <Button asChild variant="ghost" className="max-sm:px-2">
+      <nav className="z-10 flex items-center justify-center md:ml-auto md:mr-2 md:gap-2">
+        <Button asChild className="max-sm:px-2" variant="ghost">
           <Link className="text-sm font-medium" href="#">
             Features
           </Link>
