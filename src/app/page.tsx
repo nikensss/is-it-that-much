@@ -13,10 +13,10 @@ export default async function Home() {
         <div className="space-y-10 px-4">
           <div className="mx-auto flex max-w-[800px] px-4 sm:px-6 md:grid-cols-2 md:gap-16 md:px-10">
             <div>
-              <h1 className="lg:leading-tighter text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl xl:text-[3.4rem] 2xl:text-[3.75rem]">
+              <h1 className="lg:leading-tighter font-bold tracking-tighter max-sm:text-4xl md:text-5xl">
                 Track your expenses effortlessly
               </h1>
-              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+              <p className="mx-auto max-w-[700px] md:text-xl">
                 Our expense tracking service helps you keep a tab on your expenses with ease. Sign up now to get
                 started.
               </p>
@@ -50,33 +50,25 @@ export default async function Home() {
         <div className="container space-y-12 px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Features</h2>
-              <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                Explore the features of our expense tracking service.
-              </p>
+              <h2 className="text-3xl font-bold tracking-tighter max-sm:text-5xl">Features</h2>
+              <p className="max-w-[900px] md:text-xl/relaxed ">Explore the features of our expense tracking service.</p>
             </div>
           </div>
           <div className="mx-auto grid max-w-5xl items-center gap-6 pb-12 lg:grid-cols-3 lg:gap-12">
             <div className="flex flex-col justify-center space-y-4">
               <CalendarIcon className="mx-auto h-10 w-10" />
               <h3 className="text-center text-lg font-bold">Date-wise Tracking</h3>
-              <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-                Track your expenses based on dates.
-              </p>
+              <p className="text-center text-sm">Track your expenses based on dates.</p>
             </div>
             <div className="flex flex-col justify-center space-y-4">
               <CatIcon className="mx-auto h-10 w-10" />
               <h3 className="text-center text-lg font-bold">Category-wise Sorting</h3>
-              <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-                Sort your expenses based on categories.
-              </p>
+              <p className="text-center text-sm">Sort your expenses based on categories.</p>
             </div>
             <div className="flex flex-col justify-center space-y-4">
               <BarChartIcon className="mx-auto h-10 w-10" />
               <h3 className="text-center text-lg font-bold">Visual Representation</h3>
-              <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-                Get a visual representation of your expenses.
-              </p>
+              <p className="text-center text-sm">Get a visual representation of your expenses.</p>
             </div>
           </div>
         </div>

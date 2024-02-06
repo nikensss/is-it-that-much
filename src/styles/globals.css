@@ -2,26 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-.animated-underline,
-.animated-underline-span > span {
-  position: relative;
-}
+@layer components {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-slate-900;
+  }
 
-.animated-underline::after,
-.animated-underline-span > span::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 1px;
-  bottom: 0;
-  left: 0;
-  background-color: currentColor; /* Inherits text color */
-  transform: scaleX(0);
-  transition: transform 0.2s ease-out;
-  transform-origin: left;
-}
-
-.animated-underline:hover::after,
-.animated-underline-span:hover > span::after {
-  transform: scaleX(1);
+  p {
+    @apply text-slate-500;
+  }
 }

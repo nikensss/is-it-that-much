@@ -7,16 +7,8 @@ export default function DashboardSidebar() {
       <div className="flex gap-2 px-2 py-2 max-md:justify-around md:sticky md:top-16 md:flex-col">
         {getButton('Overview', '/dashboard/overview')}
         {getButton('Groups', '#')}
-        <Button asChild variant="ghost" className="select-none justify-start hover:bg-zinc-300 md:text-lg">
-          <Link className="font-medium" href="#">
-            Friends
-          </Link>
-        </Button>
-        <Button asChild variant="ghost" className="select-none justify-start hover:bg-zinc-200 md:text-lg">
-          <Link className="font-medium" href="#">
-            Settings
-          </Link>
-        </Button>
+        {getButton('Friends', '#')}
+        {getButton('Settings', '#')}
       </div>
     </aside>
   );
