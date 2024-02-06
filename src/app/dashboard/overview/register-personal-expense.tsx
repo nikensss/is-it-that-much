@@ -8,7 +8,7 @@ import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { api } from '~/trpc/react';
 
-export function DashboardRegisterExpense() {
+export default function DashboardRegisterPersonalExpense() {
   const router = useRouter();
   const [description, setDescription] = useState(getRandomDescription());
   const [amount, setAmount] = useState(0);
@@ -60,8 +60,9 @@ export function DashboardRegisterExpense() {
                   id="expense-amount"
                   type="number"
                   step={0.01}
+                  min={0.01}
                   onChange={(e) => setAmount(parseFloat(e.target.value))}
-                  placeholder={`${amount}`}
+                  value={amount}
                   className="col-span-3"
                 />
               </div>

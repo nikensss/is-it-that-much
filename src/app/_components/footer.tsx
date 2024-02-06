@@ -14,7 +14,7 @@ export function Footer() {
           Instagram
         </Link>
       </div>
-      <p className="text-xs text-gray-500 sm:ml-auto dark:text-gray-400">
+      <p className="text-xs text-gray-500 dark:text-gray-400 sm:ml-auto">
         © {new Date().getFullYear()} Expense Tracker. All rights reserved.
       </p>
     </footer>

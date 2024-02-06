@@ -1,9 +1,14 @@
 import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
+import type { Expense, PersonalExpense } from '@prisma/client';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
+
+export type RecentExpense = PersonalExpense & {
+  expense: Pick<Expense, 'amount' | 'description' | 'createdAt'>;
+};
 
 export const personalExpensesRouter = createTRPCRouter({
   all: publicProcedure.query(({ ctx }) => {
@@ -48,4 +53,33 @@ export const personalExpensesRouter = createTRPCRouter({
         return null;
       }
     }),
+
+  recent: publicProcedure.query(async ({ ctx }): Promise<RecentExpense[]> => {
+    const user = auth();
+
+    if (!user?.userId) return [];
+
+    return ctx.db.personalExpense.findMany({
+      where: {
+        user: {
+          externalId: user.userId,
+        },
+      },
+      take: 3,
+      orderBy: {
+        expense: {
+          createdAt: 'desc',
+        },
+      },
+      include: {
+        expense: {
+          select: {
+            amount: true,
+            description: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+  }),
 });

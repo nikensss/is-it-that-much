@@ -1,4 +1,5 @@
-import { DashboardRegisterExpense } from '~/app/dashboard/overview/register-expense';
+import DashboardRecentPersonalExpenses from '~/app/dashboard/overview/recent-personal-expenses';
+import DashboardRegisterPersonalExpense from '~/app/dashboard/overview/register-personal-expense';
 
 export default function DashboardOverview() {
   return (
@@ -24,26 +25,10 @@ export default function DashboardOverview() {
         </div>
       </section>
       <section className="mt-4">
-        <DashboardRegisterExpense />
+        <DashboardRegisterPersonalExpense />
       </section>
       <section className="mt-4">
-        <div className="rounded-md bg-white p-4 shadow-md ">
-          <h2 className="mb-2 text-lg font-bold">Recent Transactions</h2>
-          <div className="divide-y divide-gray-200 dark:divide-gray-600">
-            <div className="py-2">
-              <p className="text-sm">Bought groceries</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">-$45.67</p>
-            </div>
-            <div className="py-2">
-              <p className="text-sm">Received salary</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">+$2000.00</p>
-            </div>
-            <div className="py-2">
-              <p className="text-sm">Paid rent</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">-$800.00</p>
-            </div>
-          </div>
-        </div>
+        <DashboardRecentPersonalExpenses />
       </section>
     </main>
   );

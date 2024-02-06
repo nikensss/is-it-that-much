@@ -19,7 +19,8 @@
     "prisma:test:deploy": "dotenv -e .env.test -- prisma migrate deploy",
     "db:test:rm": "docker compose rm is-it-that-much-test-db -s -f -v",
     "db:test:up": "docker compose up is-it-that-much-test-db -d",
-    "db:test:restart": "npm run db:test:rm && npm run db:test:up && sleep 3 && npm run prisma:test:deploy"
+    "db:test:restart": "npm run db:test:rm && npm run db:test:up && sleep 3 && npm run prisma:test:deploy",
+    "prettier": "prettier 'src/**/*.{ts,tsx}' 'prisma/**/*.ts' --write"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
