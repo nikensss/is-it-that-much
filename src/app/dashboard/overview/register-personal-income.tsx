@@ -1,26 +1,26 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-// import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-// import { api } from '~/trpc/react';
+import { api } from '~/trpc/react';
 
 export default function DashboardRegisterPersonalIncome() {
-  // const router = useRouter();
+  const router = useRouter();
   const [description, setDescription] = useState(getRandomDescription());
   const [amount, setAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  // const registerExpense = api.personalExpenses.register.useMutation({
-  //   onMutate: () => setIsLoading(true),
-  //   onSettled: () => setIsOpen(false),
-  //   onSuccess: () => router.refresh(),
-  // });
+  const registerExpense = api.personalIncomes.register.useMutation({
+    onMutate: () => setIsLoading(true),
+    onSettled: () => setIsOpen(false),
+    onSuccess: () => router.refresh(),
+  });
 
   const resetForm = () => {
     setDescription(getRandomDescription());
@@ -31,7 +31,7 @@ export default function DashboardRegisterPersonalIncome() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" onClick={resetForm} disabled>
+        <Button variant="outline" onClick={resetForm}>
           Register income
         </Button>
       </DialogTrigger>
@@ -42,7 +42,7 @@ export default function DashboardRegisterPersonalIncome() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            // return registerExpense.mutate({ description, amount });
+            return registerExpense.mutate({ description, amount });
           }}
         >
           <div className="grid gap-4 py-4">

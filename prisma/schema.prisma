@@ -27,6 +27,7 @@ model User {
   SharedExpense   SharedExpense[] // the expenses the user added to groups
   ExpenseSplit    ExpenseSplit[] // the expenses the user has to pay a part of
   Category        Category[] // the categories the user created
+  PersonalIncome  PersonalIncome[]
 
   @@map("users")
 }
@@ -61,6 +62,35 @@ model UsersGroups {
   @@index([userId])
   @@index([groupId])
   @@map("users_groups")
+}
+
+model PersonalIncome {
+  id String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  income   Income @relation(fields: [incomeId], references: [id])
+  incomeId String
+
+  @@index([userId])
+  @@map("personal_incomes")
+}
+
+model Income {
+  id          String @id @default(cuid())
+  description String
+  amount      Int // amount in cents
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  PersonalIncome    PersonalIncome[]
+  IncomesCategories IncomesCategories[]
+
+  @@index([description])
+  @@index([createdAt])
+  @@map("incomes")
 }
 
 model PersonalExpense {
@@ -141,6 +171,7 @@ model Category {
   createdBy          User                 @relation(fields: [createdById], references: [id])
   createdById        String
   ExpensesCategories ExpensesCategories[]
+  IncomesCategories  IncomesCategories[]
 
   @@index([name])
   @@map("categories")
@@ -159,4 +190,19 @@ model ExpensesCategories {
 
   @@unique([expenseId, categoryId])
   @@map("expenses_categories")
+}
+
+model IncomesCategories {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  income   Income @relation(fields: [incomeId], references: [id])
+  incomeId String
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  @@unique([incomeId, categoryId])
+  @@map("incomes_categories")
 }
