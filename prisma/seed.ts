@@ -2,6 +2,8 @@ import { db } from '../src/server/db';
 
 async function main() {
   await db.expenseSplit.deleteMany({});
+  await db.sharedExpense.deleteMany({});
+  await db.personalExpense.deleteMany({});
   await db.expense.deleteMany({});
   await db.usersGroups.deleteMany({});
   await db.group.deleteMany({});

@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
 import type { Expense, PersonalExpense } from '@prisma/client';
+import { endOfMonth, startOfMonth } from 'date-fns';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 
@@ -23,6 +24,35 @@ export const personalExpensesRouter = createTRPCRouter({
       },
       include: {
         expense: true,
+      },
+    });
+  }),
+
+  inMonth: publicProcedure.input(z.object({ date: z.date() }).optional()).query(({ ctx, input }) => {
+    const { userId } = auth();
+    if (!userId) throw new Error('Not authenticated');
+
+    const date = input?.date ?? new Date();
+
+    const start = startOfMonth(date);
+    const end = endOfMonth(date);
+
+    return ctx.db.expense.aggregate({
+      where: {
+        createdAt: {
+          gte: start,
+          lte: end,
+        },
+        PersonalExpense: {
+          some: {
+            user: {
+              externalId: userId,
+            },
+          },
+        },
+      },
+      _sum: {
+        amount: true,
       },
     });
   }),
