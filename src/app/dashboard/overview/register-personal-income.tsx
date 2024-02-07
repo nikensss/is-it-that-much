@@ -53,8 +53,9 @@ export default function DashboardRegisterPersonalIncome() {
               <Input
                 id="description"
                 onChange={(e) => setDescription(e.target.value)}
+                onFocus={(e) => e.target.select()}
                 placeholder={description}
-                className="col-span-7"
+                className="col-span-7 text-[16px]"
                 minLength={3}
               />
             </div>
@@ -65,11 +66,12 @@ export default function DashboardRegisterPersonalIncome() {
               <Input
                 id="income-amount"
                 type="number"
+                onChange={(e) => setAmount(parseFloat(e.target.value))}
+                onFocus={(e) => e.target.select()}
                 step={0.01}
                 min={0.01}
-                onChange={(e) => setAmount(parseFloat(e.target.value))}
                 value={amount}
-                className="col-span-7"
+                className="col-span-7 text-[16px]"
               />
             </div>
           </div>
