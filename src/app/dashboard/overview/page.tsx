@@ -28,3 +28,5 @@ export default function DashboardOverview() {
 function PieChart(props: React.ComponentProps<'div'>) {
   return <div {...props}>This is a pie chart!</div>;
 }
+
+export const dynamic = 'force-dynamic';
