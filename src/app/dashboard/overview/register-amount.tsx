@@ -1,12 +1,16 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { Button } from '~/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '~/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
+import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
 import { getRandomElement } from '~/lib/utils';
 import { api } from '~/trpc/react';
 
@@ -20,16 +24,13 @@ export type RegisterAmountProps = {
 
 export default function RegisterAmount({ descriptions, target, title }: RegisterAmountProps) {
   const router = useRouter();
-  const [description, setDescription] = useState(getRandomElement(descriptions));
-  const [amount, setAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const resetForm = () => {
-    setDescription(getRandomElement(descriptions));
-    setAmount(0);
     setIsOpen(true);
     setIsLoading(false);
+    form.reset();
   };
 
   const mutationConfig = {
@@ -40,6 +41,40 @@ export default function RegisterAmount({ descriptions, target, title }: Register
 
   const registerExpense = api.personalExpenses.register.useMutation(mutationConfig);
   const registerIncome = api.personalIncomes.register.useMutation(mutationConfig);
+
+  const formSchema = z.object({
+    description: z.string().min(3).max(50),
+    amount: z.number().min(0.01),
+    categories: z.array(
+      z.object({
+        id: z.string(),
+        text: z.string().min(3).max(50),
+      }),
+    ),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      description: '',
+      amount: undefined,
+      categories: [],
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof formSchema>) {
+    console.log({ categories: form.getValues('categories') });
+
+    if (target === 'expenses') {
+      return registerExpense.mutate(data);
+    }
+
+    if (target === 'incomes') {
+      return registerIncome.mutate(data);
+    }
+
+    throw new Error('Invalid target');
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -52,57 +87,79 @@ export default function RegisterAmount({ descriptions, target, title }: Register
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-
-            if (target === 'expenses') {
-              return registerExpense.mutate({ description, amount });
-            }
-
-            if (target === 'incomes') {
-              return registerIncome.mutate({ description, amount });
-            }
-
-            throw new Error('Invalid target');
-          }}
-        >
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-10 items-center gap-4">
-              <Label htmlFor="description" className="col-span-3 text-right">
-                Description
-              </Label>
-              <Input
-                id="description"
-                onChange={(e) => setDescription(e.target.value)}
-                onFocus={(e) => e.target.select()}
-                placeholder={description}
-                className="col-span-7 text-[16px]"
-                minLength={3}
-              />
-            </div>
-            <div className="grid grid-cols-10 items-center gap-4">
-              <Label htmlFor="amount" className="col-span-3 text-right">
-                Amount
-              </Label>
-              <Input
-                id="amount"
-                type="number"
-                onChange={(e) => setAmount(parseFloat(e.target.value))}
-                onFocus={(e) => e.target.select()}
-                className="col-span-7 text-[16px]"
-                step={0.01}
-                min={0.01}
-                value={amount}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button disabled={isLoading} type="submit">
-              {isLoading ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Save'}
-            </Button>
-          </DialogFooter>
-        </form>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input
+                      onFocus={(e) => e.target.select()}
+                      placeholder={getRandomElement(descriptions)}
+                      className="col-span-7 text-[16px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      onFocus={(e) => e.target.select()}
+                      step={0.01}
+                      min={0.01}
+                      className="col-span-7 text-[16px] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      {...field}
+                      onChange={(e) => form.setValue('amount', parseFloat(e.target.value))}
+                      value={field.value ?? ''}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="categories"
+              render={({ field }) => (
+                <FormItem className="flex flex-col items-start">
+                  <FormLabel className="text-left">Topics</FormLabel>
+                  <FormControl>
+                    <TagInput
+                      shape={'rounded'}
+                      textCase={'lowercase'}
+                      animation={'fadeIn'}
+                      {...field}
+                      placeholder="Enter a topic"
+                      tags={form.getValues('categories') as Tag[]}
+                      className="sm:min-w-[450px]"
+                      setTags={(categories) => {
+                        form.setValue('categories', categories as Tag[]);
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button disabled={isLoading} type="submit">
+                {isLoading ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Save'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
