@@ -23,11 +23,12 @@ model User {
 
   Group           Group[] // the groups the user created
   UserGroup       UsersGroups[] // the groups the user is part of
+  PersonalIncome  PersonalIncome[]
   PersonalExpense PersonalExpense[] // the personal expenses of the user 
   SharedExpense   SharedExpense[] // the expenses the user added to groups
   ExpenseSplit    ExpenseSplit[] // the expenses the user has to pay a part of
-  Category        Category[] // the categories the user created
-  PersonalIncome  PersonalIncome[]
+  Tag             Tag[] // the tags the user created
+  Category        Category[]
 
   @@map("users")
 }
@@ -71,7 +72,7 @@ model PersonalIncome {
   userId String
 
   income   Income @relation(fields: [incomeId], references: [id])
-  incomeId String
+  incomeId String @unique
 
   @@index([userId])
   @@map("personal_incomes")
@@ -85,8 +86,11 @@ model Income {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  PersonalIncome    PersonalIncome[]
-  IncomesCategories IncomesCategories[]
+  PersonalIncome PersonalIncome?
+  IncomeTags     IncomesTags[]
+
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
 
   @@index([description])
   @@index([createdAt])
@@ -100,7 +104,7 @@ model PersonalExpense {
   userId String?
 
   expense   Expense @relation(fields: [expenseId], references: [id])
-  expenseId String
+  expenseId String  @unique
 
   @@index([userId])
   @@index([expenseId])
@@ -117,7 +121,7 @@ model SharedExpense {
   groupId String
 
   expense   Expense @relation(fields: [expenseId], references: [id])
-  expenseId String
+  expenseId String  @unique
 
   ExpenseSplit ExpenseSplit[]
 
@@ -133,9 +137,12 @@ model Expense {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  ExpensesCategories ExpensesCategories[]
-  PersonalExpense    PersonalExpense[]
-  SharedExpense      SharedExpense[]
+  PersonalExpense PersonalExpense?
+  SharedExpense   SharedExpense?
+
+  ExpensesTags ExpensesTags[]
+  category     Category?      @relation(fields: [categoryId], references: [id])
+  categoryId   String?
 
   @@index([description])
   @@index([createdAt])
@@ -147,13 +154,12 @@ model ExpenseSplit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  sharedExpense   SharedExpense @relation(fields: [sharedExpenseId], references: [id])
-  sharedExpenseId String
-
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  amount Int // amount in cents
+  amount          Int // amount in cents
+  SharedExpense   SharedExpense? @relation(fields: [sharedExpenseId], references: [id])
+  sharedExpenseId String?
 
   @@unique([sharedExpenseId, userId])
   @@index([sharedExpenseId])
@@ -162,22 +168,25 @@ model ExpenseSplit {
   @@map("expense_splits")
 }
 
-model Category {
+model Tag {
   id        String   @id @default(cuid())
-  name      String   @unique
+  name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdBy          User                 @relation(fields: [createdById], references: [id])
-  createdById        String
-  ExpensesCategories ExpensesCategories[]
-  IncomesCategories  IncomesCategories[]
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
 
+  ExpenseTags ExpensesTags[]
+  IncomeTags  IncomesTags[]
+
+  @@unique([createdById, name])
   @@index([name])
-  @@map("categories")
+  @@index([createdById])
+  @@map("tags")
 }
 
-model ExpensesCategories {
+model ExpensesTags {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -185,14 +194,14 @@ model ExpensesCategories {
   expense   Expense @relation(fields: [expenseId], references: [id])
   expenseId String
 
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId String
+  tag   Tag    @relation(fields: [tagId], references: [id])
+  tagId String
 
-  @@unique([expenseId, categoryId])
-  @@map("expenses_categories")
+  @@unique([expenseId, tagId])
+  @@map("expenses_tags")
 }
 
-model IncomesCategories {
+model IncomesTags {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -200,9 +209,27 @@ model IncomesCategories {
   income   Income @relation(fields: [incomeId], references: [id])
   incomeId String
 
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId String
+  tag   Tag    @relation(fields: [tagId], references: [id])
+  tagId String
 
-  @@unique([incomeId, categoryId])
-  @@map("incomes_categories")
+  @@unique([incomeId, tagId])
+  @@map("incomes_tags")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  Income  Income[]
+  Expense Expense[]
+
+  @@unique([createdById, name])
+  @@index([createdById])
+  @@index([name])
+  @@map("categories")
 }

@@ -39,8 +39,8 @@ export default function RegisterAmount({ descriptions, target, title }: Register
     onSuccess: () => router.refresh(),
   };
 
-  const registerExpense = api.personalExpenses.register.useMutation(mutationConfig);
-  const registerIncome = api.personalIncomes.register.useMutation(mutationConfig);
+  const registerExpense = api.personalExpenses.create.useMutation(mutationConfig);
+  const registerIncome = api.personalIncomes.create.useMutation(mutationConfig);
 
   const formSchema = z.object({
     description: z.string().min(3).max(50),
@@ -63,12 +63,14 @@ export default function RegisterAmount({ descriptions, target, title }: Register
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
+    const mutationData = { ...data, tags: data.tags.map((tag) => tag.text) };
+
     if (target === 'expenses') {
-      return registerExpense.mutate(data);
+      return registerExpense.mutate(mutationData);
     }
 
     if (target === 'incomes') {
-      return registerIncome.mutate(data);
+      return registerIncome.mutate(mutationData);
     }
 
     throw new Error('Invalid target');

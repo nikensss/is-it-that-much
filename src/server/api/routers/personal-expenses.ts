@@ -44,10 +44,8 @@ export const personalExpensesRouter = createTRPCRouter({
           lte: end,
         },
         PersonalExpense: {
-          some: {
-            user: {
-              externalId: userId,
-            },
+          user: {
+            externalId: userId,
           },
         },
       },
@@ -57,15 +55,35 @@ export const personalExpensesRouter = createTRPCRouter({
     });
   }),
 
-  register: publicProcedure
-    .input(z.object({ amount: z.number().positive(), description: z.string().min(1) }))
-    .mutation(async ({ ctx, input: { amount, description } }) => {
+  create: publicProcedure
+    .input(
+      z.object({
+        amount: z.number().positive(),
+        description: z.string().min(1),
+        tags: z.array(z.string().min(3).max(50)),
+      }),
+    )
+    .mutation(async ({ ctx, input: { amount, description, tags } }) => {
       try {
         const user = await currentUser();
         if (!user) throw new Error('Not authenticated');
-        if (!user.externalId) throw new Error('User has no externalId');
+
+        const createdById = user.externalId;
+        if (!createdById) throw new Error('User has no externalId');
 
         log.debug(`registering expense for ${user.id}`, { amount, description, userId: user.externalId });
+
+        await ctx.db.tag.createMany({
+          data: tags.map((name) => ({ name, createdById })),
+          skipDuplicates: true,
+        });
+
+        const dbTags = await ctx.db.tag.findMany({
+          where: {
+            createdById,
+            name: { in: tags },
+          },
+        });
 
         return ctx.db.personalExpense.create({
           data: {
@@ -74,12 +92,23 @@ export const personalExpensesRouter = createTRPCRouter({
               create: {
                 amount: parseInt(amount.toFixed(2).replace('.', '')),
                 description,
+                ExpensesTags: {
+                  createMany: {
+                    data: dbTags.map((tag) => ({ tagId: tag.id })),
+                  },
+                },
               },
             },
           },
         });
       } catch (error) {
-        log.error('could not create personal expense', { amount, description, error, externalUserId: auth().userId });
+        log.error('could not create personal expense', {
+          amount,
+          description,
+          error,
+          externalUserId: auth().userId,
+          tags,
+        });
         return null;
       }
     }),

@@ -1,10 +1,16 @@
 import { db } from '../src/server/db';
 
 async function main() {
+  await db.incomesTags.deleteMany({});
+  await db.expensesTags.deleteMany({});
+  await db.tag.deleteMany({});
   await db.expenseSplit.deleteMany({});
   await db.sharedExpense.deleteMany({});
   await db.personalExpense.deleteMany({});
+  await db.personalIncome.deleteMany({});
+  await db.income.deleteMany({});
   await db.expense.deleteMany({});
+  await db.category.deleteMany({});
   await db.usersGroups.deleteMany({});
   await db.group.deleteMany({});
   await db.user.deleteMany({});
