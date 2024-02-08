@@ -9,7 +9,9 @@ export default async function DashboardRecentTrasnsactions() {
 
   return (
     <div className="rounded-md bg-white p-4 shadow-md">
-      <h2 className="my-2 text-center text-lg font-bold">Recent Transactions</h2>
+      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-zinc-800">
+        <h2 className="text-lg font-bold text-zinc-200">Recent Transactions</h2>
+      </header>
       <div className="flex flex-col md:flex-row">
         <DashboardRecentTransactionsCard title={'Expenses'} transactions={personalExpenses.map((e) => e.expense)} />
         <div className="self-stretch border-b border-r border-gray-400"></div>

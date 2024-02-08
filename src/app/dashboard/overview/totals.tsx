@@ -9,7 +9,9 @@ export default async function DashboardTotals() {
 
   return (
     <section className="rounded-md bg-white p-4 shadow-md">
-      <h2 className="mb-2 text-lg font-bold">Totals this month</h2>
+      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-zinc-800">
+        <h2 className="text-lg font-bold text-zinc-200">Totals This Month</h2>
+      </header>
       <div className="grid items-start gap-4 md:gap-10">
         <div className="rounded-md bg-white p-4 shadow-md ">
           <h2 className="mb-2 text-lg font-bold">Total Expenses</h2>
