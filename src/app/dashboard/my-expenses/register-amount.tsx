@@ -45,7 +45,7 @@ export default function RegisterAmount({ descriptions, target, title }: Register
   const formSchema = z.object({
     description: z.string().min(3).max(50),
     amount: z.number().min(0.01),
-    categories: z.array(
+    tags: z.array(
       z.object({
         id: z.string(),
         text: z.string().min(3).max(50),
@@ -58,13 +58,11 @@ export default function RegisterAmount({ descriptions, target, title }: Register
     defaultValues: {
       description: '',
       amount: undefined,
-      categories: [],
+      tags: [],
     },
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log({ categories: form.getValues('categories') });
-
     if (target === 'expenses') {
       return registerExpense.mutate(data);
     }
@@ -131,21 +129,21 @@ export default function RegisterAmount({ descriptions, target, title }: Register
             />
             <FormField
               control={form.control}
-              name="categories"
+              name="tags"
               render={({ field }) => (
                 <FormItem className="flex flex-col items-start">
-                  <FormLabel className="text-left">Topics</FormLabel>
+                  <FormLabel className="text-left">Tags</FormLabel>
                   <FormControl>
                     <TagInput
                       shape={'rounded'}
                       textCase={'lowercase'}
                       animation={'fadeIn'}
                       {...field}
-                      placeholder="Enter a topic"
-                      tags={form.getValues('categories') as Tag[]}
+                      placeholder="Enter a tag"
+                      tags={form.getValues('tags') as Tag[]}
                       className="sm:min-w-[450px]"
-                      setTags={(categories) => {
-                        form.setValue('categories', categories as Tag[]);
+                      setTags={(tags) => {
+                        form.setValue('tags', tags as Tag[]);
                       }}
                     />
                   </FormControl>
