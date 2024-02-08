@@ -1,4 +1,4 @@
-import RegisterAmount from '~/app/dashboard/overview/register-amount';
+import RegisterAmount from '~/app/dashboard/my-expenses/register-amount';
 
 export default function DashboardRegisterPersonalExpense() {
   return <RegisterAmount target="expenses" descriptions={descriptions} title="Register expense" />;

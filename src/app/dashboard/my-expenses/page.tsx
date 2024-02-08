@@ -1,9 +1,9 @@
-import DashboardRecentTrasnsactions from '~/app/dashboard/overview/recent-transactions';
-import DashboardRegisterPersonalExpense from '~/app/dashboard/overview/register-personal-expense';
-import DashboardRegisterPersonalIncome from '~/app/dashboard/overview/register-personal-income';
-import DashboardTotals from '~/app/dashboard/overview/totals';
+import DashboardRecentTrasnsactions from '~/app/dashboard/my-expenses/recent-transactions';
+import DashboardRegisterPersonalExpense from '~/app/dashboard/my-expenses/register-personal-expense';
+import DashboardRegisterPersonalIncome from '~/app/dashboard/my-expenses/register-personal-income';
+import DashboardTotals from '~/app/dashboard/my-expenses/totals';
 
-export default function DashboardOverview() {
+export default function MyExpenses() {
   return (
     <main className="flex-1 overflow-auto bg-gray-100 p-4 md:p-6 lg:py-2 ">
       <section className="flex justify-around rounded-md bg-white p-4 shadow-md">

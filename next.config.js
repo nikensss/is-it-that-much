@@ -11,7 +11,7 @@ const config = {
     return Promise.resolve([
       {
         source: '/dashboard',
-        destination: '/dashboard/overview',
+        destination: '/dashboard/my-expenses',
         permanent: true,
       },
     ]);
