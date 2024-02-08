@@ -7,8 +7,8 @@ import { z } from 'zod';
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
-export type RecentExpense = PersonalExpense & {
-  expense: Pick<Expense, 'amount' | 'description' | 'createdAt'>;
+export type RecentPersonalExpense = PersonalExpense & {
+  expense: Pick<Expense, 'id' | 'amount' | 'description' | 'createdAt'>;
 };
 
 export const personalExpensesRouter = createTRPCRouter({
@@ -84,7 +84,7 @@ export const personalExpensesRouter = createTRPCRouter({
       }
     }),
 
-  recent: publicProcedure.query(async ({ ctx }): Promise<RecentExpense[]> => {
+  recent: publicProcedure.query(async ({ ctx }): Promise<RecentPersonalExpense[]> => {
     const user = auth();
 
     if (!user?.userId) return [];
@@ -104,6 +104,7 @@ export const personalExpensesRouter = createTRPCRouter({
       include: {
         expense: {
           select: {
+            id: true,
             amount: true,
             description: true,
             createdAt: true,

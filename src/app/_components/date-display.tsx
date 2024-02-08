@@ -5,7 +5,7 @@ export type DateProps = {
   date: Date;
 };
 
-export default function Date({ date }: DateProps) {
+export default function DateDisplay({ date }: DateProps) {
   return (
     <TooltipProvider delayDuration={300}>
       <Tooltip>

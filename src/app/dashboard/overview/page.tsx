@@ -1,4 +1,4 @@
-import DashboardRecentPersonalExpenses from '~/app/dashboard/overview/recent-personal-expenses';
+import DashboardRecentTrasnsactions from '~/app/dashboard/overview/recent-transactions';
 import DashboardRegisterPersonalExpense from '~/app/dashboard/overview/register-personal-expense';
 import DashboardRegisterPersonalIncome from '~/app/dashboard/overview/register-personal-income';
 import DashboardTotals from '~/app/dashboard/overview/totals';
@@ -19,7 +19,7 @@ export default function DashboardOverview() {
         </div>
       </section>
       <section className="mt-4">
-        <DashboardRecentPersonalExpenses />
+        <DashboardRecentTrasnsactions />
       </section>
     </main>
   );
