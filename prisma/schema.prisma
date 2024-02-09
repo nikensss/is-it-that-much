@@ -87,7 +87,7 @@ model Income {
   updatedAt DateTime @updatedAt
 
   PersonalIncome PersonalIncome?
-  IncomeTags     IncomesTags[]
+  IncomesTags    IncomesTags[]
 
   category   Category? @relation(fields: [categoryId], references: [id])
   categoryId String?
@@ -178,7 +178,7 @@ model Tag {
   createdById String
 
   ExpenseTags ExpensesTags[]
-  IncomeTags  IncomesTags[]
+  IncomesTags IncomesTags[]
 
   @@unique([createdById, name])
   @@index([name])

@@ -1,14 +1,16 @@
 import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
-import type { Income, PersonalIncome } from '@prisma/client';
+import type { Income } from '@prisma/client';
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
-export type RecentPersonalIncome = PersonalIncome & {
-  income: Pick<Income, 'id' | 'amount' | 'description' | 'createdAt'>;
+export type RecentPersonalIncome = {
+  income: Pick<Income, 'id' | 'amount' | 'description' | 'createdAt'> & {
+    IncomesTags: { tag: { id: string; name: string } }[];
+  };
 };
 
 export const personalIncomesRouter = createTRPCRouter({
@@ -22,8 +24,25 @@ export const personalIncomesRouter = createTRPCRouter({
           externalId: userId,
         },
       },
-      include: {
-        income: true,
+      select: {
+        income: {
+          select: {
+            id: true,
+            amount: true,
+            description: true,
+            createdAt: true,
+            IncomesTags: {
+              select: {
+                tag: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
   }),
@@ -92,7 +111,7 @@ export const personalIncomesRouter = createTRPCRouter({
               create: {
                 amount: parseInt(amount.toFixed(2).replace('.', '')),
                 description,
-                IncomeTags: {
+                IncomesTags: {
                   createMany: {
                     data: dbTags.map((tag) => ({ tagId: tag.id })),
                   },
@@ -130,13 +149,23 @@ export const personalIncomesRouter = createTRPCRouter({
           createdAt: 'desc',
         },
       },
-      include: {
+      select: {
         income: {
           select: {
             id: true,
             amount: true,
             description: true,
             createdAt: true,
+            IncomesTags: {
+              select: {
+                tag: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         },
       },

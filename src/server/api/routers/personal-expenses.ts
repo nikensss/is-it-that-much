@@ -1,14 +1,16 @@
 import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
-import type { Expense, PersonalExpense } from '@prisma/client';
+import type { Expense } from '@prisma/client';
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
-export type RecentPersonalExpense = PersonalExpense & {
-  expense: Pick<Expense, 'id' | 'amount' | 'description' | 'createdAt'>;
+export type RecentPersonalExpense = {
+  expense: Pick<Expense, 'id' | 'amount' | 'description' | 'createdAt'> & {
+    ExpensesTags: { tag: { id: string; name: string } }[];
+  };
 };
 
 export const personalExpensesRouter = createTRPCRouter({
@@ -22,8 +24,25 @@ export const personalExpensesRouter = createTRPCRouter({
           externalId: userId,
         },
       },
-      include: {
-        expense: true,
+      select: {
+        expense: {
+          select: {
+            id: true,
+            amount: true,
+            description: true,
+            createdAt: true,
+            ExpensesTags: {
+              select: {
+                tag: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
   }),
@@ -130,13 +149,23 @@ export const personalExpensesRouter = createTRPCRouter({
           createdAt: 'desc',
         },
       },
-      include: {
+      select: {
         expense: {
           select: {
             id: true,
             amount: true,
             description: true,
             createdAt: true,
+            ExpensesTags: {
+              select: {
+                tag: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
