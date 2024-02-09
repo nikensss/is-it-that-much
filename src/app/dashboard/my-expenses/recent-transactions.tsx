@@ -46,8 +46,8 @@ type DashboardRecentTransactionCardParams = {
 function DashboardRecentTransactionsCard({ title, transactions }: DashboardRecentTransactionCardParams) {
   function Transaction(transaction: Transaction) {
     return (
-      <div key={transaction.id} className="flex py-2">
-        <div>
+      <div key={transaction.id} className="flex h-12 items-center py-2">
+        <div className="flex-shrink-0">
           <p className="text-sm">
             {transaction.description}:
             <span className="ml-4 text-xs text-gray-500 dark:text-gray-400">${transaction.amount / 100}</span>
@@ -56,10 +56,10 @@ function DashboardRecentTransactionsCard({ title, transactions }: DashboardRecen
             <DateDisplay date={transaction.createdAt} />
           </div>
         </div>
-        <div className="ml-6 self-center">
+        <div className="ml-6 h-full overflow-hidden">
           {transaction.tags.map((tag) => {
             return (
-              <Badge key={tag.id} className="pointer-events-none mx-0.5" variant="secondary">
+              <Badge key={tag.id} className="pointer-events-none mx-0.5 mt-1.5 inline-block" variant="secondary">
                 {tag.name}
               </Badge>
             );

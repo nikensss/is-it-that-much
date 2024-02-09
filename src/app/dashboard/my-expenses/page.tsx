@@ -5,7 +5,7 @@ import DashboardTotals from '~/app/dashboard/my-expenses/totals';
 
 export default function MyExpenses() {
   return (
-    <main className="flex-1 overflow-auto bg-gray-100 p-4 md:p-6 lg:py-2 ">
+    <main className="flex-1 overflow-auto bg-gray-100 p-4">
       <section className="flex justify-around rounded-md bg-white p-4 shadow-md">
         <DashboardRegisterPersonalExpense />
         <DashboardRegisterPersonalIncome />
