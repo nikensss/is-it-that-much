@@ -25,6 +25,7 @@ export const tagsRouter = createTRPCRouter({
           some: {},
         },
       },
+      orderBy: { name: 'asc' },
     });
   }),
 
@@ -41,6 +42,7 @@ export const tagsRouter = createTRPCRouter({
           some: {},
         },
       },
+      orderBy: { name: 'asc' },
     });
   }),
 
