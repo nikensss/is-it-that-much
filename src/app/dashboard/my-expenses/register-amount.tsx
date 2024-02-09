@@ -20,9 +20,17 @@ export type RegisterAmountProps = {
   descriptions: string[];
   target: Target;
   title: string;
+  tags: {
+    id: string;
+    text: string;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+    createdById: string;
+  }[];
 };
 
-export default function RegisterAmount({ descriptions, target, title }: RegisterAmountProps) {
+export default function RegisterAmount({ descriptions, target, title, tags }: RegisterAmountProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -137,6 +145,18 @@ export default function RegisterAmount({ descriptions, target, title }: Register
                   <FormLabel className="text-left">Tags</FormLabel>
                   <FormControl>
                     <TagInput
+                      // enable autocomplete if there are unselected suggestions
+                      enableAutocomplete={
+                        !tags.every((t) => {
+                          return form.getValues('tags').some((tag) => tag.text === t.text);
+                        })
+                      }
+                      autocompleteFilter={(tag) => {
+                        // only shows tags that are not already selected
+                        return !form.getValues('tags').some(({ text }) => text === tag);
+                      }}
+                      autocompleteOptions={tags}
+                      maxTags={10}
                       shape={'rounded'}
                       textCase={'lowercase'}
                       animation={'fadeIn'}

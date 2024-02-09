@@ -1,7 +1,17 @@
 import RegisterAmount from '~/app/dashboard/my-expenses/register-amount';
+import { api } from '~/trpc/server';
 
-export default function DashboardRegisterPersonalExpense() {
-  return <RegisterAmount target="expenses" descriptions={descriptions} title="Register expense" />;
+export default async function DashboardRegisterPersonalExpense() {
+  const tags = await api.tags.expenses.query();
+
+  return (
+    <RegisterAmount
+      tags={tags.map((t) => ({ ...t, text: t.name }))}
+      target="expenses"
+      descriptions={descriptions}
+      title="Register expense"
+    />
+  );
 }
 
 const descriptions = [

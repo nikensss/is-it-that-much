@@ -12,6 +12,38 @@ export const tagsRouter = createTRPCRouter({
     return ctx.db.tag.findMany({ where: { createdBy: { externalId: userId } } });
   }),
 
+  incomes: publicProcedure.query(({ ctx }) => {
+    const { userId } = auth();
+    if (!userId) throw new Error('Not authenticated');
+
+    return ctx.db.tag.findMany({
+      where: {
+        createdBy: {
+          externalId: userId,
+        },
+        IncomesTags: {
+          some: {},
+        },
+      },
+    });
+  }),
+
+  expenses: publicProcedure.query(({ ctx }) => {
+    const { userId } = auth();
+    if (!userId) throw new Error('Not authenticated');
+
+    return ctx.db.tag.findMany({
+      where: {
+        createdBy: {
+          externalId: userId,
+        },
+        ExpensesTags: {
+          some: {},
+        },
+      },
+    });
+  }),
+
   createMany: publicProcedure.input(z.array(z.string().min(3).max(50))).mutation(async ({ ctx, input }) => {
     const user = await currentUser();
     if (!user) throw new Error('Not authenticated');
