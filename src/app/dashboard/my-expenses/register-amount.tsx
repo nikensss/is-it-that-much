@@ -163,7 +163,7 @@ export default function RegisterAmount({ descriptions, target, title, tags }: Re
                       {...field}
                       placeholder="Enter a tag"
                       tags={form.getValues('tags') as Tag[]}
-                      className="sm:min-w-[450px]"
+                      className="max-w-[100%] text-[16px]"
                       setTags={(tags) => {
                         form.setValue('tags', tags as Tag[]);
                       }}
