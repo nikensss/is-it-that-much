@@ -98,7 +98,7 @@ export default function RegisterAmount({ descriptions, target, title, tags }: Re
           {title}
         </Button>
       </DialogTrigger>
-      <DialogContent className="rounded-md max-sm:w-11/12">
+      <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>

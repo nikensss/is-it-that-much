@@ -1,5 +1,5 @@
 import React from 'react';
-import { Command, CommandList, CommandItem, CommandGroup, CommandEmpty } from '~/components/ui/command';
+import { Command, CommandList, CommandItem, CommandGroup } from '~/components/ui/command';
 import { type Tag as TagType } from './tag-input';
 
 type AutocompleteProps = {
@@ -25,7 +25,6 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
     <Command className="border">
       {children}
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup heading="Previously used">
           {autocompleteOptions.map((option) => (
             <div
