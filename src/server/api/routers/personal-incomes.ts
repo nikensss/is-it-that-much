@@ -7,14 +7,14 @@ import { z } from 'zod';
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
-export type RecentPersonalIncome = {
-  income: Pick<Income, 'id' | 'amount' | 'description' | 'createdAt'> & {
+export type PersonalIncomeExtended = {
+  income: Pick<Income, 'id' | 'amount' | 'description' | 'date'> & {
     IncomesTags: { tag: { id: string; name: string } }[];
   };
 };
 
 export const personalIncomesRouter = createTRPCRouter({
-  all: publicProcedure.query(({ ctx }) => {
+  all: publicProcedure.query(({ ctx }): Promise<PersonalIncomeExtended[]> => {
     const { userId } = auth();
     if (!userId) throw new Error('Not authenticated');
 
@@ -24,13 +24,18 @@ export const personalIncomesRouter = createTRPCRouter({
           externalId: userId,
         },
       },
+      orderBy: {
+        income: {
+          date: 'desc',
+        },
+      },
       select: {
         income: {
           select: {
             id: true,
             amount: true,
             description: true,
-            createdAt: true,
+            date: true,
             IncomesTags: {
               select: {
                 tag: {
@@ -78,11 +83,12 @@ export const personalIncomesRouter = createTRPCRouter({
     .input(
       z.object({
         amount: z.number().positive(),
+        date: z.date().default(() => new Date()),
         description: z.string().min(1),
         tags: z.array(z.string().min(3).max(50)),
       }),
     )
-    .mutation(async ({ ctx, input: { amount, description, tags } }) => {
+    .mutation(async ({ ctx, input: { amount, date, description, tags } }) => {
       try {
         const user = await currentUser();
         if (!user) throw new Error('Not authenticated');
@@ -111,6 +117,7 @@ export const personalIncomesRouter = createTRPCRouter({
               create: {
                 amount: parseInt(amount.toFixed(2).replace('.', '')),
                 description,
+                date,
                 IncomesTags: {
                   createMany: {
                     data: dbTags.map((tag) => ({ tagId: tag.id })),
@@ -132,7 +139,7 @@ export const personalIncomesRouter = createTRPCRouter({
       }
     }),
 
-  recent: publicProcedure.query(async ({ ctx }): Promise<RecentPersonalIncome[]> => {
+  recent: publicProcedure.query(async ({ ctx }): Promise<PersonalIncomeExtended[]> => {
     const user = auth();
 
     if (!user?.userId) return [];
@@ -146,7 +153,7 @@ export const personalIncomesRouter = createTRPCRouter({
       take: 3,
       orderBy: {
         income: {
-          createdAt: 'desc',
+          date: 'desc',
         },
       },
       select: {
@@ -155,7 +162,7 @@ export const personalIncomesRouter = createTRPCRouter({
             id: true,
             amount: true,
             description: true,
-            createdAt: true,
+            date: true,
             IncomesTags: {
               select: {
                 tag: {

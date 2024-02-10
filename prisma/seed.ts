@@ -92,7 +92,7 @@ async function main() {
     if (!group) throw new Error(`group ${i % user.UserGroup.length} undefined for user ${user.username}`);
 
     const amount = (100 - i * Math.PI) * 100; // amount in cents
-    const expenseData = { description: `expense${i}`, amount };
+    const expenseData = { date: new Date(), description: `expense${i}`, amount };
     const expense = await db.expense.create({ data: expenseData });
     await db.sharedExpense.create({
       data: {

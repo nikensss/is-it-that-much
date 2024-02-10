@@ -1,17 +1,21 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CalendarIcon } from '@radix-ui/react-icons';
+import { format } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '~/components/ui/button';
+import { Calendar } from '~/components/ui/calendar';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '~/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
-import { getRandomElement } from '~/lib/utils';
+import { cn, getRandomElement } from '~/lib/utils';
 import { api } from '~/trpc/react';
 
 export type Target = 'expenses' | 'incomes';
@@ -34,6 +38,7 @@ export default function RegisterAmount({ descriptions, target, title, tags }: Re
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const toggleCalendar = useRef<HTMLButtonElement>(null);
 
   const resetForm = () => {
     setIsOpen(true);
@@ -53,6 +58,7 @@ export default function RegisterAmount({ descriptions, target, title, tags }: Re
   const formSchema = z.object({
     description: z.string().min(3).max(50),
     amount: z.number().min(0.01),
+    date: z.date(),
     tags: z.array(
       z.object({
         id: z.string(),
@@ -66,6 +72,7 @@ export default function RegisterAmount({ descriptions, target, title, tags }: Re
     defaultValues: {
       description: '',
       amount: undefined,
+      date: new Date(),
       tags: [],
     },
   });
@@ -115,28 +122,76 @@ export default function RegisterAmount({ descriptions, target, title, tags }: Re
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amount</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      onFocus={(e) => e.target.select()}
-                      step={0.01}
-                      min={0.01}
-                      className="col-span-7 text-[16px] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                      {...field}
-                      onChange={(e) => form.setValue('amount', parseFloat(e.target.value))}
-                      value={field.value ?? ''}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex w-full flex-col justify-between md:flex-row">
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amount</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        onFocus={(e) => e.target.select()}
+                        step={0.01}
+                        min={0.01}
+                        className={cn(
+                          'col-span-7 text-left text-[16px] font-normal [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+                          !field.value && 'text-muted-foreground',
+                        )}
+                        {...field}
+                        onChange={(e) => form.setValue('amount', parseFloat(e.target.value))}
+                        value={field.value ?? ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            ref={toggleCalendar}
+                            className={cn(
+                              'ml-0.5 min-w-[240px] pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground',
+                              'w-full py-0',
+                            )}
+                          >
+                            {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          modifiersStyles={{
+                            today: {
+                              fontWeight: 'bold',
+                              textDecoration: 'underline',
+                            },
+                          }}
+                          onDayClick={() => toggleCalendar.current?.click()}
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(d) => d < new Date('1900-01-01')}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="tags"

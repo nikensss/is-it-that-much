@@ -6,14 +6,14 @@ export default async function DashboardRecentTrasnsactions() {
   const personalExpenses = await api.personalExpenses.recent.query();
   const personalIncomes = await api.personalIncomes.recent.query();
 
-  const expenses = personalExpenses.map(({ expense: { id, amount, createdAt, description, ExpensesTags } }) => {
+  const expenses = personalExpenses.map(({ expense: { id, amount, date, description, ExpensesTags } }) => {
     const tags = ExpensesTags.map((t) => ({ id: t.tag.id, name: t.tag.name }));
-    return { id, amount, createdAt, description, tags };
+    return { id, amount, date, description, tags };
   });
 
-  const incomes = personalIncomes.map(({ income: { id, amount, createdAt, description, IncomesTags } }) => {
+  const incomes = personalIncomes.map(({ income: { id, amount, date, description, IncomesTags } }) => {
     const tags = IncomesTags.map((t) => ({ id: t.tag.id, name: t.tag.name }));
-    return { id, amount, createdAt, description, tags };
+    return { id, amount, date, description, tags };
   });
 
   return (
@@ -32,7 +32,7 @@ export default async function DashboardRecentTrasnsactions() {
 
 type Transaction = {
   amount: number;
-  createdAt: Date;
+  date: Date;
   description: string;
   id: string;
   tags: { id: string; name: string }[];
@@ -53,7 +53,7 @@ function DashboardRecentTransactionsCard({ title, transactions }: DashboardRecen
             <span className="ml-4 text-xs text-gray-500 dark:text-gray-400">${transaction.amount / 100}</span>
           </p>
           <div className="cursor-pointer select-all text-xs text-gray-500 dark:text-gray-400">
-            <DateDisplay date={transaction.createdAt} />
+            <DateDisplay date={transaction.date} />
           </div>
         </div>
         <div className="ml-6 h-full overflow-hidden">
