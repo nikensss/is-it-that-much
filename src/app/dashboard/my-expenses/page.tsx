@@ -1,3 +1,4 @@
+import Charts from '~/app/dashboard/my-expenses/charts/charts';
 import DashboardRecentTrasnsactions from '~/app/dashboard/my-expenses/recent-transactions';
 import DashboardRegisterPersonalExpense from '~/app/dashboard/my-expenses/register-transaction/register-personal-expense';
 import DashboardRegisterPersonalIncome from '~/app/dashboard/my-expenses/register-transaction/register-personal-income';
@@ -14,7 +15,7 @@ export default function MyExpenses() {
         <div className="grid gap-4 md:grid-cols-2 md:gap-6 lg:gap-8">
           <DashboardTotals />
           <section className="rounded-md bg-white p-4 shadow-md">
-            <PieChart className="aspect-[4/3] w-full" />
+            <Charts className="aspect-[4/3] w-full" />
           </section>
         </div>
       </section>
@@ -23,10 +24,6 @@ export default function MyExpenses() {
       </section>
     </main>
   );
-}
-
-function PieChart(props: React.ComponentProps<'div'>) {
-  return <div {...props}>This is a pie chart!</div>;
 }
 
 export const dynamic = 'force-dynamic';
