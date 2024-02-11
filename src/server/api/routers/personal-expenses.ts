@@ -96,7 +96,7 @@ export const personalExpensesRouter = createTRPCRouter({
         const createdById = user.externalId;
         if (!createdById) throw new Error('User has no externalId');
 
-        log.debug(`registering expense for ${user.id}`, { amount, description, userId: user.externalId });
+        log.debug(`registering expense for ${user.id}`, { amount, date, description, tags, userId: user.externalId });
 
         await ctx.db.tag.createMany({
           data: tags.map((name) => ({ name, createdById })),

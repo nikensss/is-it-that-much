@@ -6,11 +6,12 @@ export type DateProps = {
 };
 
 export default function DateDisplay({ date }: DateProps) {
+  const localised = date.toLocaleDateString();
   return (
     <TooltipProvider delayDuration={300}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <time dateTime={date.toString()}>{format(date, 'LLLL d, yyyy')}</time>
+          <time dateTime={localised}>{format(localised, 'LLLL d, yyyy')}</time>
         </TooltipTrigger>
         <TooltipContent side="right">
           <span>{date.toString()}</span>
