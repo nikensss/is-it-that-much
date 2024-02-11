@@ -34,7 +34,7 @@ export type RegisterAmountProps = {
   }[];
 };
 
-export default function RegisterAmount({ descriptions, target, title, tags }: RegisterAmountProps) {
+export default function RegisterTransaction({ descriptions, target, title, tags }: RegisterAmountProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);

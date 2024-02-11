@@ -1,6 +1,6 @@
 import DashboardRecentTrasnsactions from '~/app/dashboard/my-expenses/recent-transactions';
-import DashboardRegisterPersonalExpense from '~/app/dashboard/my-expenses/register-personal-expense';
-import DashboardRegisterPersonalIncome from '~/app/dashboard/my-expenses/register-personal-income';
+import DashboardRegisterPersonalExpense from '~/app/dashboard/my-expenses/register-transaction/register-personal-expense';
+import DashboardRegisterPersonalIncome from '~/app/dashboard/my-expenses/register-transaction/register-personal-income';
 import DashboardTotals from '~/app/dashboard/my-expenses/totals';
 
 export default function MyExpenses() {
