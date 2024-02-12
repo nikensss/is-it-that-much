@@ -20,7 +20,7 @@ import { api } from '~/trpc/react';
 
 export type Target = 'expenses' | 'incomes';
 
-export type RegisterAmountProps = {
+export type RegisterTransactionProps = {
   descriptions: string[];
   target: Target;
   title: string;
@@ -34,7 +34,7 @@ export type RegisterAmountProps = {
   }[];
 };
 
-export default function RegisterTransaction({ descriptions, target, title, tags }: RegisterAmountProps) {
+export default function RegisterTransaction({ descriptions, target, title, tags }: RegisterTransactionProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);

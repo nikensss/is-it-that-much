@@ -23,7 +23,6 @@ export default function DailyExpensesChartClient({ labels, datasets }: DailyExpe
           },
         },
       }}
-      height={window?.innerWidth > 1024 ? 200 : 300}
       data={{ labels, datasets }}
     />
   );
