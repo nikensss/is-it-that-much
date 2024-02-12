@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~/components/ui/tooltip';
 
 export type DateProps = {
@@ -11,10 +11,10 @@ export default function DateDisplay({ date }: DateProps) {
     <TooltipProvider delayDuration={300}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <time dateTime={localised}>{format(localised, 'LLLL d, yyyy')}</time>
+          <time dateTime={localised}>{formatDistanceToNow(localised, { addSuffix: true })}</time>
         </TooltipTrigger>
         <TooltipContent side="right">
-          <span>{date.toString()}</span>
+          <span>{format(localised, 'LLLL d, yyyy')}</span>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
