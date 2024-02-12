@@ -13,6 +13,17 @@ export type PersonalIncomeExtended = {
   };
 };
 
+export type PersonalIncomeInPeriod = {
+  IncomesTags: {
+    tag: {
+      name: string;
+    };
+  }[];
+} & {
+  amount: number;
+  date: Date;
+};
+
 export const personalIncomesRouter = createTRPCRouter({
   all: publicProcedure.query(({ ctx }): Promise<PersonalIncomeExtended[]> => {
     const { userId } = auth();
@@ -52,32 +63,84 @@ export const personalIncomesRouter = createTRPCRouter({
     });
   }),
 
-  inMonth: publicProcedure.input(z.object({ date: z.date() }).optional()).query(({ ctx, input }) => {
-    const { userId } = auth();
-    if (!userId) throw new Error('Not authenticated');
+  period: publicProcedure
+    .input(
+      z
+        .object({
+          start: z.date().default(startOfMonth(new Date())),
+          end: z.date().default(endOfMonth(new Date())),
+        })
+        .default({
+          start: startOfMonth(new Date()),
+          end: endOfMonth(new Date()),
+        }),
+    )
+    .query(({ ctx, input: { start, end } }): Promise<PersonalIncomeInPeriod[]> => {
+      const { userId } = auth();
+      if (!userId) throw new Error('Not authenticated');
 
-    const date = input?.date ?? new Date();
-
-    const start = startOfMonth(date);
-    const end = endOfMonth(date);
-
-    return ctx.db.income.aggregate({
-      where: {
-        createdAt: {
-          gte: start,
-          lte: end,
-        },
-        PersonalIncome: {
-          user: {
-            externalId: userId,
+      return ctx.db.income.findMany({
+        where: {
+          createdAt: {
+            gte: start,
+            lte: end,
+          },
+          PersonalIncome: {
+            user: {
+              externalId: userId,
+            },
           },
         },
-      },
-      _sum: {
-        amount: true,
-      },
-    });
-  }),
+        select: {
+          date: true,
+          amount: true,
+          IncomesTags: {
+            select: {
+              tag: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
+
+  totalAmountInMonth: publicProcedure
+    .input(
+      z
+        .object({
+          date: z.date(),
+        })
+        .optional(),
+    )
+    .query(({ ctx, input }) => {
+      const { userId } = auth();
+      if (!userId) throw new Error('Not authenticated');
+
+      const date = input?.date ?? new Date();
+
+      const start = startOfMonth(date);
+      const end = endOfMonth(date);
+
+      return ctx.db.income.aggregate({
+        where: {
+          createdAt: {
+            gte: start,
+            lte: end,
+          },
+          PersonalIncome: {
+            user: {
+              externalId: userId,
+            },
+          },
+        },
+        _sum: {
+          amount: true,
+        },
+      });
+    }),
 
   create: publicProcedure
     .input(

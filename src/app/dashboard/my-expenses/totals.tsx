@@ -4,7 +4,7 @@ export default async function DashboardTotals() {
   const totalPersonalExpenses = await api.personalExpenses.totalAmountInMonth.query();
   const expenses = totalPersonalExpenses._sum?.amount ?? 0;
 
-  const totalPersonalIncomes = await api.personalIncomes.inMonth.query();
+  const totalPersonalIncomes = await api.personalIncomes.totalAmountInMonth.query();
   const incomes = totalPersonalIncomes._sum?.amount ?? 0;
 
   return (

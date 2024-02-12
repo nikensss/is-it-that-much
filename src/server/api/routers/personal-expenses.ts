@@ -13,20 +13,15 @@ export type PersonalExpenseExtended = {
   };
 };
 
-export type PersonalExpensePeriod = {
+export type PersonalExpenseInPeriod = {
   ExpensesTags: {
     tag: {
       name: string;
     };
   }[];
 } & {
-  id: string;
-  description: string;
   amount: number;
   date: Date;
-  createdAt: Date;
-  updatedAt: Date;
-  categoryId: string | null;
 };
 
 export const personalExpensesRouter = createTRPCRouter({
@@ -80,7 +75,7 @@ export const personalExpensesRouter = createTRPCRouter({
           end: endOfMonth(new Date()),
         }),
     )
-    .query(({ ctx, input: { start, end } }): Promise<PersonalExpensePeriod[]> => {
+    .query(({ ctx, input: { start, end } }): Promise<PersonalExpenseInPeriod[]> => {
       const { userId } = auth();
       if (!userId) throw new Error('Not authenticated');
 
@@ -96,7 +91,9 @@ export const personalExpensesRouter = createTRPCRouter({
             },
           },
         },
-        include: {
+        select: {
+          date: true,
+          amount: true,
           ExpensesTags: {
             select: {
               tag: {
@@ -110,32 +107,40 @@ export const personalExpensesRouter = createTRPCRouter({
       });
     }),
 
-  totalAmountInMonth: publicProcedure.input(z.object({ date: z.date() }).optional()).query(({ ctx, input }) => {
-    const { userId } = auth();
-    if (!userId) throw new Error('Not authenticated');
+  totalAmountInMonth: publicProcedure
+    .input(
+      z
+        .object({
+          date: z.date(),
+        })
+        .optional(),
+    )
+    .query(({ ctx, input }) => {
+      const { userId } = auth();
+      if (!userId) throw new Error('Not authenticated');
 
-    const date = input?.date ?? new Date();
+      const date = input?.date ?? new Date();
 
-    const start = startOfMonth(date);
-    const end = endOfMonth(date);
+      const start = startOfMonth(date);
+      const end = endOfMonth(date);
 
-    return ctx.db.expense.aggregate({
-      where: {
-        createdAt: {
-          gte: start,
-          lte: end,
-        },
-        PersonalExpense: {
-          user: {
-            externalId: userId,
+      return ctx.db.expense.aggregate({
+        where: {
+          createdAt: {
+            gte: start,
+            lte: end,
+          },
+          PersonalExpense: {
+            user: {
+              externalId: userId,
+            },
           },
         },
-      },
-      _sum: {
-        amount: true,
-      },
-    });
-  }),
+        _sum: {
+          amount: true,
+        },
+      });
+    }),
 
   create: publicProcedure
     .input(
