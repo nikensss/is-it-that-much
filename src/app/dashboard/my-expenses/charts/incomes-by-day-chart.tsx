@@ -1,7 +1,7 @@
 import { eachDayOfInterval, getDate } from 'date-fns';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
-import ChartClient from '~/app/dashboard/my-expenses/charts/chart-client';
+import BarChartClient from '~/app/dashboard/my-expenses/charts/bar-chart-client';
 import type { PersonalIncomeInPeriod } from '~/server/api/routers/personal-incomes';
 
 export type IncomesByDayChartProps = {
@@ -24,7 +24,7 @@ export default async function IncomesByDay({ incomes, start, end }: IncomesByDay
   const backgroundColor = fullConfig.theme.colors.slate[900];
 
   return (
-    <ChartClient
+    <BarChartClient
       labels={labels}
       datasets={[{ backgroundColor, label: 'Incomes', data: labels.map((d) => incomesByDay.get(d) ?? 0) }]}
     />
