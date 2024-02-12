@@ -16,3 +16,22 @@
     @apply text-slate-500;
   }
 }
+
+.responsive-tab-trigger .compact {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .responsive-tab-trigger[data-state='inactive'] .full {
+    display: none;
+  }
+
+  .responsive-tab-trigger[data-state='active'] .full {
+    flex-grow: 1;
+  }
+
+  .responsive-tab-trigger[data-state='inactive'] .compact {
+    display: block;
+    flex-shrink: 1;
+  }
+}
