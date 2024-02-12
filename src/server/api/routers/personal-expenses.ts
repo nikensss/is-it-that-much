@@ -13,6 +13,22 @@ export type PersonalExpenseExtended = {
   };
 };
 
+export type PersonalExpensePeriod = {
+  ExpensesTags: {
+    tag: {
+      name: string;
+    };
+  }[];
+} & {
+  id: string;
+  description: string;
+  amount: number;
+  date: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  categoryId: string | null;
+};
+
 export const personalExpensesRouter = createTRPCRouter({
   all: publicProcedure.query(({ ctx }): Promise<PersonalExpenseExtended[]> => {
     const { userId } = auth();
@@ -64,7 +80,7 @@ export const personalExpensesRouter = createTRPCRouter({
           end: endOfMonth(new Date()),
         }),
     )
-    .query(({ ctx, input: { start, end } }) => {
+    .query(({ ctx, input: { start, end } }): Promise<PersonalExpensePeriod[]> => {
       const { userId } = auth();
       if (!userId) throw new Error('Not authenticated');
 
@@ -77,6 +93,17 @@ export const personalExpensesRouter = createTRPCRouter({
           PersonalExpense: {
             user: {
               externalId: userId,
+            },
+          },
+        },
+        include: {
+          ExpensesTags: {
+            select: {
+              tag: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
         },
