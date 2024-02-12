@@ -1,4 +1,4 @@
-import { eachDayOfInterval, endOfMonth, format, getDate, startOfMonth } from 'date-fns';
+import { eachDayOfInterval, endOfMonth, format, startOfMonth } from 'date-fns';
 import { api } from '~/trpc/server';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
@@ -19,7 +19,6 @@ export default async function DailyExpensesChart() {
 
   const fullConfig = resolveConfig(tailwindConfig);
   const backgroundColor = fullConfig.theme.colors.slate[900];
-  console.log(fullConfig.theme.width);
 
   return (
     <>
