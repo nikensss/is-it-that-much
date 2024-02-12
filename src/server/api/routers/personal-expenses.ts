@@ -52,7 +52,38 @@ export const personalExpensesRouter = createTRPCRouter({
     });
   }),
 
-  inMonth: publicProcedure.input(z.object({ date: z.date() }).optional()).query(({ ctx, input }) => {
+  period: publicProcedure
+    .input(
+      z
+        .object({
+          start: z.date().default(startOfMonth(new Date())),
+          end: z.date().default(endOfMonth(new Date())),
+        })
+        .default({
+          start: startOfMonth(new Date()),
+          end: endOfMonth(new Date()),
+        }),
+    )
+    .query(({ ctx, input: { start, end } }) => {
+      const { userId } = auth();
+      if (!userId) throw new Error('Not authenticated');
+
+      return ctx.db.expense.findMany({
+        where: {
+          createdAt: {
+            gte: start,
+            lte: end,
+          },
+          PersonalExpense: {
+            user: {
+              externalId: userId,
+            },
+          },
+        },
+      });
+    }),
+
+  totalAmountInMonth: publicProcedure.input(z.object({ date: z.date() }).optional()).query(({ ctx, input }) => {
     const { userId } = auth();
     if (!userId) throw new Error('Not authenticated');
 

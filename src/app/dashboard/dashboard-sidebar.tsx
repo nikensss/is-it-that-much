@@ -16,7 +16,7 @@ export default function DashboardSidebar() {
 
 function getButton(text: string, href: string) {
   return (
-    <Button asChild variant="ghost" className="select-none justify-start px-2 text-sm hover:bg-zinc-300 md:text-lg">
+    <Button asChild variant="ghost" className="select-none justify-start px-2 text-sm hover:bg-slate-300 md:text-lg">
       <Link href={href}>{text}</Link>
     </Button>
   );

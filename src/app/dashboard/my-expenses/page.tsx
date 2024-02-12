@@ -14,9 +14,7 @@ export default function MyExpenses() {
       <section className="mt-4">
         <div className="grid gap-4 md:grid-cols-2 md:gap-6 lg:gap-8">
           <DashboardTotals />
-          <section className="rounded-md bg-white p-4 shadow-md">
-            <Charts className="aspect-[4/3] w-full" />
-          </section>
+          <Charts />
         </div>
       </section>
       <section className="mt-4">

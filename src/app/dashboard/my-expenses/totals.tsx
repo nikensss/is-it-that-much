@@ -1,7 +1,7 @@
 import { api } from '~/trpc/server';
 
 export default async function DashboardTotals() {
-  const totalPersonalExpenses = await api.personalExpenses.inMonth.query();
+  const totalPersonalExpenses = await api.personalExpenses.totalAmountInMonth.query();
   const expenses = totalPersonalExpenses._sum?.amount ?? 0;
 
   const totalPersonalIncomes = await api.personalIncomes.inMonth.query();
@@ -9,8 +9,8 @@ export default async function DashboardTotals() {
 
   return (
     <section className="rounded-md bg-white p-4 shadow-md">
-      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-zinc-800">
-        <h2 className="text-lg font-bold text-zinc-200">Totals This Month</h2>
+      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-800">
+        <h2 className="text-lg font-bold text-slate-200">Totals This Month</h2>
       </header>
       <div className="grid items-start gap-4 md:gap-10">
         <div className="rounded-md bg-white p-4 shadow-md ">
