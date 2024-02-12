@@ -13,28 +13,33 @@ export type IncomeLeftByDayProps = {
 };
 
 export default async function IncomeLeftByDay({ incomes, expenses, start, end }: IncomeLeftByDayProps) {
-  const dateToLabel = (date: Date) => getDate(date);
   const labels = eachDayOfInterval({ start, end })
-    .map((date) => dateToLabel(date))
+    .map((date) => getDate(date))
     .sort((a, b) => a - b);
-
-  const totalIncome = incomes.reduce((acc, income) => acc + income.amount, 0);
 
   const expensesByDay = new Map<number, number>();
   for (const expense of expenses) {
-    const day = dateToLabel(expense.date);
-    expensesByDay.set(day, expensesByDay.get(day) ?? 0 + expense.amount);
+    const day = getDate(expense.date);
+    const current = expensesByDay.get(day) ?? 0;
+    expensesByDay.set(day, current + expense.amount);
+  }
+
+  const incomesByDay = new Map<number, number>();
+  for (const income of incomes) {
+    const day = getDate(income.date);
+    const current = incomesByDay.get(day) ?? 0;
+    incomesByDay.set(day, current + income.amount);
   }
 
   const incomeLeftByDay = new Map<number, number>();
-  let incomeLeft = totalIncome;
+  let incomeLeft = 0;
   for (const label of labels) {
-    incomeLeft -= expensesByDay.get(label) ?? 0;
+    incomeLeft += (incomesByDay.get(label) ?? 0) - (expensesByDay.get(label) ?? 0);
     incomeLeftByDay.set(label, incomeLeft);
   }
 
   const fullConfig = resolveConfig(tailwindConfig);
-  const backgroundColor = fullConfig.theme.colors.slate[900];
+  const slate900 = fullConfig.theme.colors.slate[900];
 
   const lastDayWithExpenses = Math.max(...expensesByDay.keys());
 
@@ -43,8 +48,8 @@ export default async function IncomeLeftByDay({ incomes, expenses, start, end }:
       labels={labels}
       datasets={[
         {
-          borderColor: backgroundColor,
-          backgroundColor,
+          borderColor: slate900,
+          backgroundColor: slate900,
           label: 'Incomes',
           data: labels.slice(0, lastDayWithExpenses).map((d) => (incomeLeftByDay.get(d) ?? 0) / 100),
         },

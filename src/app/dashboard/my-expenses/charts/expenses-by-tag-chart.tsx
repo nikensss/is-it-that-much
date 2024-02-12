@@ -11,7 +11,8 @@ export default async function ExpensesByTagChart({ expenses }: ExpensesByTagChar
   const expensesPerTag = new Map<string, number>();
   for (const expense of expenses) {
     for (const { tag } of expense.ExpensesTags) {
-      expensesPerTag.set(tag.name, expensesPerTag.get(tag.name) ?? 0 + expense.amount / 100);
+      const current = expensesPerTag.get(tag.name) ?? 0;
+      expensesPerTag.set(tag.name, current + expense.amount / 100);
     }
   }
 

@@ -5,7 +5,7 @@ import { Line } from 'react-chartjs-2';
 
 ChartJS.register(LineElement, PointElement, Tooltip);
 
-type LineChartClientProps = Parameters<typeof Line<number[], number>>[0]['data'];
+type LineChartClientProps = Parameters<typeof Line<number[], string | number>>[0]['data'];
 
 export default function LineChartClient({ labels, datasets }: LineChartClientProps) {
   return (

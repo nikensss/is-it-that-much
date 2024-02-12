@@ -11,13 +11,13 @@ export type ExpensesByDayChartProps = {
 };
 
 export default async function ExpensesByDayChart({ expenses, start, end }: ExpensesByDayChartProps) {
-  const dateToLabel = (date: Date) => `${getDate(date)}`;
-  const labels = eachDayOfInterval({ start, end }).map((date) => `${dateToLabel(date)}`);
+  const labels = eachDayOfInterval({ start, end }).map((date) => getDate(date));
 
-  const expensesByDay = new Map<string, number>();
+  const expensesByDay = new Map<number, number>();
   for (const expense of expenses) {
-    const day = `${dateToLabel(expense.date)}`;
-    expensesByDay.set(day, expensesByDay.get(day) ?? 0 + expense.amount / 100);
+    const day = getDate(expense.date);
+    const current = expensesByDay.get(day) ?? 0;
+    expensesByDay.set(day, current + expense.amount / 100);
   }
 
   const fullConfig = resolveConfig(tailwindConfig);

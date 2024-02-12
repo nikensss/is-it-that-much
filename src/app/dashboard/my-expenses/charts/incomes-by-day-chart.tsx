@@ -17,7 +17,8 @@ export default async function IncomesByDay({ incomes, start, end }: IncomesByDay
   const incomesByDay = new Map<string, number>();
   for (const income of incomes) {
     const day = `${dateToLabel(income.date)}`;
-    incomesByDay.set(day, incomesByDay.get(day) ?? 0 + income.amount / 100);
+    const current = incomesByDay.get(day) ?? 0;
+    incomesByDay.set(day, current + income.amount / 100);
   }
 
   const fullConfig = resolveConfig(tailwindConfig);
