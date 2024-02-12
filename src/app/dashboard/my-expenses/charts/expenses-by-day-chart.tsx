@@ -1,7 +1,7 @@
 import { eachDayOfInterval, getDate } from 'date-fns';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
-import DailyExpensesChartClient from '~/app/dashboard/my-expenses/charts/daily-expenses-chart-client';
+import ChartClient from '~/app/dashboard/my-expenses/charts/chart-client';
 import type { PersonalExpensePeriod } from '~/server/api/routers/personal-expenses';
 
 export type DailyExpensesChartProps = {
@@ -10,7 +10,7 @@ export type DailyExpensesChartProps = {
   end: Date;
 };
 
-export default async function DailyExpensesChart({ expenses, start, end }: DailyExpensesChartProps) {
+export default async function ExpensesByDayChart({ expenses, start, end }: DailyExpensesChartProps) {
   const dateToLabel = (date: Date) => `${getDate(date)}`;
   const labels = eachDayOfInterval({ start, end }).map((date) => `${dateToLabel(date)}`);
 
@@ -24,7 +24,7 @@ export default async function DailyExpensesChart({ expenses, start, end }: Daily
   const backgroundColor = fullConfig.theme.colors.slate[900];
 
   return (
-    <DailyExpensesChartClient
+    <ChartClient
       labels={labels}
       datasets={[{ backgroundColor, label: 'Expenses', data: labels.map((d) => expensesByDay.get(d) ?? 0) }]}
     />

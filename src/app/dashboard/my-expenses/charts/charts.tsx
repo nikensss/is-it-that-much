@@ -1,8 +1,8 @@
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { api } from '~/trpc/server';
-import DailyExpensesChart from '~/app/dashboard/my-expenses/charts/daily-expenses-chart';
+import ExpensesByDayChart from '~/app/dashboard/my-expenses/charts/expenses-by-day-chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
-import ExpensesByTagsChart from '~/app/dashboard/my-expenses/charts/expenses-by-tags-chart';
+import ExpensesByTagChart from '~/app/dashboard/my-expenses/charts/expenses-by-tag-chart';
 
 export default async function Charts() {
   const now = new Date();
@@ -25,19 +25,19 @@ export default async function Charts() {
             <TabsTrigger value="income-left-per-day">Income left per day</TabsTrigger>
           </TabsList>
           <TabsContent value="expenses-by-day">
-            <DailyExpensesChart expenses={expenses} start={start} end={end} />
+            <ExpensesByDayChart expenses={expenses} start={start} end={end} />
           </TabsContent>
 
           <TabsContent value="expenses-by-tag">
-            <ExpensesByTagsChart expenses={expenses} />
+            <ExpensesByTagChart expenses={expenses} />
           </TabsContent>
 
           <TabsContent value="incomes-by-day">
-            <DailyExpensesChart expenses={expenses} start={start} end={end} />
+            <ExpensesByDayChart expenses={expenses} start={start} end={end} />
           </TabsContent>
 
           <TabsContent value="income-left-per-day">
-            <DailyExpensesChart expenses={expenses} start={start} end={end} />
+            <ExpensesByDayChart expenses={expenses} start={start} end={end} />
           </TabsContent>
         </Tabs>
       </div>

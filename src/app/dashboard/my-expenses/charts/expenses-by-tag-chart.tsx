@@ -1,13 +1,13 @@
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
-import DailyExpensesChartClient from '~/app/dashboard/my-expenses/charts/daily-expenses-chart-client';
+import ChartClient from '~/app/dashboard/my-expenses/charts/chart-client';
 import type { PersonalExpensePeriod } from '~/server/api/routers/personal-expenses';
 
-export type DailyExpensesChartProps = {
+export type ExpensesByTagChartProps = {
   expenses: PersonalExpensePeriod[];
 };
 
-export default async function ExpensesByTagsChart({ expenses }: DailyExpensesChartProps) {
+export default async function ExpensesByTagChart({ expenses }: ExpensesByTagChartProps) {
   const expensesPerTag = new Map<string, number>();
   for (const expense of expenses) {
     for (const { tag } of expense.ExpensesTags) {
@@ -22,7 +22,7 @@ export default async function ExpensesByTagsChart({ expenses }: DailyExpensesCha
   const labels = entries.map(([tag]) => tag);
 
   return (
-    <DailyExpensesChartClient
+    <ChartClient
       labels={labels}
       datasets={[{ backgroundColor, label: 'Expenses', data: labels.map((d) => expensesPerTag.get(d) ?? 0) }]}
     />

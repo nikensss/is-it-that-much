@@ -5,9 +5,9 @@ import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-type DailyExpensesChartClientProps = Parameters<typeof Bar<number[], string>>[0]['data'];
+type ChartClientProps = Parameters<typeof Bar<number[], string>>[0]['data'];
 
-export default function DailyExpensesChartClient({ labels, datasets }: DailyExpensesChartClientProps) {
+export default function ChartClient({ labels, datasets }: ChartClientProps) {
   return (
     <Bar
       options={{
