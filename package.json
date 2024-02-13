@@ -6,8 +6,10 @@
   "scripts": {
     "build": "next build",
     "db:push": "prisma db push",
+    "db:push:dev": "dotenv -e .env.dev -- prisma db push",
     "db:studio": "prisma studio",
-    "db:seed": "NODE_ENV=development prisma db seed",
+    "db:seed": "prisma db seed",
+    "db:seed:dev": "dotenv -e .env.dev -- prisma db seed",
     "db:fill": "dotenv -e .env -- tsx prisma/fill.ts",
     "dev": "next dev",
     "postinstall": "prisma generate",
