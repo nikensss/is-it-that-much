@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
 import type { Income } from '@prisma/client';
 import { endOfMonth, startOfMonth } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
+import { getTimezoneOffset, utcToZonedTime } from 'date-fns-tz';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 
@@ -85,14 +85,16 @@ export const personalIncomesRouter = createTRPCRouter({
       });
 
       const now = utcToZonedTime(Date.now(), user?.timezone ?? 'Europe/Amsterdam');
-      const start = input.start ?? startOfMonth(now);
-      const end = input.end ?? endOfMonth(now);
+      const preferredTimezoneOffset = getTimezoneOffset(user?.timezone ?? 'Europe/Amsterdam');
+      const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+      const start = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+      const end = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
 
       return ctx.db.income.findMany({
         where: {
           createdAt: {
-            gte: start,
-            lte: end,
+            gte: input.start ?? start,
+            lte: input.end ?? end,
           },
           PersonalIncome: {
             user: {

@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
@@ -21,6 +22,7 @@ import { api } from '~/trpc/react';
 export type Target = 'expenses' | 'incomes';
 
 export type RegisterTransactionProps = {
+  timezone?: string;
   descriptions: string[];
   target: Target;
   title: string;
@@ -34,11 +36,11 @@ export type RegisterTransactionProps = {
   }[];
 };
 
-export default function RegisterTransaction({ descriptions, target, title, tags }: RegisterTransactionProps) {
+export default function RegisterTransaction({ timezone, descriptions, target, title, tags }: RegisterTransactionProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const toggleCalendar = useRef<HTMLButtonElement>(null);
+  const calendarTrigger = useRef<HTMLButtonElement>(null);
 
   const resetForm = () => {
     setIsOpen(true);
@@ -78,6 +80,12 @@ export default function RegisterTransaction({ descriptions, target, title, tags 
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
+    if (timezone) {
+      // little hack to make sure the date used is timezoned to the user's preference
+      // the calendar component cannot be timezoned
+      data.date = new Date(zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), timezone));
+    }
+
     const mutationData = { ...data, tags: data.tags.map((tag) => tag.text) };
 
     if (target === 'expenses') {
@@ -159,7 +167,7 @@ export default function RegisterTransaction({ descriptions, target, title, tags 
                         <FormControl>
                           <Button
                             variant={'outline'}
-                            ref={toggleCalendar}
+                            ref={calendarTrigger}
                             className={cn(
                               'ml-0.5 min-w-[240px] pl-3 text-left font-normal',
                               !field.value && 'text-muted-foreground',
@@ -180,7 +188,7 @@ export default function RegisterTransaction({ descriptions, target, title, tags 
                               textDecoration: 'underline',
                             },
                           }}
-                          onDayClick={() => toggleCalendar.current?.click()}
+                          onDayClick={() => calendarTrigger.current?.click()}
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={(d) => d < new Date('1900-01-01')}

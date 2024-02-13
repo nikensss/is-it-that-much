@@ -5,15 +5,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import ExpensesByTagChart from '~/app/dashboard/my-expenses/charts/expenses-by-tag-chart';
 import IncomesByDay from '~/app/dashboard/my-expenses/charts/incomes-by-day-chart';
 import IncomeLeftByDay from '~/app/dashboard/my-expenses/charts/income-left-by-day-chart';
-import { utcToZonedTime } from 'date-fns-tz';
+import { getTimezoneOffset } from 'date-fns-tz';
 
 export default async function Charts() {
   const user = await api.users.get.query();
   const timezone = user?.timezone ?? 'Europe/Amsterdam';
 
-  const now = utcToZonedTime(Date.now(), timezone);
-  const start = startOfMonth(now);
-  const end = endOfMonth(now);
+  const now = Date.now();
+  const preferredTimezoneOffset = getTimezoneOffset(timezone);
+  const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+  const start = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+  const end = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
 
   const expenses = await api.personalExpenses.period.query({ start, end });
   const incomes = await api.personalIncomes.period.query({ start, end });
