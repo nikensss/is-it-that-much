@@ -11,15 +11,18 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(cuid())
-  externalId String   @unique
-  username   String?  @unique
-  email      String?  @unique
+  id         String  @id @default(cuid())
+  externalId String  @unique
+  username   String? @unique
+  email      String? @unique
   firstName  String?
   lastName   String?
   imageUrl   String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  timezone   String?
+  currency   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   Group           Group[] // the groups the user created
   UserGroup       UsersGroups[] // the groups the user is part of

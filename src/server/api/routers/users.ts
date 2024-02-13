@@ -1,6 +1,7 @@
 import { auth, clerkClient as clerk, currentUser } from '@clerk/nextjs';
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 import { log } from 'next-axiom';
+import { z } from 'zod';
 
 export const usersRouter = createTRPCRouter({
   exists: publicProcedure.query(async ({ ctx }) => {
@@ -10,6 +11,7 @@ export const usersRouter = createTRPCRouter({
     const count = await ctx.db.user.count({ where: { externalId: userId } });
     return count > 0;
   }),
+
   create: publicProcedure.mutation(async ({ ctx }) => {
     try {
       const clerkUser = await currentUser();
@@ -37,12 +39,14 @@ export const usersRouter = createTRPCRouter({
       return null;
     }
   }),
+
   get: publicProcedure.query(({ ctx }) => {
     const { userId } = auth();
     if (!userId) return null;
 
     return ctx.db.user.findUnique({ where: { externalId: userId } });
   }),
+
   sync: publicProcedure.mutation(async ({ ctx }) => {
     const clerkUser = await currentUser();
     if (!clerkUser) return;
@@ -67,4 +71,35 @@ export const usersRouter = createTRPCRouter({
       log.debug('updated user in clerk');
     }
   }),
+
+  update: publicProcedure
+    .input(
+      z.object({
+        timezone: z.string().optional(),
+        currency: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = auth();
+      if (!userId) return null;
+
+      const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
+      if (!user) return null;
+
+      const timezone =
+        input.timezone
+          ?.match(/^(?<timezone>[^\(]+)\(.*$/)
+          ?.groups?.timezone?.trim()
+          .replace(/ /g, '_') ?? undefined;
+
+      const currency = input.currency?.match(/^(?<name>\w+) \((?<symbol>.)\)$/)?.groups?.name?.trim() ?? undefined;
+
+      return ctx.db.user.update({
+        where: { id: user.id },
+        data: {
+          timezone,
+          currency,
+        },
+      });
+    }),
 });

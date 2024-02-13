@@ -8,7 +8,7 @@ export default function DashboardSidebar() {
         {getButton('My expenses', '/dashboard/my-expenses')}
         {getButton('Groups', '#')}
         {getButton('Friends', '#')}
-        {getButton('Settings', '#')}
+        {getButton('Settings', '/dashboard/settings')}
       </div>
     </aside>
   );

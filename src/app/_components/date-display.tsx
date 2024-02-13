@@ -11,10 +11,10 @@ export default function DateDisplay({ date }: DateProps) {
     <TooltipProvider delayDuration={300}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <time dateTime={localised}>{formatDistanceToNow(localised, { addSuffix: true })}</time>
+          <time dateTime={localised}>{formatDistanceToNow(date, { addSuffix: true })}</time>
         </TooltipTrigger>
         <TooltipContent side="right">
-          <span>{format(localised, 'LLLL d, yyyy')}</span>
+          <span>{format(date, 'LLLL d, yyyy')}</span>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
