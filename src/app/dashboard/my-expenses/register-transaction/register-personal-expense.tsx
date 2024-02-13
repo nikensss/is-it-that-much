@@ -59,3 +59,5 @@ const descriptions = [
   'Webinars',
   'Workshops',
 ];
+
+export const dynamic = 'force-dynamic';

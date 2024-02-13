@@ -1,6 +1,10 @@
+import currencySymbolMap from 'currency-symbol-map/map';
 import { api } from '~/trpc/server';
 
 export default async function DashboardTotals() {
+  const user = await api.users.get.query();
+  const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];
+
   const totalPersonalExpenses = await api.personalExpenses.totalAmountInMonth.query();
   const expenses = totalPersonalExpenses._sum?.amount ?? 0;
 
@@ -15,15 +19,24 @@ export default async function DashboardTotals() {
       <div className="grid items-start gap-4 md:gap-10">
         <div className="rounded-md bg-white p-4 shadow-md ">
           <h2 className="mb-2 text-lg font-bold">Total Expenses</h2>
-          <p className="text-2xl font-semibold">${expenses / 100}</p>
+          <p className="text-2xl font-semibold">
+            {currencySymbol}
+            {expenses / 100}
+          </p>
         </div>
         <div className="rounded-md bg-white p-4 shadow-md ">
           <h2 className="mb-2 text-lg font-bold">Total Incomes</h2>
-          <p className="text-2xl font-semibold">${incomes / 100}</p>
+          <p className="text-2xl font-semibold">
+            {currencySymbol}
+            {incomes / 100}
+          </p>
         </div>
         <div className="rounded-md bg-white p-4 shadow-md ">
           <h2 className="mb-2 text-lg font-bold">Income left</h2>
-          <p className="text-2xl font-semibold">${(incomes - expenses) / 100}</p>
+          <p className="text-2xl font-semibold">
+            {currencySymbol}
+            {(incomes - expenses) / 100}
+          </p>
         </div>
       </div>
     </section>

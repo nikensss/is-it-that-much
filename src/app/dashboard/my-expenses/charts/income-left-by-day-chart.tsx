@@ -1,4 +1,5 @@
-import { eachDayOfInterval, getDate } from 'date-fns';
+import { eachDayOfInterval } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
 import LineChartClient from '~/app/dashboard/my-expenses/charts/line-chart-client';
@@ -6,27 +7,28 @@ import type { PersonalExpenseInPeriod } from '~/server/api/routers/personal-expe
 import type { PersonalIncomeInPeriod } from '~/server/api/routers/personal-incomes';
 
 export type IncomeLeftByDayProps = {
+  timezone: string;
   incomes: PersonalIncomeInPeriod[];
   expenses: PersonalExpenseInPeriod[];
   start: Date;
   end: Date;
 };
 
-export default async function IncomeLeftByDay({ incomes, expenses, start, end }: IncomeLeftByDayProps) {
+export default async function IncomeLeftByDay({ timezone, incomes, expenses, start, end }: IncomeLeftByDayProps) {
   const labels = eachDayOfInterval({ start, end })
-    .map((date) => getDate(date))
+    .map((date) => parseInt(formatInTimeZone(date, timezone, 'dd')))
     .sort((a, b) => a - b);
 
   const expensesByDay = new Map<number, number>();
   for (const expense of expenses) {
-    const day = getDate(expense.date);
+    const day = parseInt(formatInTimeZone(expense.date, timezone, 'dd'));
     const current = expensesByDay.get(day) ?? 0;
     expensesByDay.set(day, current + expense.amount);
   }
 
   const incomesByDay = new Map<number, number>();
   for (const income of incomes) {
-    const day = getDate(income.date);
+    const day = parseInt(formatInTimeZone(income.date, timezone, 'dd'));
     const current = incomesByDay.get(day) ?? 0;
     incomesByDay.set(day, current + income.amount);
   }

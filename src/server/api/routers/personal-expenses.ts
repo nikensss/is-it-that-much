@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
 import type { Expense } from '@prisma/client';
 import { endOfMonth, startOfMonth } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 
@@ -65,19 +66,28 @@ export const personalExpensesRouter = createTRPCRouter({
 
   period: publicProcedure
     .input(
-      z
-        .object({
-          start: z.date().default(startOfMonth(new Date())),
-          end: z.date().default(endOfMonth(new Date())),
-        })
-        .default({
-          start: startOfMonth(new Date()),
-          end: endOfMonth(new Date()),
-        }),
+      z.object({
+        start: z.date().optional(),
+        end: z.date().optional(),
+      }),
     )
-    .query(({ ctx, input: { start, end } }): Promise<PersonalExpenseInPeriod[]> => {
+    .query(async ({ ctx, input }): Promise<PersonalExpenseInPeriod[]> => {
+      console.log('input', input);
       const { userId } = auth();
       if (!userId) throw new Error('Not authenticated');
+
+      const user = await ctx.db.user.findUnique({
+        where: {
+          externalId: userId,
+        },
+        select: {
+          timezone: true,
+        },
+      });
+
+      const now = utcToZonedTime(Date.now(), user?.timezone ?? 'Europe/Amsterdam');
+      const start = input.start ?? startOfMonth(now);
+      const end = input.end ?? endOfMonth(now);
 
       return ctx.db.expense.findMany({
         where: {
@@ -115,12 +125,20 @@ export const personalExpensesRouter = createTRPCRouter({
         })
         .optional(),
     )
-    .query(({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {
       const { userId } = auth();
       if (!userId) throw new Error('Not authenticated');
 
-      const date = input?.date ?? new Date();
+      const user = await ctx.db.user.findUnique({
+        where: {
+          externalId: userId,
+        },
+        select: {
+          timezone: true,
+        },
+      });
 
+      const date = input?.date ?? utcToZonedTime(Date.now(), user?.timezone ?? 'Europe/Amsterdam');
       const start = startOfMonth(date);
       const end = endOfMonth(date);
 

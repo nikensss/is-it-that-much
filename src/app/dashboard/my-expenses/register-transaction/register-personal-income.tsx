@@ -15,3 +15,5 @@ export default async function DashboardRegisterPersonalIncome() {
 }
 
 const descriptions = ['Income', 'Settlements', 'Rent', 'Dinner'];
+
+export const dynamic = 'force-dynamic';

@@ -167,3 +167,5 @@ export default function SettingsForm({ timezone, currency }: SettingsFormProps) 
     </Form>
   );
 }
+
+export const dynamic = 'force-dynamic';

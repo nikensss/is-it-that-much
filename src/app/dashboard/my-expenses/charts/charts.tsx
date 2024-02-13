@@ -5,9 +5,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import ExpensesByTagChart from '~/app/dashboard/my-expenses/charts/expenses-by-tag-chart';
 import IncomesByDay from '~/app/dashboard/my-expenses/charts/incomes-by-day-chart';
 import IncomeLeftByDay from '~/app/dashboard/my-expenses/charts/income-left-by-day-chart';
+import { utcToZonedTime } from 'date-fns-tz';
 
 export default async function Charts() {
-  const now = new Date();
+  const user = await api.users.get.query();
+  const timezone = user?.timezone ?? 'Europe/Amsterdam';
+
+  const now = utcToZonedTime(Date.now(), timezone);
   const start = startOfMonth(now);
   const end = endOfMonth(now);
 
@@ -41,7 +45,7 @@ export default async function Charts() {
           </TabsList>
 
           <TabsContent value="expenses-by-day">
-            <ExpensesByDayChart expenses={expenses} start={start} end={end} />
+            <ExpensesByDayChart timezone={timezone} expenses={expenses} start={start} end={end} />
           </TabsContent>
 
           <TabsContent value="expenses-by-tag">
@@ -49,11 +53,11 @@ export default async function Charts() {
           </TabsContent>
 
           <TabsContent value="incomes-by-day">
-            <IncomesByDay incomes={incomes} start={start} end={end} />
+            <IncomesByDay timezone={timezone} incomes={incomes} start={start} end={end} />
           </TabsContent>
 
           <TabsContent value="income-left">
-            <IncomeLeftByDay incomes={incomes} expenses={expenses} start={start} end={end} />
+            <IncomeLeftByDay timezone={timezone} incomes={incomes} expenses={expenses} start={start} end={end} />
           </TabsContent>
         </Tabs>
       </div>

@@ -1,22 +1,25 @@
-import { eachDayOfInterval, getDate } from 'date-fns';
+import { eachDayOfInterval } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
 import BarChartClient from '~/app/dashboard/my-expenses/charts/bar-chart-client';
 import type { PersonalIncomeInPeriod } from '~/server/api/routers/personal-incomes';
 
 export type IncomesByDayChartProps = {
+  timezone: string;
   incomes: PersonalIncomeInPeriod[];
   start: Date;
   end: Date;
 };
 
-export default async function IncomesByDay({ incomes, start, end }: IncomesByDayChartProps) {
-  const dateToLabel = (date: Date) => `${getDate(date)}`;
-  const labels = eachDayOfInterval({ start, end }).map((date) => `${dateToLabel(date)}`);
+export default async function IncomesByDay({ timezone, incomes, start, end }: IncomesByDayChartProps) {
+  const labels = eachDayOfInterval({ start, end })
+    .map((date) => parseInt(formatInTimeZone(date, timezone, 'dd')))
+    .sort((a, b) => a - b);
 
-  const incomesByDay = new Map<string, number>();
+  const incomesByDay = new Map<number, number>();
   for (const income of incomes) {
-    const day = `${dateToLabel(income.date)}`;
+    const day = parseInt(formatInTimeZone(income.date, timezone, 'dd'));
     const current = incomesByDay.get(day) ?? 0;
     incomesByDay.set(day, current + income.amount / 100);
   }
