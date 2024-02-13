@@ -1,19 +1,23 @@
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~/components/ui/tooltip';
 
 export type DateProps = {
+  timezone?: string;
   date: Date;
 };
 
-export default function DateDisplay({ date }: DateProps) {
+export default function DateDisplay({ date, timezone }: DateProps) {
+  const formattedDate = formatInTimeZone(date, timezone ?? 'Europe/Amsterdam', 'LLLL d, yyyy');
+
   return (
     <TooltipProvider delayDuration={300}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <time dateTime={format(date, 'LLLL d, yyyy')}>{formatDistanceToNow(date, { addSuffix: true })}</time>
+          <time dateTime={formattedDate}>{formatDistanceToNow(date, { addSuffix: true })}</time>
         </TooltipTrigger>
         <TooltipContent side="right">
-          <span>{format(date, 'LLLL d, yyyy')}</span>
+          <span>{formattedDate}</span>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
