@@ -22,7 +22,7 @@ import { api } from '~/trpc/react';
 export type Target = 'expenses' | 'incomes';
 
 export type RegisterTransactionProps = {
-  timezone?: string;
+  timezone: string;
   descriptions: string[];
   target: Target;
   title: string;

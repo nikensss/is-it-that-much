@@ -72,7 +72,6 @@ export const personalExpensesRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }): Promise<PersonalExpenseInPeriod[]> => {
-      console.log('input', input);
       const { userId } = auth();
       if (!userId) throw new Error('Not authenticated');
 

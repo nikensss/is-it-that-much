@@ -1,4 +1,4 @@
-import { eachDayOfInterval, getDate } from 'date-fns';
+import { addDays, isAfter } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
@@ -13,7 +13,10 @@ export type ExpensesByDayChartProps = {
 };
 
 export default async function ExpensesByDayChart({ timezone, expenses, start, end }: ExpensesByDayChartProps) {
-  const labels = eachDayOfInterval({ start, end }).map((date) => getDate(date));
+  const labels: number[] = [];
+  for (let i = start; !isAfter(i, end); i = addDays(i, 1)) {
+    labels.push(parseInt(formatInTimeZone(i, timezone, 'dd')));
+  }
 
   const expensesByDay = new Map<number, number>();
   for (const expense of expenses) {
