@@ -38,8 +38,8 @@ export default function SettingsForm({ timezone, currency }: SettingsFormProps) 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      timezone: displayTimezone(timezone ?? 'Europe/Amsterdam'),
-      currency: displayCurrency(currency ?? 'EUR'),
+      timezone: timezone ? displayTimezone(timezone) : 'No timezone set',
+      currency: currency ? displayCurrency(currency) : 'No currency set',
     },
   });
 
