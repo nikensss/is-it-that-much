@@ -145,7 +145,7 @@ export const personalIncomesRouter = createTRPCRouter({
 
       return ctx.db.income.aggregate({
         where: {
-          createdAt: {
+          date: {
             gte: start,
             lte: end,
           },
