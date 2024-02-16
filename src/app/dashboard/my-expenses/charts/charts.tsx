@@ -23,7 +23,7 @@ export default async function Charts() {
   return (
     <section className="flex items-center justify-center rounded-md bg-white p-4 shadow-md">
       <div className="h-full w-full">
-        <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-800">
+        <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
           <h2 className="text-lg font-bold text-slate-200">Charts</h2>
         </header>
         <Tabs defaultValue="expenses-by-day" className="mt-4 h-full w-full">

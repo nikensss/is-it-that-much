@@ -13,7 +13,7 @@ export default async function DashboardTotals() {
 
   return (
     <section className="rounded-md bg-white p-4 shadow-md">
-      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-800">
+      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
         <h2 className="text-lg font-bold text-slate-200">Totals This Month</h2>
       </header>
       <div className="grid items-start gap-4 md:gap-10">

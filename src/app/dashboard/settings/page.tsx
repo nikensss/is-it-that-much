@@ -7,7 +7,7 @@ export default async function SettingsPage() {
   return (
     <main className="flex flex-1 overflow-auto overflow-y-hidden bg-gray-100 p-4">
       <section className="flex flex-grow flex-col rounded-md bg-white p-4 shadow-md">
-        <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-800">
+        <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
           <h2 className="text-lg font-bold text-slate-200">Settings</h2>
         </header>
         <SettingsForm timezone={user?.timezone} currency={user?.currency} />

@@ -21,6 +21,8 @@ export type PersonalExpenseInPeriod = {
     };
   }[];
 } & {
+  id: string;
+  description: string;
   amount: number;
   date: Date;
 };
@@ -66,10 +68,12 @@ export const personalExpensesRouter = createTRPCRouter({
 
   period: publicProcedure
     .input(
-      z.object({
-        start: z.date().optional(),
-        end: z.date().optional(),
-      }),
+      z
+        .object({
+          start: z.date().optional(),
+          end: z.date().optional(),
+        })
+        .optional(),
     )
     .query(async ({ ctx, input }): Promise<PersonalExpenseInPeriod[]> => {
       const { userId } = auth();
@@ -92,9 +96,9 @@ export const personalExpensesRouter = createTRPCRouter({
 
       return ctx.db.expense.findMany({
         where: {
-          createdAt: {
-            gte: input.start ?? start,
-            lte: input.end ?? end,
+          date: {
+            gte: input?.start ?? start,
+            lte: input?.end ?? end,
           },
           PersonalExpense: {
             user: {
@@ -102,8 +106,13 @@ export const personalExpensesRouter = createTRPCRouter({
             },
           },
         },
+        orderBy: {
+          date: 'desc',
+        },
         select: {
+          id: true,
           date: true,
+          description: true,
           amount: true,
           ExpensesTags: {
             select: {
