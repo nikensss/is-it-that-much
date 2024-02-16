@@ -19,17 +19,17 @@ export default function MyExpenses() {
           <Charts />
         </div>
       </section>
-      <section className="my-2 flex justify-around rounded-md bg-white p-4 shadow-md">
-        <Button asChild variant="outline">
+      <section className="my-2 grid grid-cols-2 grid-rows-2 rounded-md bg-white p-4 shadow-md md:grid-cols-4 md:grid-rows-1">
+        <Button asChild variant="outline" className="m-1">
           <Link href="/dashboard/my-expenses/expenses">Expenses</Link>
         </Button>
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" className="m-1">
           <Link href="/dashboard/my-expenses/incomes">Incomes</Link>
         </Button>
-        <Button asChild variant="outline" disabled>
+        <Button asChild variant="outline" className="m-1">
           <Link href="/dashboard/my-expenses/tags">Tags</Link>
         </Button>
-        <Button asChild variant="outline" disabled>
+        <Button asChild variant="outline" className="m-1">
           <Link href="/dashboard/my-expenses/categories">Categories</Link>
         </Button>
       </section>
