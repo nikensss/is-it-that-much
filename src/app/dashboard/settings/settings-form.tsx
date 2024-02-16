@@ -5,7 +5,7 @@ import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '~/components/ui/button';
@@ -25,7 +25,20 @@ export default function SettingsForm({ timezone, currency }: SettingsFormProps) 
   const [isMutating, setIsMutating] = useState(false);
 
   const timezoneTrigger = useRef<HTMLButtonElement>(null);
+  const [timezoneWidth, setTimezoneWidth] = useState<number>(0);
+
   const currencyTrigger = useRef<HTMLButtonElement>(null);
+  const [currencyWidth, setCurrencyWidth] = useState<number>(0);
+
+  useLayoutEffect(() => {
+    if (timezoneTrigger.current) {
+      setTimezoneWidth(timezoneTrigger.current.clientWidth);
+    }
+
+    if (currencyTrigger.current) {
+      setCurrencyWidth(currencyTrigger.current.clientWidth);
+    }
+  }, [timezoneTrigger, currencyTrigger]);
 
   const timezones = Intl.supportedValuesOf('timeZone');
   const currencies = Object.keys(currencySymbolMap);
@@ -69,7 +82,7 @@ export default function SettingsForm({ timezone, currency }: SettingsFormProps) 
               <FormLabel>Timezone</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
-                  <FormControl>
+                  <FormControl className="w-full">
                     <Button
                       ref={timezoneTrigger}
                       variant="outline"
@@ -81,7 +94,7 @@ export default function SettingsForm({ timezone, currency }: SettingsFormProps) 
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="max-h-[30vh] w-full overflow-y-auto p-0">
+                <PopoverContent className="max-h-[30vh] overflow-y-auto p-0" style={{ width: timezoneWidth }}>
                   <Command>
                     <CommandInput placeholder="Search timezone..." className="h-9" />
                     <CommandEmpty>No timezone found.</CommandEmpty>
@@ -94,6 +107,7 @@ export default function SettingsForm({ timezone, currency }: SettingsFormProps) 
                             form.setValue('timezone', displayTimezone(timezone));
                             timezoneTrigger.current?.click();
                           }}
+                          className="hover:cursor-pointer"
                         >
                           {displayTimezone(timezone)}
                           <CheckIcon
@@ -132,7 +146,7 @@ export default function SettingsForm({ timezone, currency }: SettingsFormProps) 
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="max-h-[30vh] w-full overflow-y-auto p-0">
+                <PopoverContent className="max-h-[30vh] overflow-y-auto p-0" style={{ width: currencyWidth }}>
                   <Command>
                     <CommandInput placeholder="Search currency..." className="h-9" />
                     <CommandEmpty>No currency found.</CommandEmpty>
@@ -145,6 +159,7 @@ export default function SettingsForm({ timezone, currency }: SettingsFormProps) 
                             form.setValue('currency', displayCurrency(currency));
                             currencyTrigger.current?.click();
                           }}
+                          className="hover:cursor-pointer"
                         >
                           {displayCurrency(currency)}
                           <CheckIcon
