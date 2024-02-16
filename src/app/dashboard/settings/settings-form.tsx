@@ -18,9 +18,12 @@ import { api } from '~/trpc/react';
 export type SettingsFormProps = {
   timezone: string | null | undefined;
   currency: string | null | undefined;
+  weekStartsOn: number | null | undefined;
 };
 
-export default function SettingsForm({ timezone, currency }: SettingsFormProps) {
+export default function SettingsForm({ timezone, currency, weekStartsOn }: SettingsFormProps) {
+  const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
+
   const router = useRouter();
   const [isMutating, setIsMutating] = useState(false);
 
@@ -30,15 +33,22 @@ export default function SettingsForm({ timezone, currency }: SettingsFormProps) 
   const currencyTrigger = useRef<HTMLButtonElement>(null);
   const [currencyWidth, setCurrencyWidth] = useState<number>(0);
 
+  const weekStartsOnTrigger = useRef<HTMLButtonElement>(null);
+  const [weekStartsOnWidth, setWeekStartsOnWidth] = useState<number>(0);
+
   useLayoutEffect(() => {
     if (timezoneTrigger.current) {
-      setTimezoneWidth(timezoneTrigger.current.clientWidth);
+      setTimezoneWidth(timezoneTrigger.current.offsetWidth);
     }
 
     if (currencyTrigger.current) {
-      setCurrencyWidth(currencyTrigger.current.clientWidth);
+      setCurrencyWidth(currencyTrigger.current.offsetWidth);
     }
-  }, [timezoneTrigger, currencyTrigger]);
+
+    if (weekStartsOnTrigger.current) {
+      setWeekStartsOnWidth(weekStartsOnTrigger.current.offsetWidth);
+    }
+  }, [timezoneTrigger, currencyTrigger, weekStartsOnTrigger]);
 
   const timezones = Intl.supportedValuesOf('timeZone');
   const currencies = Object.keys(currencySymbolMap);
@@ -46,6 +56,7 @@ export default function SettingsForm({ timezone, currency }: SettingsFormProps) 
   const formSchema = z.object({
     timezone: z.string(),
     currency: z.string(),
+    weekStartsOn: z.number().min(0).max(6),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,6 +64,7 @@ export default function SettingsForm({ timezone, currency }: SettingsFormProps) 
     defaultValues: {
       timezone: timezone ? displayTimezone(timezone) : 'No timezone set',
       currency: currency ? displayCurrency(currency) : 'No currency set',
+      weekStartsOn: weekStartsOn ?? 1,
     },
   });
 
@@ -164,6 +176,53 @@ export default function SettingsForm({ timezone, currency }: SettingsFormProps) 
                           {displayCurrency(currency)}
                           <CheckIcon
                             className={cn('ml-auto h-4 w-4', currency === field.value ? 'opacity-100' : 'opacity-0')}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="weekStartsOn"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Week starts on</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      ref={weekStartsOnTrigger}
+                      variant="outline"
+                      role="combobox"
+                      className={cn('justify-between', !field.value && 'text-muted-foreground')}
+                    >
+                      {weekDays[field.value ?? 1]}
+                      <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="max-h-[30vh] overflow-y-auto p-0" style={{ width: weekStartsOnWidth }}>
+                  <Command>
+                    <CommandGroup>
+                      {weekDays.map((day, idx) => (
+                        <CommandItem
+                          value={day}
+                          key={idx}
+                          onSelect={() => {
+                            form.setValue('weekStartsOn', idx % 7);
+                            weekStartsOnTrigger.current?.click();
+                          }}
+                          className="hover:cursor-pointer"
+                        >
+                          {day}
+                          <CheckIcon
+                            className={cn('ml-auto h-4 w-4', idx === field.value ? 'opacity-100' : 'opacity-0')}
                           />
                         </CommandItem>
                       ))}

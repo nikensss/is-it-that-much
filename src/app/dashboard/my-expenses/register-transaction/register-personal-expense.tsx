@@ -4,11 +4,13 @@ import { api } from '~/trpc/server';
 export default async function DashboardRegisterPersonalExpense() {
   const tags = await api.tags.expenses.query();
   const user = await api.users.get.query();
+  const weekStartsOn = user?.weekStartsOn ?? 1;
   const timezone = user?.timezone ?? 'Europe/Amsterdam';
 
   return (
     <RegisterTransaction
       timezone={timezone}
+      weekStartsOn={weekStartsOn}
       tags={tags.map((t) => ({ ...t, text: t.name }))}
       target="expenses"
       descriptions={descriptions}

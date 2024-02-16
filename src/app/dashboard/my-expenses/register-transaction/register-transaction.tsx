@@ -23,6 +23,7 @@ export type Target = 'expenses' | 'incomes';
 
 export type RegisterTransactionProps = {
   timezone: string;
+  weekStartsOn: number;
   descriptions: string[];
   target: Target;
   title: string;
@@ -36,7 +37,14 @@ export type RegisterTransactionProps = {
   }[];
 };
 
-export default function RegisterTransaction({ timezone, descriptions, target, title, tags }: RegisterTransactionProps) {
+export default function RegisterTransaction({
+  timezone,
+  weekStartsOn,
+  descriptions,
+  target,
+  title,
+  tags,
+}: RegisterTransactionProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -181,6 +189,7 @@ export default function RegisterTransaction({ timezone, descriptions, target, ti
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
+                          weekStartsOn={(Math.abs(weekStartsOn) % 7) as 0 | 1 | 2 | 3 | 4 | 5 | 6}
                           mode="single"
                           modifiersStyles={{
                             today: {

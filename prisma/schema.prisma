@@ -11,15 +11,16 @@ datasource db {
 }
 
 model User {
-  id         String  @id @default(cuid())
-  externalId String  @unique
-  username   String? @unique
-  email      String? @unique
-  firstName  String?
-  lastName   String?
-  imageUrl   String?
-  timezone   String?
-  currency   String?
+  id           String  @id @default(cuid())
+  externalId   String  @unique
+  username     String? @unique
+  email        String? @unique
+  firstName    String?
+  lastName     String?
+  imageUrl     String?
+  timezone     String?
+  currency     String?
+  weekStartsOn Int     @default(1) // 0 is Sunday, 1 is Monday
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -77,6 +77,7 @@ export const usersRouter = createTRPCRouter({
       z.object({
         timezone: z.string().optional(),
         currency: z.string().optional(),
+        weekStartsOn: z.number().min(0).max(6).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -99,6 +100,7 @@ export const usersRouter = createTRPCRouter({
         data: {
           timezone,
           currency,
+          weekStartsOn: input.weekStartsOn,
         },
       });
     }),

@@ -10,7 +10,7 @@ export default async function SettingsPage() {
         <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
           <h2 className="text-lg font-bold text-slate-200">Settings</h2>
         </header>
-        <SettingsForm timezone={user?.timezone} currency={user?.currency} />
+        <SettingsForm timezone={user?.timezone} currency={user?.currency} weekStartsOn={user?.weekStartsOn} />
       </section>
     </main>
   );

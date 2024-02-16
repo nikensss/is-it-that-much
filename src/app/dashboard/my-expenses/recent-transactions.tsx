@@ -90,7 +90,7 @@ function PlaceholderTransaction(id: number) {
       <span className="pointer-events-none invisible">
         <p className="text-sm">Lorem ipsum</p>
         <div className="cursor-pointer select-all text-xs text-gray-500">
-          <DateDisplay date={new Date()} />
+          <DateDisplay timezone={null} date={new Date()} />
         </div>
       </span>
     </div>
