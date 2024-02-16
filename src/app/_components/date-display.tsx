@@ -2,12 +2,12 @@ import { formatDistanceToNow } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~/components/ui/tooltip';
 
-export type DateProps = {
-  timezone?: string;
+export type DateDisplayProps = {
+  timezone: string | null | undefined;
   date: Date;
 };
 
-export default function DateDisplay({ date, timezone }: DateProps) {
+export default function DateDisplay({ date, timezone }: DateDisplayProps) {
   const formattedDate = formatInTimeZone(date, timezone ?? 'Europe/Amsterdam', 'LLLL d, yyyy');
 
   return (

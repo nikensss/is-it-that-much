@@ -1,4 +1,4 @@
-import DateDisplay from '~/app/_components/date-display';
+import DateDisplay, { DateDisplayProps } from '~/app/_components/date-display';
 import { Badge } from '~/components/ui/badge';
 import { api } from '~/trpc/server';
 
@@ -6,7 +6,6 @@ export default async function DashboardRecentTrasnsactions() {
   const personalExpenses = await api.personalExpenses.recent.query();
   const personalIncomes = await api.personalIncomes.recent.query();
   const user = await api.users.get.query();
-  const timezone = user?.timezone ?? 'Europe/Amsterdam';
 
   const expenses = personalExpenses.map(({ expense: { id, amount, date, description, ExpensesTags } }) => {
     const tags = ExpensesTags.map((t) => ({ id: t.tag.id, name: t.tag.name }));
@@ -24,9 +23,9 @@ export default async function DashboardRecentTrasnsactions() {
         <h2 className="text-lg font-bold text-slate-200">Recent Transactions</h2>
       </header>
       <div className="flex flex-col md:flex-row">
-        <DashboardRecentTransactionsCard timezone={timezone} title={'Expenses'} transactions={expenses} />
+        <DashboardRecentTransactionsCard timezone={user?.timezone} title={'Expenses'} transactions={expenses} />
         <div className="self-stretch border-b border-r border-gray-400"></div>
-        <DashboardRecentTransactionsCard timezone={timezone} title={'Incomes'} transactions={incomes} />
+        <DashboardRecentTransactionsCard timezone={user?.timezone} title={'Incomes'} transactions={incomes} />
       </div>
     </div>
   );
@@ -42,7 +41,7 @@ type Transaction = {
 
 type DashboardRecentTransactionCardParams = {
   title: string;
-  timezone: string;
+  timezone: DateDisplayProps['timezone'];
   transactions: Transaction[];
 };
 
