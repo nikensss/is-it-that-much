@@ -1,4 +1,4 @@
-import DateDisplay, { DateDisplayProps } from '~/app/_components/date-display';
+import DateDisplay, { type DateDisplayProps } from '~/app/_components/date-display';
 import { Badge } from '~/components/ui/badge';
 import { api } from '~/trpc/server';
 
