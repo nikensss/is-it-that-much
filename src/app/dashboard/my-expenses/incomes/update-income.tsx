@@ -17,13 +17,13 @@ import { Input } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
 import { cn } from '~/lib/utils';
-import type { PersonalExpenseInPeriod } from '~/server/api/routers/personal-expenses';
+import type { PersonalIncomeInPeriod } from '~/server/api/routers/personal-incomes';
 import { api } from '~/trpc/react';
 
-export type UpdateExpenseProps = {
+export type UpdateIncomeProps = {
   timezone: string;
   weekStartsOn: number;
-  expense: PersonalExpenseInPeriod;
+  income: PersonalIncomeInPeriod;
   tags: {
     id: string;
     text: string;
@@ -35,7 +35,7 @@ export type UpdateExpenseProps = {
   trigger: ReactElement;
 };
 
-export default function UpdateExpense({ timezone, weekStartsOn, expense, tags, trigger }: UpdateExpenseProps) {
+export default function UpdateIncome({ timezone, weekStartsOn, income, tags, trigger }: UpdateIncomeProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -53,7 +53,7 @@ export default function UpdateExpense({ timezone, weekStartsOn, expense, tags, t
     onSuccess: () => router.refresh(),
   };
 
-  const updateExpense = api.personalExpenses.update.useMutation(mutationConfig);
+  const updateIncome = api.personalIncomes.update.useMutation(mutationConfig);
 
   const formSchema = z.object({
     description: z.string().min(3).max(50),
@@ -70,10 +70,10 @@ export default function UpdateExpense({ timezone, weekStartsOn, expense, tags, t
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      description: expense.description,
-      amount: expense.amount / 100,
-      date: new Date(expense.date),
-      tags: expense.ExpensesTags.map((t) => ({ id: t.tag.id, text: t.tag.name })),
+      description: income.description,
+      amount: income.amount / 100,
+      date: new Date(income.date),
+      tags: income.IncomesTags.map((t) => ({ id: t.tag.id, text: t.tag.name })),
     },
   });
 
@@ -84,10 +84,10 @@ export default function UpdateExpense({ timezone, weekStartsOn, expense, tags, t
       data.date = new Date(zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), timezone));
     }
 
-    return updateExpense.mutate({
+    return updateIncome.mutate({
       ...data,
       tags: data.tags.map((tag) => tag.text),
-      id: expense.id,
+      id: income.id,
     });
   }
 
@@ -98,7 +98,7 @@ export default function UpdateExpense({ timezone, weekStartsOn, expense, tags, t
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">
         <DialogHeader>
-          <DialogTitle>Update expense</DialogTitle>
+          <DialogTitle>Update income</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">

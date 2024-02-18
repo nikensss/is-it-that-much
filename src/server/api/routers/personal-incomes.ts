@@ -10,13 +10,15 @@ import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
 export type PersonalIncomeExtended = {
   income: Pick<Income, 'id' | 'amount' | 'description' | 'date'> & {
-    IncomesTags: { tag: { id: string; name: string } }[];
+    IncomesTags: { id: string; tag: { id: string; name: string } }[];
   };
 };
 
 export type PersonalIncomeInPeriod = {
   IncomesTags: {
+    id: string;
     tag: {
+      id: string;
       name: string;
     };
   }[];
@@ -52,6 +54,7 @@ export const personalIncomesRouter = createTRPCRouter({
             date: true,
             IncomesTags: {
               select: {
+                id: true,
                 tag: {
                   select: {
                     id: true,
@@ -116,8 +119,10 @@ export const personalIncomesRouter = createTRPCRouter({
           amount: true,
           IncomesTags: {
             select: {
+              id: true,
               tag: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },
@@ -219,7 +224,72 @@ export const personalIncomesRouter = createTRPCRouter({
           },
         });
       } catch (error) {
-        log.error('could not create personal expense', {
+        log.error('could not create personal income', {
+          amount,
+          description,
+          error,
+          externalUserId: auth().userId,
+          tags,
+        });
+        return null;
+      }
+    }),
+
+  update: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        amount: z.number().positive(),
+        date: z.date().default(() => new Date()),
+        description: z.string().min(1),
+        tags: z.array(z.string().min(3).max(50)),
+      }),
+    )
+    .mutation(async ({ ctx, input: { id, amount, date, description, tags } }) => {
+      try {
+        const user = await currentUser();
+        if (!user) throw new Error('Not authenticated');
+
+        const createdById = user.externalId;
+        if (!createdById) throw new Error('User has no externalId');
+
+        log.debug(`updating income for ${user.id}`, { id, amount, date, description, tags, userId: user.externalId });
+
+        // delete all the tags the income has
+        await ctx.db.incomesTags.deleteMany({ where: { incomeId: id } });
+
+        // ensure all the tags for this income exist
+        await ctx.db.tag.createMany({
+          data: tags.map((name) => ({ name, createdById })),
+          skipDuplicates: true,
+        });
+
+        const dbTags = await ctx.db.tag.findMany({
+          where: {
+            createdById,
+            name: { in: tags },
+          },
+        });
+
+        await ctx.db.incomesTags.createMany({
+          data: dbTags.map((tag) => ({ tagId: tag.id, incomeId: id })),
+        });
+
+        return ctx.db.personalIncome.update({
+          where: { incomeId: id },
+          data: {
+            income: {
+              update: {
+                amount: parseInt(amount.toFixed(2)) * 100,
+                date,
+                description,
+              },
+            },
+          },
+        });
+      } catch (error) {
+        log.error('could not update personal income', {
+          id,
           amount,
           description,
           error,
@@ -256,6 +326,7 @@ export const personalIncomesRouter = createTRPCRouter({
             date: true,
             IncomesTags: {
               select: {
+                id: true,
                 tag: {
                   select: {
                     id: true,
