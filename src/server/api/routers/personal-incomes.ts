@@ -206,7 +206,7 @@ export const personalIncomesRouter = createTRPCRouter({
             user: { connect: { externalId: user.id } },
             income: {
               create: {
-                amount: parseInt(amount.toFixed(2).replace('.', '')),
+                amount: parseInt(amount.toFixed(2)) * 100,
                 description,
                 date,
                 IncomesTags: {

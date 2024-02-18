@@ -10,13 +10,15 @@ import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
 export type PersonalExpenseExtended = {
   expense: Pick<Expense, 'id' | 'amount' | 'description' | 'date'> & {
-    ExpensesTags: { tag: { id: string; name: string } }[];
+    ExpensesTags: { id: string; tag: { id: string; name: string } }[];
   };
 };
 
 export type PersonalExpenseInPeriod = {
   ExpensesTags: {
+    id: string;
     tag: {
+      id: string;
       name: string;
     };
   }[];
@@ -52,6 +54,7 @@ export const personalExpensesRouter = createTRPCRouter({
             date: true,
             ExpensesTags: {
               select: {
+                id: true,
                 tag: {
                   select: {
                     id: true,
@@ -116,8 +119,10 @@ export const personalExpensesRouter = createTRPCRouter({
           amount: true,
           ExpensesTags: {
             select: {
+              id: true,
               tag: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },
@@ -206,7 +211,7 @@ export const personalExpensesRouter = createTRPCRouter({
             user: { connect: { externalId: user.id } },
             expense: {
               create: {
-                amount: parseInt(amount.toFixed(2).replace('.', '')),
+                amount: parseInt(amount.toFixed(2)) * 100,
                 date,
                 description,
                 ExpensesTags: {
@@ -220,6 +225,71 @@ export const personalExpensesRouter = createTRPCRouter({
         });
       } catch (error) {
         log.error('could not create personal expense', {
+          amount,
+          description,
+          error,
+          externalUserId: auth().userId,
+          tags,
+        });
+        return null;
+      }
+    }),
+
+  update: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        amount: z.number().positive(),
+        date: z.date().default(() => new Date()),
+        description: z.string().min(1),
+        tags: z.array(z.string().min(3).max(50)),
+      }),
+    )
+    .mutation(async ({ ctx, input: { id, amount, date, description, tags } }) => {
+      try {
+        const user = await currentUser();
+        if (!user) throw new Error('Not authenticated');
+
+        const createdById = user.externalId;
+        if (!createdById) throw new Error('User has no externalId');
+
+        log.debug(`updating expense for ${user.id}`, { id, amount, date, description, tags, userId: user.externalId });
+
+        // delete all the tags the expense has
+        await ctx.db.expensesTags.deleteMany({ where: { expenseId: id } });
+
+        // ensure all the tags for this expense exist
+        await ctx.db.tag.createMany({
+          data: tags.map((name) => ({ name, createdById })),
+          skipDuplicates: true,
+        });
+
+        const dbTags = await ctx.db.tag.findMany({
+          where: {
+            createdById,
+            name: { in: tags },
+          },
+        });
+
+        await ctx.db.expensesTags.createMany({
+          data: dbTags.map((tag) => ({ tagId: tag.id, expenseId: id })),
+        });
+
+        return ctx.db.personalExpense.update({
+          where: { expenseId: id },
+          data: {
+            expense: {
+              update: {
+                amount: parseInt(amount.toFixed(2)) * 100,
+                date,
+                description,
+              },
+            },
+          },
+        });
+      } catch (error) {
+        log.error('could not update personal expense', {
+          id,
           amount,
           description,
           error,
@@ -256,6 +326,7 @@ export const personalExpensesRouter = createTRPCRouter({
             date: true,
             ExpensesTags: {
               select: {
+                id: true,
                 tag: {
                   select: {
                     id: true,

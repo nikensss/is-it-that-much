@@ -187,7 +187,7 @@ async function createExpense({ user, tags, amount, date, description }: CreateEx
       user: { connect: { id: user.id } },
       expense: {
         create: {
-          amount: parseInt(amount.toFixed(2).replace('.', '')),
+          amount: parseInt(amount.toFixed(2)) * 100,
           date,
           description,
           ExpensesTags: {
