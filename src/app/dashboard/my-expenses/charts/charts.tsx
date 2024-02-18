@@ -6,6 +6,7 @@ import ExpensesByTagChart from '~/app/dashboard/my-expenses/charts/expenses-by-t
 import IncomesByDay from '~/app/dashboard/my-expenses/charts/incomes-by-day-chart';
 import IncomeLeftByDay from '~/app/dashboard/my-expenses/charts/income-left-by-day-chart';
 import { getTimezoneOffset } from 'date-fns-tz';
+import { BarChartBig, LineChart } from 'lucide-react';
 
 export default async function Charts() {
   const user = await api.users.get.query();
@@ -29,19 +30,27 @@ export default async function Charts() {
         <Tabs defaultValue="expenses-by-day" className="mt-4 h-full w-full">
           <TabsList className="flex w-full justify-between md:grid md:grid-cols-4">
             <TabsTrigger value="expenses-by-day" className="responsive-tab-trigger">
-              <span className="compact">&#8857;</span>
+              <span className="compact">
+                <BarChartBig />
+              </span>
               <span className="full">Expenses by day</span>
             </TabsTrigger>
             <TabsTrigger value="expenses-by-tag" className="responsive-tab-trigger">
-              <span className="compact">&#8857;</span>
+              <span className="compact">
+                <BarChartBig />
+              </span>
               <span className="full">Expenses by tag</span>
             </TabsTrigger>
             <TabsTrigger value="incomes-by-day" className="responsive-tab-trigger">
-              <span className="compact">&#8857;</span>
+              <span className="compact">
+                <BarChartBig />
+              </span>
               <span className="full">Incomes by day</span>
             </TabsTrigger>
             <TabsTrigger value="income-left" className="responsive-tab-trigger">
-              <span className="compact">&#8857;</span>
+              <span className="compact">
+                <LineChart />
+              </span>
               <span className="full">Income left</span>
             </TabsTrigger>
           </TabsList>
