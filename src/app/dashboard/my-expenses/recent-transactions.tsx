@@ -7,7 +7,7 @@ export default async function DashboardRecentTrasnsactions() {
   const personalExpenses = await api.personalExpenses.recent.query();
   const personalIncomes = await api.personalIncomes.recent.query();
   const user = await api.users.get.query();
-  const currencySymbol = currencySymbolMap[user?.currency ?? 'USD'];
+  const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];
 
   const expenses = personalExpenses.map(({ expense: { id, amount, date, description, ExpensesTags } }) => {
     const tags = ExpensesTags.map((t) => ({ id: t.tag.id, name: t.tag.name }));
@@ -26,14 +26,14 @@ export default async function DashboardRecentTrasnsactions() {
       </header>
       <div className="flex flex-col md:flex-row">
         <DashboardRecentTransactionsCard
-          currencySymbol={currencySymbol ?? '$'}
+          currencySymbol={currencySymbol ?? '€'}
           timezone={user?.timezone}
           title={'Expenses'}
           transactions={expenses}
         />
         <div className="self-stretch border-b border-r border-gray-400"></div>
         <DashboardRecentTransactionsCard
-          currencySymbol={currencySymbol ?? '$'}
+          currencySymbol={currencySymbol ?? '€'}
           timezone={user?.timezone}
           title={'Incomes'}
           transactions={incomes}
