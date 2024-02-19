@@ -1,3 +1,4 @@
+import currencySymbolMap from 'currency-symbol-map/map';
 import DateDisplay, { type DateDisplayProps } from '~/app/_components/date-display';
 import { Badge } from '~/components/ui/badge';
 import { api } from '~/trpc/server';
@@ -6,6 +7,7 @@ export default async function DashboardRecentTrasnsactions() {
   const personalExpenses = await api.personalExpenses.recent.query();
   const personalIncomes = await api.personalIncomes.recent.query();
   const user = await api.users.get.query();
+  const currencySymbol = currencySymbolMap[user?.currency ?? 'USD'];
 
   const expenses = personalExpenses.map(({ expense: { id, amount, date, description, ExpensesTags } }) => {
     const tags = ExpensesTags.map((t) => ({ id: t.tag.id, name: t.tag.name }));
@@ -23,9 +25,19 @@ export default async function DashboardRecentTrasnsactions() {
         <h2 className="text-lg font-bold text-slate-200">Recent Transactions</h2>
       </header>
       <div className="flex flex-col md:flex-row">
-        <DashboardRecentTransactionsCard timezone={user?.timezone} title={'Expenses'} transactions={expenses} />
+        <DashboardRecentTransactionsCard
+          currencySymbol={currencySymbol ?? '$'}
+          timezone={user?.timezone}
+          title={'Expenses'}
+          transactions={expenses}
+        />
         <div className="self-stretch border-b border-r border-gray-400"></div>
-        <DashboardRecentTransactionsCard timezone={user?.timezone} title={'Incomes'} transactions={incomes} />
+        <DashboardRecentTransactionsCard
+          currencySymbol={currencySymbol ?? '$'}
+          timezone={user?.timezone}
+          title={'Incomes'}
+          transactions={incomes}
+        />
       </div>
     </div>
   );
@@ -40,19 +52,28 @@ type Transaction = {
 };
 
 type DashboardRecentTransactionCardParams = {
+  currencySymbol: string;
   title: string;
   timezone: DateDisplayProps['timezone'];
   transactions: Transaction[];
 };
 
-function DashboardRecentTransactionsCard({ title, timezone, transactions }: DashboardRecentTransactionCardParams) {
+function DashboardRecentTransactionsCard({
+  currencySymbol,
+  title,
+  timezone,
+  transactions,
+}: DashboardRecentTransactionCardParams) {
   function Transaction(transaction: Transaction) {
     return (
       <div key={transaction.id} className="flex h-12 items-center py-2">
         <div className="flex-shrink-0">
           <p className="text-sm">
             {transaction.description}:
-            <span className="ml-4 text-xs text-gray-500 dark:text-gray-400">${transaction.amount / 100}</span>
+            <span className="ml-4 text-xs text-gray-500 dark:text-gray-400">
+              {currencySymbol}
+              {transaction.amount / 100}
+            </span>
           </p>
           <div className="cursor-pointer select-all text-xs text-gray-500 dark:text-gray-400">
             <DateDisplay timezone={timezone} date={transaction.date} />
