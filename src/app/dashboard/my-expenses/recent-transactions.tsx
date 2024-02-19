@@ -109,7 +109,7 @@ function PlaceholderTransaction(id: number) {
   return (
     <div key={id} className="py-2">
       <span className="pointer-events-none invisible">
-        <p className="text-sm">Lorem ipsum</p>
+        <p className="text-sm">Lorem ipsum dolor</p>
         <div className="cursor-pointer select-all text-xs text-gray-500">
           <DateDisplay timezone={null} date={new Date()} />
         </div>
