@@ -6,7 +6,7 @@ import { CalendarIcon } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Calendar } from '~/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
-import { addDays, endOfMonth, format, startOfMonth } from 'date-fns';
+import { addDays, subMilliseconds, endOfMonth, format, startOfMonth } from 'date-fns';
 import { cn } from '~/lib/utils';
 import { usePathname, useRouter } from 'next/navigation';
 import { zonedTimeToUtc } from 'date-fns-tz';
@@ -34,7 +34,7 @@ export default function DateRangePicker({ timezone }: DateRangePickerProps) {
     }
 
     if (period?.to) {
-      const to = zonedTimeToUtc(format(addDays(period.to, 1), 'yyyy-MM-dd'), timezone);
+      const to = subMilliseconds(zonedTimeToUtc(format(addDays(period.to, 1), 'yyyy-MM-dd'), timezone), 1);
       params.set('to', to.toISOString());
     }
 
