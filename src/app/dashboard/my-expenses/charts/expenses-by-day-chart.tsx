@@ -8,13 +8,13 @@ import type { PersonalExpenseInPeriod } from '~/server/api/routers/personal-expe
 export type ExpensesByDayChartProps = {
   timezone: string;
   expenses: PersonalExpenseInPeriod[];
-  start: Date;
-  end: Date;
+  from: Date;
+  to: Date;
 };
 
-export default async function ExpensesByDayChart({ timezone, expenses, start, end }: ExpensesByDayChartProps) {
+export default async function ExpensesByDayChart({ timezone, expenses, from, to }: ExpensesByDayChartProps) {
   const labels: number[] = [];
-  for (let i = start; !isAfter(i, end); i = addDays(i, 1)) {
+  for (let i = from; !isAfter(i, to); i = addDays(i, 1)) {
     labels.push(parseInt(formatInTimeZone(i, timezone, 'dd')));
   }
 

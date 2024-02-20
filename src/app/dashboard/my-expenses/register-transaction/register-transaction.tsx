@@ -91,7 +91,7 @@ export default function RegisterTransaction({
     if (timezone) {
       // little hack to make sure the date used is timezoned to the user's preference
       // the calendar component cannot be timezoned
-      data.date = new Date(zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), timezone));
+      data.date = zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), timezone);
     }
 
     const mutationData = { ...data, tags: data.tags.map((tag) => tag.text) };

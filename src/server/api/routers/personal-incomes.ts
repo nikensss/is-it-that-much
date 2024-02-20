@@ -73,8 +73,8 @@ export const personalIncomesRouter = createTRPCRouter({
     .input(
       z
         .object({
-          start: z.date().optional(),
-          end: z.date().optional(),
+          from: z.date().nullish(),
+          to: z.date().nullish(),
         })
         .optional(),
     )
@@ -91,17 +91,18 @@ export const personalIncomesRouter = createTRPCRouter({
         },
       });
 
-      const now = utcToZonedTime(Date.now(), user?.timezone ?? 'Europe/Amsterdam');
-      const preferredTimezoneOffset = getTimezoneOffset(user?.timezone ?? 'Europe/Amsterdam');
+      const timezone = user?.timezone ?? 'Europe/Amsterdam';
+      const now = utcToZonedTime(Date.now(), timezone);
+      const preferredTimezoneOffset = getTimezoneOffset(timezone);
       const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-      const start = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
-      const end = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+      const from = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+      const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
 
       return ctx.db.income.findMany({
         where: {
           date: {
-            gte: input?.start ?? start,
-            lte: input?.end ?? end,
+            gte: input?.from ?? from,
+            lte: input?.to ?? to,
           },
           PersonalIncome: {
             user: {

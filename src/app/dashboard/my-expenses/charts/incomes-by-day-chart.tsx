@@ -8,13 +8,13 @@ import type { PersonalIncomeInPeriod } from '~/server/api/routers/personal-incom
 export type IncomesByDayChartProps = {
   timezone: string;
   incomes: PersonalIncomeInPeriod[];
-  start: Date;
-  end: Date;
+  from: Date;
+  to: Date;
 };
 
-export default async function IncomesByDay({ timezone, incomes, start, end }: IncomesByDayChartProps) {
+export default async function IncomesByDay({ timezone, incomes, from, to }: IncomesByDayChartProps) {
   const labels: number[] = [];
-  for (let i = start; !isAfter(i, end); i = addDays(i, 1)) {
+  for (let i = from; !isAfter(i, to); i = addDays(i, 1)) {
     labels.push(parseInt(formatInTimeZone(i, timezone, 'dd')));
   }
 

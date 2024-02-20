@@ -10,13 +10,13 @@ export type IncomeLeftByDayProps = {
   timezone: string;
   incomes: PersonalIncomeInPeriod[];
   expenses: PersonalExpenseInPeriod[];
-  start: Date;
-  end: Date;
+  from: Date;
+  to: Date;
 };
 
-export default async function IncomeLeftByDay({ timezone, incomes, expenses, start, end }: IncomeLeftByDayProps) {
+export default async function IncomeLeftByDay({ timezone, incomes, expenses, from, to }: IncomeLeftByDayProps) {
   const labels: number[] = [];
-  for (let i = start; !isAfter(i, end); i = addDays(i, 1)) {
+  for (let i = from; !isAfter(i, to); i = addDays(i, 1)) {
     labels.push(parseInt(formatInTimeZone(i, timezone, 'dd')));
   }
 

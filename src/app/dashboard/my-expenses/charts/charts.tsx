@@ -15,11 +15,11 @@ export default async function Charts() {
   const now = Date.now();
   const preferredTimezoneOffset = getTimezoneOffset(timezone);
   const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-  const start = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
-  const end = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+  const from = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+  const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
 
-  const expenses = await api.personalExpenses.period.query({ start, end });
-  const incomes = await api.personalIncomes.period.query({ start, end });
+  const expenses = await api.personalExpenses.period.query({ from, to });
+  const incomes = await api.personalIncomes.period.query({ from, to });
 
   return (
     <section className="flex items-center justify-center rounded-md bg-white p-4 shadow-md">
@@ -56,7 +56,7 @@ export default async function Charts() {
           </TabsList>
 
           <TabsContent value="expenses-by-day">
-            <ExpensesByDayChart timezone={timezone} expenses={expenses} start={start} end={end} />
+            <ExpensesByDayChart timezone={timezone} expenses={expenses} from={from} to={to} />
           </TabsContent>
 
           <TabsContent value="expenses-by-tag">
@@ -64,11 +64,11 @@ export default async function Charts() {
           </TabsContent>
 
           <TabsContent value="incomes-by-day">
-            <IncomesByDay timezone={timezone} incomes={incomes} start={start} end={end} />
+            <IncomesByDay timezone={timezone} incomes={incomes} from={from} to={to} />
           </TabsContent>
 
           <TabsContent value="income-left">
-            <IncomeLeftByDay timezone={timezone} incomes={incomes} expenses={expenses} start={start} end={end} />
+            <IncomeLeftByDay timezone={timezone} incomes={incomes} expenses={expenses} from={from} to={to} />
           </TabsContent>
         </Tabs>
       </div>
