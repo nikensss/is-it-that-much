@@ -50,9 +50,11 @@ export default function DateRangePicker({ timezone }: DateRangePickerProps) {
             ref={calendarTrigger}
             id="date"
             variant={'outline'}
-            className={cn('w-[300px] justify-start text-left font-normal', !period && 'text-muted-foreground')}
+            className={cn(
+              'w-full justify-center gap-2 text-left font-normal shadow-slate-400',
+              !period && 'text-muted-foreground',
+            )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
             {period?.from ? (
               period.to ? (
                 <>
@@ -64,6 +66,7 @@ export default function DateRangePicker({ timezone }: DateRangePickerProps) {
             ) : (
               <span>Pick a date</span>
             )}
+            <CalendarIcon className="h-4 w-4" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="center">
@@ -75,7 +78,7 @@ export default function DateRangePicker({ timezone }: DateRangePickerProps) {
             onSelect={(p) => {
               setPeriod(p);
             }}
-            numberOfMonths={2}
+            numberOfMonths={1}
           />
           <div className="w-full p-2">
             <Button type="submit" className="w-full" onClick={onClick}>

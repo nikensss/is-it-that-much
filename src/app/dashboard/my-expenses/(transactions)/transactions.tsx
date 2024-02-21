@@ -15,12 +15,12 @@ export default async function TransactionsOverview({
   transactions,
 }: TransactionOverviewProps) {
   return (
-    <main className="grow bg-gray-100 p-2">
-      <div className="rounded-md bg-white p-4 shadow-md">
+    <main className="flex grow flex-col bg-gray-100 p-2">
+      <div className="grow rounded-md bg-white p-4 shadow-md">
         <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
           <h2 className="text-lg font-bold text-slate-200">{title}</h2>
         </header>
-        <section className="flex items-center justify-center gap-2">
+        <section className="items-center justify-center gap-2 md:flex">
           <DateRangePicker timezone={timezone} />
         </section>
         <section>
