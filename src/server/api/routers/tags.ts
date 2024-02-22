@@ -21,8 +21,12 @@ export const tagsRouter = createTRPCRouter({
         createdBy: {
           externalId: userId,
         },
-        IncomesTags: {
-          some: {},
+        TransactionsTags: {
+          some: {
+            transaction: {
+              type: 'INCOME',
+            },
+          },
         },
       },
       orderBy: { name: 'asc' },
@@ -38,8 +42,12 @@ export const tagsRouter = createTRPCRouter({
         createdBy: {
           externalId: userId,
         },
-        ExpensesTags: {
-          some: {},
+        TransactionsTags: {
+          some: {
+            transaction: {
+              type: 'EXPENSE',
+            },
+          },
         },
       },
       orderBy: { name: 'asc' },

@@ -3,13 +3,12 @@ import { formatInTimeZone } from 'date-fns-tz';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
 import LineChartClient from '~/app/dashboard/my-expenses/charts/line-chart-client';
-import type { PersonalExpenseInPeriod } from '~/server/api/routers/personal-expenses';
-import type { PersonalIncomeInPeriod } from '~/server/api/routers/personal-incomes';
+import type { PersonalTransactionInPeriod } from '~/server/api/routers/personal-transactions';
 
 export type IncomeLeftByDayProps = {
   timezone: string;
-  incomes: PersonalIncomeInPeriod[];
-  expenses: PersonalExpenseInPeriod[];
+  incomes: PersonalTransactionInPeriod[];
+  expenses: PersonalTransactionInPeriod[];
   from: Date;
   to: Date;
 };
@@ -44,7 +43,7 @@ export default async function IncomeLeftByDay({ timezone, incomes, expenses, fro
   const fullConfig = resolveConfig(tailwindConfig);
   const slate900 = fullConfig.theme.colors.slate[900];
 
-  const lastDayWithExpenses = Math.max(...expensesByDay.keys());
+  const lastDayWithTransactions = Math.max(...expensesByDay.keys(), ...incomesByDay.keys());
 
   return (
     <LineChartClient
@@ -54,7 +53,7 @@ export default async function IncomeLeftByDay({ timezone, incomes, expenses, fro
           borderColor: slate900,
           backgroundColor: slate900,
           label: 'Incomes',
-          data: labels.slice(0, lastDayWithExpenses).map((d) => (incomeLeftByDay.get(d) ?? 0) / 100),
+          data: labels.slice(0, lastDayWithTransactions).map((d) => (incomeLeftByDay.get(d) ?? 0) / 100),
         },
       ]}
     />

@@ -9,13 +9,13 @@ export default async function DashboardRecentTrasnsactions() {
   const user = await api.users.get.query();
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];
 
-  const expenses = personalExpenses.map(({ expense: { id, amount, date, description, ExpensesTags } }) => {
-    const tags = ExpensesTags.map((t) => ({ id: t.tag.id, name: t.tag.name }));
+  const expenses = personalExpenses.map(({ transaction: { id, amount, date, description, TransactionsTags } }) => {
+    const tags = TransactionsTags.map((t) => ({ id: t.tag.id, name: t.tag.name }));
     return { id, amount, date, description, tags };
   });
 
-  const incomes = personalIncomes.map(({ income: { id, amount, date, description, IncomesTags } }) => {
-    const tags = IncomesTags.map((t) => ({ id: t.tag.id, name: t.tag.name }));
+  const incomes = personalIncomes.map(({ transaction: { id, amount, date, description, TransactionsTags } }) => {
+    const tags = TransactionsTags.map((t) => ({ id: t.tag.id, name: t.tag.name }));
     return { id, amount, date, description, tags };
   });
 

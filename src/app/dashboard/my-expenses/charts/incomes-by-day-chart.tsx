@@ -3,11 +3,11 @@ import { formatInTimeZone } from 'date-fns-tz';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
 import BarChartClient from '~/app/dashboard/my-expenses/charts/bar-chart-client';
-import type { PersonalIncomeInPeriod } from '~/server/api/routers/personal-incomes';
+import type { PersonalTransactionInPeriod } from '~/server/api/routers/personal-transactions';
 
 export type IncomesByDayChartProps = {
   timezone: string;
-  incomes: PersonalIncomeInPeriod[];
+  incomes: PersonalTransactionInPeriod[];
   from: Date;
   to: Date;
 };

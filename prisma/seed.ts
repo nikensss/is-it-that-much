@@ -1,15 +1,12 @@
 import { db } from '../src/server/db';
 
 async function main() {
-  await db.incomesTags.deleteMany({});
-  await db.expensesTags.deleteMany({});
+  await db.transactionsTags.deleteMany({});
   await db.tag.deleteMany({});
-  await db.expenseSplit.deleteMany({});
-  await db.sharedExpense.deleteMany({});
-  await db.personalExpense.deleteMany({});
-  await db.personalIncome.deleteMany({});
-  await db.income.deleteMany({});
-  await db.expense.deleteMany({});
+  await db.transactionSplit.deleteMany({});
+  await db.sharedTransaction.deleteMany({});
+  await db.personalTransaction.deleteMany({});
+  await db.transaction.deleteMany({});
   await db.category.deleteMany({});
   await db.usersGroups.deleteMany({});
   await db.group.deleteMany({});
@@ -92,18 +89,25 @@ async function main() {
     if (!group) throw new Error(`group ${i % user.UserGroup.length} undefined for user ${user.username}`);
 
     const amount = (100 - i * Math.PI) * 100; // amount in cents
-    const expenseData = { date: new Date(), description: `expense${i}`, amount };
-    const expense = await db.expense.create({ data: expenseData });
-    await db.sharedExpense.create({
+    const transaction = await db.transaction.create({
       data: {
-        expenseId: expense.id,
+        date: new Date(),
+        description: `expense${i}`,
+        amount,
+        type: 'EXPENSE',
+      },
+    });
+    await db.sharedTransaction.create({
+      data: {
+        transactionId: transaction.id,
         groupId: group.id,
         createdById: user.id,
       },
     });
   }
 
-  const sharedExpenses = await db.sharedExpense.findMany({
+  const sharedTransactions = await db.sharedTransaction.findMany({
+    where: { transaction: { type: 'EXPENSE' } },
     include: {
       group: {
         include: {
@@ -114,15 +118,15 @@ async function main() {
           },
         },
       },
-      expense: true,
+      transaction: true,
     },
   });
 
-  for (const sharedExpense of sharedExpenses) {
+  for (const sharedTransaction of sharedTransactions) {
     const {
-      expense: { amount },
+      transaction: { amount },
       group,
-    } = sharedExpense;
+    } = sharedTransaction;
     if ((group?.UserGroup?.length || 0) <= 0) throw new Error(`group ${group?.id} has no users`);
 
     // 1/3+1/6+1/8+3/8
@@ -138,8 +142,14 @@ async function main() {
       const user = group.UserGroup[userIndex]?.user;
       if (!user) throw new Error(`no user at index ${userIndex}`);
 
-      const expenseSplit = { sharedExpenseId: sharedExpense.id, userId: user.id, amount: split };
-      await db.expenseSplit.create({ data: expenseSplit });
+      await db.transactionSplit.create({
+        data: {
+          date: new Date(),
+          sharedTransactionId: sharedTransaction.id,
+          userId: user.id,
+          amount: split,
+        },
+      });
     }
   }
 }

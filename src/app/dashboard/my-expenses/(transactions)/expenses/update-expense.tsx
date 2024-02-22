@@ -17,13 +17,13 @@ import { Input } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
 import { cn } from '~/lib/utils';
-import type { PersonalExpenseInPeriod } from '~/server/api/routers/personal-expenses';
+import type { PersonalTransactionInPeriod } from '~/server/api/routers/personal-transactions';
 import { api } from '~/trpc/react';
 
 export type UpdateExpenseProps = {
   timezone: string;
   weekStartsOn: number;
-  expense: PersonalExpenseInPeriod;
+  expense: PersonalTransactionInPeriod;
   tags: {
     id: string;
     text: string;
@@ -73,7 +73,7 @@ export default function UpdateExpense({ timezone, weekStartsOn, expense, tags, t
       description: expense.description,
       amount: expense.amount / 100,
       date: new Date(expense.date),
-      tags: expense.ExpensesTags.map((t) => ({ id: t.tag.id, text: t.tag.name })),
+      tags: expense.TransactionsTags.map((t) => ({ id: t.tag.id, text: t.tag.name })),
     },
   });
 

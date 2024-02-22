@@ -1,16 +1,16 @@
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
 import BarChartClient from '~/app/dashboard/my-expenses/charts/bar-chart-client';
-import type { PersonalExpenseInPeriod } from '~/server/api/routers/personal-expenses';
+import type { PersonalTransactionInPeriod } from '~/server/api/routers/personal-transactions';
 
 export type ExpensesByTagChartProps = {
-  expenses: PersonalExpenseInPeriod[];
+  expenses: PersonalTransactionInPeriod[];
 };
 
 export default async function ExpensesByTagChart({ expenses }: ExpensesByTagChartProps) {
   const expensesPerTag = new Map<string, number>();
   for (const expense of expenses) {
-    for (const { tag } of expense.ExpensesTags) {
+    for (const { tag } of expense.TransactionsTags) {
       const current = expensesPerTag.get(tag.name) ?? 0;
       expensesPerTag.set(tag.name, current + expense.amount / 100);
     }

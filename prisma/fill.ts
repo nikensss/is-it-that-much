@@ -182,15 +182,16 @@ async function createExpense({ user, tags, amount, date, description }: CreateEx
     },
   });
 
-  return db.personalExpense.create({
+  return db.personalTransaction.create({
     data: {
       user: { connect: { id: user.id } },
-      expense: {
+      transaction: {
         create: {
           amount: parseInt(amount.toFixed(2)) * 100,
           date,
           description,
-          ExpensesTags: {
+          type: 'EXPENSE',
+          TransactionsTags: {
             createMany: {
               data: dbTags.map((tag) => ({ tagId: tag.id })),
             },

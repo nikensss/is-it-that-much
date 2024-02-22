@@ -36,7 +36,7 @@ export default async function ExpenseOverview({ searchParams }: { searchParams: 
                 <TableCell>{formatInTimeZone(e.date, timezone, 'LLLL d, yyyy')}</TableCell>
                 <TableCell>{e.description}</TableCell>
                 <TableCell>{e.amount / 100}</TableCell>
-                <TableCell>{e.ExpensesTags.map((t) => t.tag.name).join(', ')}</TableCell>
+                <TableCell>{e.TransactionsTags.map((t) => t.tag.name).join(', ')}</TableCell>
               </TableRow>
             }
           />
