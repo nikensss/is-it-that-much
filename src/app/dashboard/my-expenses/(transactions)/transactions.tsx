@@ -99,7 +99,7 @@ async function getIncomes({ from, to }: Omit<GetTransactionInput, 'type'>) {
 }
 
 async function getExpenses({ from, to }: Omit<GetTransactionInput, 'type'>) {
-  const transactions = await api.personalIncomes.period.query({
+  const transactions = await api.personalExpenses.period.query({
     from: from ? new Date(from) : null,
     to: to ? new Date(to) : null,
   });
