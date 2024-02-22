@@ -1,15 +1,16 @@
+import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { api } from '~/trpc/server';
 
 export default async function DashboardTotals() {
-  const user = await api.users.get.query();
+  const [expenses, incomes, user] = await Promise.all([
+    api.personalTransactions.totalAmountInMonth.query({ type: TransactionType.EXPENSE }),
+    api.personalTransactions.totalAmountInMonth.query({ type: TransactionType.INCOME }),
+    api.users.get.query(),
+  ]);
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];
 
-  const totalPersonalExpenses = await api.personalExpenses.totalAmountInMonth.query();
-  const expenses = totalPersonalExpenses._sum?.amount ?? 0;
-
-  const totalPersonalIncomes = await api.personalIncomes.totalAmountInMonth.query();
-  const incomes = totalPersonalIncomes._sum?.amount ?? 0;
+  const [totalExpenses, totalIncomes] = [expenses._sum?.amount ?? 0, incomes._sum?.amount ?? 0];
 
   return (
     <section className="rounded-md bg-white p-4 shadow-md">
@@ -21,21 +22,21 @@ export default async function DashboardTotals() {
           <h2 className="mb-2 text-lg font-bold">Total Expenses</h2>
           <p className="text-2xl font-semibold">
             {currencySymbol}
-            {expenses / 100}
+            {totalExpenses / 100}
           </p>
         </div>
         <div className="rounded-md bg-white p-4 shadow-md ">
           <h2 className="mb-2 text-lg font-bold">Total Incomes</h2>
           <p className="text-2xl font-semibold">
             {currencySymbol}
-            {incomes / 100}
+            {totalIncomes / 100}
           </p>
         </div>
         <div className="rounded-md bg-white p-4 shadow-md ">
           <h2 className="mb-2 text-lg font-bold">Income left</h2>
           <p className="text-2xl font-semibold">
             {currencySymbol}
-            {(incomes - expenses) / 100}
+            {(totalIncomes - totalExpenses) / 100}
           </p>
         </div>
       </div>

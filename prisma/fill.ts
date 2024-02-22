@@ -1,4 +1,4 @@
-import type { User } from '@prisma/client';
+import { TransactionType, type User } from '@prisma/client';
 import { db } from '../src/server/db';
 import { addDays, startOfMonth } from 'date-fns';
 
@@ -190,7 +190,7 @@ async function createExpense({ user, tags, amount, date, description }: CreateEx
           amount: parseInt(amount.toFixed(2)) * 100,
           date,
           description,
-          type: 'EXPENSE',
+          type: TransactionType.EXPENSE,
           TransactionsTags: {
             createMany: {
               data: dbTags.map((tag) => ({ tagId: tag.id })),

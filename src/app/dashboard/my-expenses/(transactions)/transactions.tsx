@@ -1,10 +1,9 @@
-import type { Tag, TransactionType } from '@prisma/client';
+import type { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { formatInTimeZone } from 'date-fns-tz';
 import DateRangePicker from '~/app/dashboard/my-expenses/(transactions)/date-range-picker';
 import UpdateTransaction from '~/app/dashboard/my-expenses/(transactions)/update-transaction';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
-import type { PersonalTransactionInPeriod } from '~/server/api/routers/personal-transactions';
 import { api } from '~/trpc/server';
 
 export type TransactionOverviewProps = {
@@ -13,14 +12,18 @@ export type TransactionOverviewProps = {
 };
 
 export default async function TransactionsOverview({ type, searchParams }: TransactionOverviewProps) {
-  console.log({ from: searchParams.from });
   const user = await api.users.get.query();
   const weekStartsOn = user?.weekStartsOn ?? 1;
   const timezone = user?.timezone ?? 'Europe/Amsterdam';
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'] ?? '€';
 
   const { from, to } = searchParams;
-  const { transactions, tags } = await getTransactions({ type, from, to });
+  const transactions = await api.personalTransactions.period.query({
+    type,
+    from: from ? new Date(from) : null,
+    to: to ? new Date(to) : null,
+  });
+  const tags = await api.tags.all.query({ type });
 
   return (
     <main className="flex grow flex-col bg-gray-100 p-2">
@@ -67,43 +70,4 @@ export default async function TransactionsOverview({ type, searchParams }: Trans
       </div>
     </main>
   );
-}
-
-type GetTransactionInput = {
-  type: TransactionType;
-  from: string | undefined;
-  to: string | undefined;
-};
-
-function getTransactions({
-  type,
-  from,
-  to,
-}: GetTransactionInput): Promise<{ transactions: PersonalTransactionInPeriod[]; tags: Tag[] }> {
-  switch (type) {
-    case 'INCOME':
-      return getIncomes({ from, to });
-    case 'EXPENSE':
-      return getExpenses({ from, to });
-  }
-}
-
-async function getIncomes({ from, to }: Omit<GetTransactionInput, 'type'>) {
-  const transactions = await api.personalIncomes.period.query({
-    from: from ? new Date(from) : null,
-    to: to ? new Date(to) : null,
-  });
-  const tags = await api.tags.incomes.query();
-
-  return { transactions, tags };
-}
-
-async function getExpenses({ from, to }: Omit<GetTransactionInput, 'type'>) {
-  const transactions = await api.personalExpenses.period.query({
-    from: from ? new Date(from) : null,
-    to: to ? new Date(to) : null,
-  });
-  const tags = await api.tags.incomes.query();
-
-  return { transactions, tags };
 }

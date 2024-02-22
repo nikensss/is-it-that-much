@@ -1,7 +1,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { TransactionType } from '@prisma/client';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
@@ -60,14 +59,7 @@ export default function UpdateTransaction({
     onSuccess: () => router.refresh(),
   };
 
-  const updateTransaction = ((type: TransactionType) => {
-    switch (type) {
-      case 'EXPENSE':
-        return api.personalExpenses.update.useMutation(mutationConfig);
-      case 'INCOME':
-        return api.personalIncomes.update.useMutation(mutationConfig);
-    }
-  })(transaction.type);
+  const update = api.personalTransactions.update.useMutation(mutationConfig);
 
   const formSchema = z.object({
     description: z.string().min(3).max(50),
@@ -98,7 +90,7 @@ export default function UpdateTransaction({
       data.date = new Date(zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), timezone));
     }
 
-    return updateTransaction.mutate({
+    return update.mutate({
       ...data,
       tags: data.tags.map((tag) => tag.text),
       id: transaction.id,

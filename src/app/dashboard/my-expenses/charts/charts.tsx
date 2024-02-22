@@ -7,6 +7,7 @@ import IncomesByDay from '~/app/dashboard/my-expenses/charts/incomes-by-day-char
 import IncomeLeftByDay from '~/app/dashboard/my-expenses/charts/income-left-by-day-chart';
 import { getTimezoneOffset } from 'date-fns-tz';
 import { BarChart3 } from 'lucide-react';
+import { TransactionType } from '@prisma/client';
 
 export default async function Charts() {
   const user = await api.users.get.query();
@@ -18,8 +19,10 @@ export default async function Charts() {
   const from = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
   const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
 
-  const expenses = await api.personalExpenses.period.query({ from, to });
-  const incomes = await api.personalIncomes.period.query({ from, to });
+  const [expenses, incomes] = await Promise.all([
+    api.personalTransactions.period.query({ type: TransactionType.EXPENSE, from, to }),
+    api.personalTransactions.period.query({ type: TransactionType.INCOME, from, to }),
+  ]);
 
   return (
     <section className="flex items-center justify-center rounded-md bg-white p-4 shadow-md">

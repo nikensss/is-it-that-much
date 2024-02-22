@@ -1,18 +1,12 @@
 import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
+import { TransactionType } from '@prisma/client';
 import { z } from 'zod';
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
 export const tagsRouter = createTRPCRouter({
-  all: publicProcedure.query(({ ctx }) => {
-    const { userId } = auth();
-    if (!userId) throw new Error('Not authenticated');
-
-    return ctx.db.tag.findMany({ where: { createdBy: { externalId: userId } } });
-  }),
-
-  incomes: publicProcedure.query(({ ctx }) => {
+  all: publicProcedure.input(z.object({ type: z.nativeEnum(TransactionType) })).query(({ ctx, input: { type } }) => {
     const { userId } = auth();
     if (!userId) throw new Error('Not authenticated');
 
@@ -24,33 +18,11 @@ export const tagsRouter = createTRPCRouter({
         TransactionsTags: {
           some: {
             transaction: {
-              type: 'INCOME',
+              type,
             },
           },
         },
       },
-      orderBy: { name: 'asc' },
-    });
-  }),
-
-  expenses: publicProcedure.query(({ ctx }) => {
-    const { userId } = auth();
-    if (!userId) throw new Error('Not authenticated');
-
-    return ctx.db.tag.findMany({
-      where: {
-        createdBy: {
-          externalId: userId,
-        },
-        TransactionsTags: {
-          some: {
-            transaction: {
-              type: 'EXPENSE',
-            },
-          },
-        },
-      },
-      orderBy: { name: 'asc' },
     });
   }),
 

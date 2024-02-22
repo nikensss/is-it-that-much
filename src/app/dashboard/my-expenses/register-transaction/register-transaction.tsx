@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { TransactionType } from '@prisma/client';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
@@ -19,13 +20,11 @@ import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
 import { cn, getRandomElement } from '~/lib/utils';
 import { api } from '~/trpc/react';
 
-export type Target = 'expenses' | 'incomes';
-
 export type RegisterTransactionProps = {
   timezone: string;
   weekStartsOn: number;
   descriptions: string[];
-  target: Target;
+  target: TransactionType;
   title: string;
   tags: {
     id: string;
@@ -62,8 +61,7 @@ export default function RegisterTransaction({
     onSuccess: () => router.refresh(),
   };
 
-  const registerExpense = api.personalExpenses.create.useMutation(mutationConfig);
-  const registerIncome = api.personalIncomes.create.useMutation(mutationConfig);
+  const register = api.personalTransactions.create.useMutation(mutationConfig);
 
   const formSchema = z.object({
     description: z.string().min(3).max(50),
@@ -94,17 +92,11 @@ export default function RegisterTransaction({
       data.date = zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), timezone);
     }
 
-    const mutationData = { ...data, tags: data.tags.map((tag) => tag.text) };
-
-    if (target === 'expenses') {
-      return registerExpense.mutate(mutationData);
-    }
-
-    if (target === 'incomes') {
-      return registerIncome.mutate(mutationData);
-    }
-
-    throw new Error('Invalid target');
+    return register.mutate({
+      ...data,
+      tags: data.tags.map((tag) => tag.text),
+      type: target,
+    });
   }
 
   return (

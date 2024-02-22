@@ -11,8 +11,7 @@ import { createTRPCRouter } from '~/server/api/trpc';
  */
 export const appRouter = createTRPCRouter({
   categories: categoriesRouter,
-  personalExpenses: personalTransactionsRouter('EXPENSE'),
-  personalIncomes: personalTransactionsRouter('INCOME'),
+  personalTransactions: personalTransactionsRouter,
   tags: tagsRouter,
   users: usersRouter,
 });

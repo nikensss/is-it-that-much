@@ -1,3 +1,4 @@
+import { TransactionType } from '@prisma/client';
 import { db } from '../src/server/db';
 
 async function main() {
@@ -94,7 +95,7 @@ async function main() {
         date: new Date(),
         description: `expense${i}`,
         amount,
-        type: 'EXPENSE',
+        type: TransactionType.EXPENSE,
       },
     });
     await db.sharedTransaction.create({
@@ -107,7 +108,7 @@ async function main() {
   }
 
   const sharedTransactions = await db.sharedTransaction.findMany({
-    where: { transaction: { type: 'EXPENSE' } },
+    where: { transaction: { type: TransactionType.EXPENSE } },
     include: {
       group: {
         include: {

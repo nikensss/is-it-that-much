@@ -1,23 +1,18 @@
+import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import DateDisplay, { type DateDisplayProps } from '~/app/_components/date-display';
 import { Badge } from '~/components/ui/badge';
+import type { PersonalTransactionExtended } from '~/server/api/routers/personal-transactions';
 import { api } from '~/trpc/server';
 
 export default async function DashboardRecentTrasnsactions() {
-  const personalExpenses = await api.personalExpenses.recent.query();
-  const personalIncomes = await api.personalIncomes.recent.query();
-  const user = await api.users.get.query();
+  const [expenses, incomes, user] = await Promise.all([
+    api.personalTransactions.recent.query({ type: TransactionType.EXPENSE }),
+    api.personalTransactions.recent.query({ type: TransactionType.INCOME }),
+    api.users.get.query(),
+  ]);
+
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];
-
-  const expenses = personalExpenses.map(({ transaction: { id, amount, date, description, TransactionsTags } }) => {
-    const tags = TransactionsTags.map((t) => ({ id: t.tag.id, name: t.tag.name }));
-    return { id, amount, date, description, tags };
-  });
-
-  const incomes = personalIncomes.map(({ transaction: { id, amount, date, description, TransactionsTags } }) => {
-    const tags = TransactionsTags.map((t) => ({ id: t.tag.id, name: t.tag.name }));
-    return { id, amount, date, description, tags };
-  });
 
   return (
     <div className="rounded-md bg-white p-4 shadow-md">
@@ -43,19 +38,11 @@ export default async function DashboardRecentTrasnsactions() {
   );
 }
 
-type Transaction = {
-  amount: number;
-  date: Date;
-  description: string;
-  id: string;
-  tags: { id: string; name: string }[];
-};
-
 type DashboardRecentTransactionCardParams = {
   currencySymbol: string;
   title: string;
   timezone: DateDisplayProps['timezone'];
-  transactions: Transaction[];
+  transactions: PersonalTransactionExtended[];
 };
 
 function DashboardRecentTransactionsCard({
@@ -64,7 +51,7 @@ function DashboardRecentTransactionsCard({
   timezone,
   transactions,
 }: DashboardRecentTransactionCardParams) {
-  function Transaction(transaction: Transaction) {
+  function Transaction({ transaction }: PersonalTransactionExtended) {
     return (
       <div key={transaction.id} className="flex h-12 items-center py-2">
         <div className="flex-shrink-0">
@@ -80,7 +67,7 @@ function DashboardRecentTransactionsCard({
           </div>
         </div>
         <div className="ml-6 h-full overflow-hidden">
-          {transaction.tags.map((tag) => {
+          {transaction.TransactionsTags.map(({ tag }) => {
             return (
               <Badge key={tag.id} className="pointer-events-none mx-0.5 mt-1.5 inline-block" variant="secondary">
                 {tag.name}

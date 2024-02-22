@@ -1,9 +1,12 @@
+import { TransactionType } from '@prisma/client';
 import RegisterTransaction from '~/app/dashboard/my-expenses/register-transaction/register-transaction';
 import { api } from '~/trpc/server';
 
 export default async function DashboardRegisterPersonalExpense() {
-  const tags = await api.tags.expenses.query();
-  const user = await api.users.get.query();
+  const [tags, user] = await Promise.all([
+    api.tags.all.query({ type: TransactionType.EXPENSE }),
+    api.users.get.query(),
+  ]);
   const weekStartsOn = user?.weekStartsOn ?? 1;
   const timezone = user?.timezone ?? 'Europe/Amsterdam';
 
@@ -12,7 +15,7 @@ export default async function DashboardRegisterPersonalExpense() {
       timezone={timezone}
       weekStartsOn={weekStartsOn}
       tags={tags.map((t) => ({ ...t, text: t.name }))}
-      target="expenses"
+      target={TransactionType.EXPENSE}
       descriptions={descriptions}
       title="Register expense"
     />
