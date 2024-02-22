@@ -29,30 +29,7 @@ export default async function Charts() {
         </header>
         <Tabs defaultValue="expenses-by-day" className="mt-4 h-full w-full">
           <TabsList className="flex w-full justify-between md:grid md:grid-cols-4">
-            <TabsTrigger value="expenses-by-day" className="responsive-tab-trigger">
-              <span className="compact animate-pulse">
-                <BarChart3 />
-              </span>
-              <span className="full">Expenses by day</span>
-            </TabsTrigger>
-            <TabsTrigger value="expenses-by-tag" className="responsive-tab-trigger">
-              <span className="compact animate-pulse">
-                <BarChart3 />
-              </span>
-              <span className="full">Expenses by tag</span>
-            </TabsTrigger>
-            <TabsTrigger value="incomes-by-day" className="responsive-tab-trigger">
-              <span className="compact animate-pulse">
-                <BarChart3 />
-              </span>
-              <span className="full">Incomes by day</span>
-            </TabsTrigger>
-            <TabsTrigger value="income-left" className="responsive-tab-trigger">
-              <span className="compact animate-pulse">
-                <BarChart3 />
-              </span>
-              <span className="full">Income left</span>
-            </TabsTrigger>
+            {['expenses-by-day', 'expenses-by-tag', 'incomes-by-day', 'income-left'].map(getTabsTrigger)}
           </TabsList>
 
           <TabsContent value="expenses-by-day">
@@ -73,5 +50,16 @@ export default async function Charts() {
         </Tabs>
       </div>
     </section>
+  );
+}
+
+function getTabsTrigger(value: string) {
+  return (
+    <TabsTrigger value={value} className="responsive-tab-trigger">
+      <span className="compact animate-pulse">
+        <BarChart3 />
+      </span>
+      <span className="full capitalize">{value.replace(/-/g, ' ')}</span>
+    </TabsTrigger>
   );
 }
