@@ -8,8 +8,8 @@ import { z } from 'zod';
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
-export type PersonalExpenseExtended = {
-  transaction: Pick<Transaction, 'id' | 'amount' | 'description' | 'date'> & {
+export type PersonalTransactionExtended = {
+  transaction: Pick<Transaction, 'id' | 'amount' | 'description' | 'date' | 'type'> & {
     TransactionsTags: { id: string; tag: { id: string; name: string } }[];
   };
 };
@@ -24,6 +24,7 @@ export type PersonalTransactionInPeriod = {
   }[];
 } & {
   id: string;
+  type: TransactionType;
   description: string;
   amount: number;
   date: Date;
@@ -31,7 +32,7 @@ export type PersonalTransactionInPeriod = {
 
 export const personalTransactionsRouter = (type: TransactionType) =>
   createTRPCRouter({
-    all: publicProcedure.query(({ ctx }): Promise<PersonalExpenseExtended[]> => {
+    all: publicProcedure.query(({ ctx }): Promise<PersonalTransactionExtended[]> => {
       const { userId } = auth();
       if (!userId) throw new Error('Not authenticated');
 
@@ -56,6 +57,7 @@ export const personalTransactionsRouter = (type: TransactionType) =>
               amount: true,
               description: true,
               date: true,
+              type: true,
               TransactionsTags: {
                 select: {
                   id: true,
@@ -123,6 +125,7 @@ export const personalTransactionsRouter = (type: TransactionType) =>
             date: true,
             description: true,
             amount: true,
+            type: true,
             TransactionsTags: {
               select: {
                 id: true,
@@ -315,7 +318,7 @@ export const personalTransactionsRouter = (type: TransactionType) =>
         }
       }),
 
-    recent: publicProcedure.query(async ({ ctx }): Promise<PersonalExpenseExtended[]> => {
+    recent: publicProcedure.query(async ({ ctx }): Promise<PersonalTransactionExtended[]> => {
       const user = auth();
 
       if (!user?.userId) return [];
@@ -342,6 +345,7 @@ export const personalTransactionsRouter = (type: TransactionType) =>
               amount: true,
               description: true,
               date: true,
+              type: true,
               TransactionsTags: {
                 select: {
                   id: true,

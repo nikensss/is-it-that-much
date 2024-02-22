@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { TransactionType } from '@prisma/client';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
@@ -20,10 +21,10 @@ import { cn } from '~/lib/utils';
 import type { PersonalTransactionInPeriod } from '~/server/api/routers/personal-transactions';
 import { api } from '~/trpc/react';
 
-export type UpdateIncomeProps = {
+export type UpdateTransactionProps = {
   timezone: string;
   weekStartsOn: number;
-  income: PersonalTransactionInPeriod;
+  transaction: PersonalTransactionInPeriod;
   tags: {
     id: string;
     text: string;
@@ -35,7 +36,13 @@ export type UpdateIncomeProps = {
   trigger: ReactElement;
 };
 
-export default function UpdateIncome({ timezone, weekStartsOn, income, tags, trigger }: UpdateIncomeProps) {
+export default function UpdateTransaction({
+  timezone,
+  weekStartsOn,
+  transaction,
+  tags,
+  trigger,
+}: UpdateTransactionProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -53,7 +60,14 @@ export default function UpdateIncome({ timezone, weekStartsOn, income, tags, tri
     onSuccess: () => router.refresh(),
   };
 
-  const updateIncome = api.personalIncomes.update.useMutation(mutationConfig);
+  const updateTransaction = ((type: TransactionType) => {
+    switch (type) {
+      case 'EXPENSE':
+        return api.personalExpenses.update.useMutation(mutationConfig);
+      case 'INCOME':
+        return api.personalIncomes.update.useMutation(mutationConfig);
+    }
+  })(transaction.type);
 
   const formSchema = z.object({
     description: z.string().min(3).max(50),
@@ -70,10 +84,10 @@ export default function UpdateIncome({ timezone, weekStartsOn, income, tags, tri
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      description: income.description,
-      amount: income.amount / 100,
-      date: new Date(income.date),
-      tags: income.TransactionsTags.map((t) => ({ id: t.tag.id, text: t.tag.name })),
+      description: transaction.description,
+      amount: transaction.amount / 100,
+      date: new Date(transaction.date),
+      tags: transaction.TransactionsTags.map((t) => ({ id: t.tag.id, text: t.tag.name })),
     },
   });
 
@@ -84,10 +98,10 @@ export default function UpdateIncome({ timezone, weekStartsOn, income, tags, tri
       data.date = new Date(zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), timezone));
     }
 
-    return updateIncome.mutate({
+    return updateTransaction.mutate({
       ...data,
       tags: data.tags.map((tag) => tag.text),
-      id: income.id,
+      id: transaction.id,
     });
   }
 
@@ -98,7 +112,7 @@ export default function UpdateIncome({ timezone, weekStartsOn, income, tags, tri
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">
         <DialogHeader>
-          <DialogTitle>Update income</DialogTitle>
+          <DialogTitle>Update expense</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
