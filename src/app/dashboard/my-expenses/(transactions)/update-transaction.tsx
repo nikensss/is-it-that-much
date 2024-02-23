@@ -17,13 +17,13 @@ import { Input } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
 import { cn } from '~/lib/utils';
-import type { PersonalTransactionInPeriod } from '~/server/api/routers/personal-transactions';
 import { api } from '~/trpc/react';
+import type { RouterOutputs } from '~/trpc/shared';
 
 export type UpdateTransactionProps = {
   timezone: string;
   weekStartsOn: number;
-  transaction: PersonalTransactionInPeriod;
+  transaction: RouterOutputs['personalTransactions']['period'][number];
   tags: {
     id: string;
     text: string;

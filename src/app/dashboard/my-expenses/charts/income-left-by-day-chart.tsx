@@ -3,12 +3,12 @@ import { formatInTimeZone } from 'date-fns-tz';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
 import LineChartClient from '~/app/dashboard/my-expenses/charts/line-chart-client';
-import type { PersonalTransactionInPeriod } from '~/server/api/routers/personal-transactions';
+import type { RouterOutputs } from '~/trpc/shared';
 
 export type IncomeLeftByDayProps = {
   timezone: string;
-  incomes: PersonalTransactionInPeriod[];
-  expenses: PersonalTransactionInPeriod[];
+  incomes: RouterOutputs['personalTransactions']['period'];
+  expenses: RouterOutputs['personalTransactions']['period'];
   from: Date;
   to: Date;
 };

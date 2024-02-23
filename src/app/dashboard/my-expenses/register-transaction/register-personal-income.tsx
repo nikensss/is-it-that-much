@@ -3,7 +3,12 @@ import RegisterTransaction from '~/app/dashboard/my-expenses/register-transactio
 import { api } from '~/trpc/server';
 
 export default async function DashboardRegisterPersonalIncome() {
-  const [tags, user] = await Promise.all([api.tags.all.query({ type: TransactionType.INCOME }), api.users.get.query()]);
+  const [tags, user] = await Promise.all([
+    api.tags.all.query({
+      type: TransactionType.INCOME,
+    }),
+    api.users.get.query(),
+  ]);
   const weekStartsOn = user?.weekStartsOn ?? 1;
   const timezone = user?.timezone ?? 'Europe/Amsterdam';
 

@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
-import { type Transaction, TransactionType } from '@prisma/client';
+import { TransactionType } from '@prisma/client';
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { getTimezoneOffset, utcToZonedTime } from 'date-fns-tz';
 import { log } from 'next-axiom';
@@ -8,73 +8,38 @@ import { z } from 'zod';
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
-export type PersonalTransactionExtended = {
-  transaction: Pick<Transaction, 'id' | 'amount' | 'description' | 'date' | 'type'> & {
-    TransactionsTags: { id: string; tag: { id: string; name: string } }[];
-  };
-};
-
-export type PersonalTransactionInPeriod = {
-  TransactionsTags: {
-    id: string;
-    tag: {
-      id: string;
-      name: string;
-    };
-  }[];
-} & {
-  id: string;
-  type: TransactionType;
-  description: string;
-  amount: number;
-  date: Date;
-};
-
 export const personalTransactionsRouter = createTRPCRouter({
-  all: publicProcedure
-    .input(z.object({ type: z.nativeEnum(TransactionType) }))
-    .query(({ ctx, input: { type } }): Promise<PersonalTransactionExtended[]> => {
-      const { userId } = auth();
-      if (!userId) throw new Error('Not authenticated');
+  all: publicProcedure.input(z.object({ type: z.nativeEnum(TransactionType) })).query(({ ctx, input: { type } }) => {
+    const { userId } = auth();
+    if (!userId) throw new Error('Not authenticated');
 
-      return ctx.db.personalTransaction.findMany({
-        where: {
-          user: {
-            externalId: userId,
-          },
-          transaction: {
-            type,
-          },
+    return ctx.db.personalTransaction.findMany({
+      where: {
+        user: {
+          externalId: userId,
         },
-        orderBy: {
-          transaction: {
-            date: 'desc',
-          },
+        transaction: {
+          type,
         },
-        select: {
-          transaction: {
-            select: {
-              id: true,
-              amount: true,
-              description: true,
-              date: true,
-              type: true,
-              TransactionsTags: {
-                select: {
-                  id: true,
-                  tag: {
-                    select: {
-                      id: true,
-                      name: true,
-                    },
-                  },
-                },
+      },
+      orderBy: {
+        transaction: {
+          date: 'desc',
+        },
+      },
+      include: {
+        transaction: {
+          include: {
+            TransactionsTags: {
+              include: {
+                tag: true,
               },
             },
           },
         },
-      });
-    }),
+      },
+    });
+  }),
 
   period: publicProcedure
     .input(
@@ -84,7 +49,7 @@ export const personalTransactionsRouter = createTRPCRouter({
         to: z.date().nullish(),
       }),
     )
-    .query(async ({ ctx, input }): Promise<PersonalTransactionInPeriod[]> => {
+    .query(async ({ ctx, input }) => {
       const { userId } = auth();
       if (!userId) throw new Error('Not authenticated');
 
@@ -120,21 +85,10 @@ export const personalTransactionsRouter = createTRPCRouter({
         orderBy: {
           date: 'desc',
         },
-        select: {
-          id: true,
-          date: true,
-          description: true,
-          amount: true,
-          type: true,
+        include: {
           TransactionsTags: {
-            select: {
-              id: true,
-              tag: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
+            include: {
+              tag: true,
             },
           },
         },
@@ -324,7 +278,7 @@ export const personalTransactionsRouter = createTRPCRouter({
         type: z.nativeEnum(TransactionType),
       }),
     )
-    .query(async ({ ctx, input: { type } }): Promise<PersonalTransactionExtended[]> => {
+    .query(async ({ ctx, input: { type } }) => {
       const user = auth();
 
       if (!user?.userId) return [];
@@ -344,23 +298,12 @@ export const personalTransactionsRouter = createTRPCRouter({
             date: 'desc',
           },
         },
-        select: {
+        include: {
           transaction: {
-            select: {
-              id: true,
-              amount: true,
-              description: true,
-              date: true,
-              type: true,
+            include: {
               TransactionsTags: {
-                select: {
-                  id: true,
-                  tag: {
-                    select: {
-                      id: true,
-                      name: true,
-                    },
-                  },
+                include: {
+                  tag: true,
                 },
               },
             },

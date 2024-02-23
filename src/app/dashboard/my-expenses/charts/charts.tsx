@@ -58,7 +58,7 @@ export default async function Charts() {
 
 function getTabsTrigger(value: string) {
   return (
-    <TabsTrigger value={value} className="responsive-tab-trigger">
+    <TabsTrigger key={value} value={value} className="responsive-tab-trigger">
       <span className="compact animate-pulse">
         <BarChart3 />
       </span>

@@ -1,10 +1,10 @@
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
 import BarChartClient from '~/app/dashboard/my-expenses/charts/bar-chart-client';
-import type { PersonalTransactionInPeriod } from '~/server/api/routers/personal-transactions';
+import type { RouterOutputs } from '~/trpc/shared';
 
 export type ExpensesByTagChartProps = {
-  expenses: PersonalTransactionInPeriod[];
+  expenses: RouterOutputs['personalTransactions']['period'];
 };
 
 export default async function ExpensesByTagChart({ expenses }: ExpensesByTagChartProps) {

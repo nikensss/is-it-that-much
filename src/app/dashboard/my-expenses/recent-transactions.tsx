@@ -2,8 +2,8 @@ import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import DateDisplay, { type DateDisplayProps } from '~/app/_components/date-display';
 import { Badge } from '~/components/ui/badge';
-import type { PersonalTransactionExtended } from '~/server/api/routers/personal-transactions';
 import { api } from '~/trpc/server';
+import type { RouterOutputs } from '~/trpc/shared';
 
 export default async function DashboardRecentTrasnsactions() {
   const [expenses, incomes, user] = await Promise.all([
@@ -42,7 +42,7 @@ type DashboardRecentTransactionCardParams = {
   currencySymbol: string;
   title: string;
   timezone: DateDisplayProps['timezone'];
-  transactions: PersonalTransactionExtended[];
+  transactions: RouterOutputs['personalTransactions']['recent'];
 };
 
 function DashboardRecentTransactionsCard({
@@ -51,7 +51,7 @@ function DashboardRecentTransactionsCard({
   timezone,
   transactions,
 }: DashboardRecentTransactionCardParams) {
-  function Transaction({ transaction }: PersonalTransactionExtended) {
+  function Transaction({ transaction }: RouterOutputs['personalTransactions']['recent'][number]) {
     return (
       <div key={transaction.id} className="flex h-12 items-center py-2">
         <div className="flex-shrink-0">
