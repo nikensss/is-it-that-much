@@ -17,9 +17,8 @@ export default async function DashboardRegisterPersonalIncome() {
       timezone={timezone}
       weekStartsOn={weekStartsOn}
       tags={tags.map((t) => ({ ...t, text: t.name }))}
-      target={TransactionType.INCOME}
+      transactionType={TransactionType.INCOME}
       descriptions={descriptions}
-      title="Register income"
     />
   );
 }

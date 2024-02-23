@@ -19,29 +19,21 @@ import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover
 import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
 import { cn, getRandomElement } from '~/lib/utils';
 import { api } from '~/trpc/react';
+import type { RouterOutputs } from '~/trpc/shared';
 
 export type RegisterTransactionProps = {
   timezone: string;
   weekStartsOn: number;
   descriptions: string[];
-  target: TransactionType;
-  title: string;
-  tags: {
-    id: string;
-    text: string;
-    name: string;
-    createdAt: Date;
-    updatedAt: Date;
-    createdById: string;
-  }[];
+  transactionType: TransactionType;
+  tags: RouterOutputs['tags']['all'];
 };
 
 export default function RegisterTransaction({
   timezone,
   weekStartsOn,
   descriptions,
-  target,
-  title,
+  transactionType,
   tags,
 }: RegisterTransactionProps) {
   const router = useRouter();
@@ -95,7 +87,7 @@ export default function RegisterTransaction({
     return register.mutate({
       ...data,
       tags: data.tags.map((tag) => tag.text),
-      type: target,
+      type: transactionType,
     });
   }
 
@@ -103,12 +95,12 @@ export default function RegisterTransaction({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" onClick={resetForm}>
-          {title}
+          Register {transactionType.toLowerCase()}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle>Register {transactionType.toLowerCase()}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
@@ -212,21 +204,21 @@ export default function RegisterTransaction({
                       // enable autocomplete if there are unselected suggestions
                       enableAutocomplete={
                         !tags.every((t) => {
-                          return form.getValues('tags').some((tag) => tag.text === t.text);
+                          return form.getValues('tags').some((tag) => tag.text === t.name);
                         })
                       }
                       autocompleteFilter={(tag) => {
                         // only shows tags that are not already selected
                         return !form.getValues('tags').some(({ text }) => text === tag);
                       }}
-                      autocompleteOptions={tags}
+                      autocompleteOptions={tags.map((t) => ({ id: t.id, text: t.name }))}
                       maxTags={10}
                       shape={'rounded'}
                       textCase={'lowercase'}
                       animation={'fadeIn'}
                       {...field}
                       placeholder="Enter a tag"
-                      tags={form.getValues('tags') as Tag[]}
+                      tags={form.getValues('tags')}
                       className="max-w-[100%] text-[16px]"
                       setTags={(tags) => {
                         form.setValue('tags', tags as Tag[]);

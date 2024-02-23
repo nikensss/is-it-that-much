@@ -14,10 +14,9 @@ export default async function DashboardRegisterPersonalExpense() {
     <RegisterTransaction
       timezone={timezone}
       weekStartsOn={weekStartsOn}
-      tags={tags.map((t) => ({ ...t, text: t.name }))}
-      target={TransactionType.EXPENSE}
+      tags={tags}
+      transactionType={TransactionType.EXPENSE}
       descriptions={descriptions}
-      title="Register expense"
     />
   );
 }
