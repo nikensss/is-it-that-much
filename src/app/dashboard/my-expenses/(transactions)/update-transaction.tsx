@@ -3,18 +3,28 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
-import { zonedTimeToUtc } from 'date-fns-tz';
-import { Loader2 } from 'lucide-react';
+import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz';
+import { Loader2, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { type ReactElement, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '~/components/ui/button';
 import { Calendar } from '~/components/ui/calendar';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '~/components/ui/dialog';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '~/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
+import { TableCell, TableRow } from '~/components/ui/table';
 import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
 import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
@@ -24,24 +34,10 @@ export type UpdateTransactionProps = {
   timezone: string;
   weekStartsOn: number;
   transaction: RouterOutputs['personalTransactions']['period'][number];
-  tags: {
-    id: string;
-    text: string;
-    name: string;
-    createdAt: Date;
-    updatedAt: Date;
-    createdById: string;
-  }[];
-  trigger: ReactElement;
+  tags: RouterOutputs['tags']['all'];
 };
 
-export default function UpdateTransaction({
-  timezone,
-  weekStartsOn,
-  transaction,
-  tags,
-  trigger,
-}: UpdateTransactionProps) {
+export default function UpdateTransaction({ timezone, weekStartsOn, transaction, tags }: UpdateTransactionProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -100,11 +96,16 @@ export default function UpdateTransaction({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild type={undefined} onClick={resetForm}>
-        {trigger}
+        <TableRow key={transaction.id} className="cursor-pointer">
+          <TableCell>{formatInTimeZone(transaction.date, timezone, 'LLLL d, yyyy')}</TableCell>
+          <TableCell>{transaction.description}</TableCell>
+          <TableCell>{transaction.amount / 100}</TableCell>
+          <TableCell>{transaction.TransactionsTags.map((t) => t.tag.name).join(', ')}</TableCell>
+        </TableRow>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">
         <DialogHeader>
-          <DialogTitle>Update expense</DialogTitle>
+          <DialogTitle>Update {transaction.type.toLowerCase()}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
@@ -203,21 +204,21 @@ export default function UpdateTransaction({
                       // enable autocomplete if there are unselected suggestions
                       enableAutocomplete={
                         !tags.every((t) => {
-                          return form.getValues('tags').some((tag) => tag.text === t.text);
+                          return form.getValues('tags').some((tag) => tag.text === t.name);
                         })
                       }
                       autocompleteFilter={(tag) => {
                         // only shows tags that are not already selected
                         return !form.getValues('tags').some(({ text }) => text === tag);
                       }}
-                      autocompleteOptions={tags}
+                      autocompleteOptions={tags.map((t) => ({ id: t.id, text: t.name }))}
                       maxTags={10}
                       shape={'rounded'}
                       textCase={'lowercase'}
                       animation={'fadeIn'}
                       {...field}
                       placeholder="Enter a tag"
-                      tags={form.getValues('tags') as Tag[]}
+                      tags={form.getValues('tags')}
                       className="max-w-[100%] text-[16px]"
                       setTags={(tags) => {
                         form.setValue('tags', tags as Tag[]);
@@ -229,12 +230,59 @@ export default function UpdateTransaction({
               )}
             />
             <DialogFooter>
-              <Button disabled={isLoading} type="submit">
+              <DeleteTransaction transaction={transaction} onDelete={() => setIsOpen(false)} />
+              <Button className="grow" disabled={isLoading} type="submit">
                 {isLoading ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Save'}
               </Button>
             </DialogFooter>
           </form>
         </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+type DeleteTransactionProps = {
+  transaction: UpdateTransactionProps['transaction'];
+  onDelete: () => void;
+};
+
+function DeleteTransaction({ transaction, onDelete }: DeleteTransactionProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const deleteTransaction = api.personalTransactions.delete.useMutation({
+    onMutate: () => setIsLoading(true),
+    onSettled: () => setIsOpen(false),
+    onSuccess: () => {
+      onDelete();
+      router.refresh();
+    },
+  });
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button className="min-w-[70px] grow" variant="destructive">
+          <Trash2 />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Delete {transaction.type.toLowerCase()}</DialogTitle>
+        </DialogHeader>
+        <DialogDescription>Are you sure you want to delete this {transaction.type.toLowerCase()}?</DialogDescription>
+        <DialogFooter className="flex">
+          <Button type="button" variant="destructive" onClick={() => deleteTransaction.mutate({ id: transaction.id })}>
+            {isLoading ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Delete'}
+          </Button>
+          <DialogClose asChild>
+            <Button type="button" variant="secondary" onClick={() => setIsOpen(false)}>
+              Cancel
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

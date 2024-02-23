@@ -1,9 +1,8 @@
 import type { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
-import { formatInTimeZone } from 'date-fns-tz';
 import DateRangePicker from '~/app/dashboard/my-expenses/(transactions)/date-range-picker';
 import UpdateTransaction from '~/app/dashboard/my-expenses/(transactions)/update-transaction';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { api } from '~/trpc/server';
 
 export type TransactionOverviewProps = {
@@ -42,25 +41,18 @@ export default async function TransactionsOverview({ type, searchParams }: Trans
                 <TableHead className="font-bold text-slate-900">Description</TableHead>
                 <TableHead className="font-bold text-slate-900">{`Amount (${currencySymbol})`}</TableHead>
                 <TableHead className="font-bold text-slate-900">Tags</TableHead>
+                <TableHead className="font-bold text-slate-900">{/* Fake column for delete button */}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {transactions.map((e) => {
+              {transactions.map((transaction) => {
                 return (
                   <UpdateTransaction
-                    key={e.id}
-                    transaction={e}
+                    key={transaction.id}
+                    transaction={transaction}
                     weekStartsOn={weekStartsOn}
                     timezone={timezone}
-                    tags={tags.map((t) => ({ ...t, text: t.name }))}
-                    trigger={
-                      <TableRow key={e.id} className="cursor-pointer">
-                        <TableCell>{formatInTimeZone(e.date, timezone, 'LLLL d, yyyy')}</TableCell>
-                        <TableCell>{e.description}</TableCell>
-                        <TableCell>{e.amount / 100}</TableCell>
-                        <TableCell>{e.TransactionsTags.map((t) => t.tag.name).join(', ')}</TableCell>
-                      </TableRow>
-                    }
+                    tags={tags}
                   />
                 );
               })}

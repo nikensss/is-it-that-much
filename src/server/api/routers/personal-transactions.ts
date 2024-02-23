@@ -156,8 +156,6 @@ export const personalTransactionsRouter = createTRPCRouter({
         const createdById = user.externalId;
         if (!createdById) throw new Error('User has no externalId');
 
-        log.debug(`registering expense for ${user.id}`, { amount, date, description, tags, userId: user.externalId });
-
         await ctx.db.tag.createMany({
           data: tags.map((name) => ({ name, createdById })),
           skipDuplicates: true,
@@ -218,19 +216,10 @@ export const personalTransactionsRouter = createTRPCRouter({
         const createdById = user.externalId;
         if (!createdById) throw new Error('User has no externalId');
 
-        log.debug(`updating expense for ${user.id}`, {
-          id,
-          amount,
-          date,
-          description,
-          tags,
-          userId: user.externalId,
-        });
-
-        // delete all the tags the expense has
+        // delete all the tags the transaction has
         await ctx.db.transactionsTags.deleteMany({ where: { transactionId: id } });
 
-        // ensure all the tags for this expense exist
+        // ensure all the tags for this transaction exist
         await ctx.db.tag.createMany({
           data: tags.map((name) => ({ name, createdById })),
           skipDuplicates: true,
@@ -311,4 +300,28 @@ export const personalTransactionsRouter = createTRPCRouter({
         },
       });
     }),
+
+  delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input: { id } }) => {
+    const user = await currentUser();
+    try {
+      if (!user) throw new Error('Not authenticated');
+
+      return ctx.db.personalTransaction.delete({
+        where: {
+          user: {
+            externalId: user.id,
+          },
+          transactionId: id,
+        },
+      });
+    } catch (error) {
+      log.error('could not delete personal transaction', {
+        id,
+        error,
+        externalUserId: user?.id,
+        userId: user?.externalId,
+      });
+      return null;
+    }
+  }),
 });
