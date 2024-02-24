@@ -47,6 +47,10 @@ export default function UpdateTransaction({ timezone, weekStartsOn, transaction,
     setIsOpen(true);
     setIsLoading(false);
     form.reset();
+    form.setValue(
+      'tags',
+      transaction.TransactionsTags.map((t) => ({ id: t.tag.id, text: t.tag.name })),
+    );
   };
 
   const update = api.transactions.personal.update.useMutation({

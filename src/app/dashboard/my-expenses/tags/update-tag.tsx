@@ -32,6 +32,12 @@ export default function UpdateTag({ tag }: UpdateTagProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
+  const resetForm = () => {
+    setIsOpen(true);
+    setIsLoading(false);
+    form.reset();
+  };
+
   const update = api.tags.update.useMutation({
     onMutate: () => setIsLoading(true),
     onSettled: () => setIsOpen(false),
@@ -57,7 +63,7 @@ export default function UpdateTag({ tag }: UpdateTagProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild type={undefined}>
+      <DialogTrigger asChild type={undefined} onClick={resetForm}>
         <TableRow className="hover:cursor-pointer">
           <TableCell>{tag.name}</TableCell>
         </TableRow>
