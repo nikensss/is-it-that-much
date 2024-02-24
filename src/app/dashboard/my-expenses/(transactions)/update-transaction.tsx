@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz';
-import { Loader2, Trash2 } from 'lucide-react';
+import { Loader2, Save, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -231,10 +231,16 @@ export default function UpdateTransaction({ timezone, weekStartsOn, transaction,
                 </FormItem>
               )}
             />
-            <DialogFooter>
+            <DialogFooter className="flex flex-col gap-4">
               <DeleteTransaction transaction={transaction} onDelete={() => setIsOpen(false)} />
               <Button className="grow" disabled={isLoading} type="submit">
-                {isLoading ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Save'}
+                {isLoading ? (
+                  <Loader2 className="m-4 h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Save className="mr-4" /> Save
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </form>
@@ -267,15 +273,17 @@ function DeleteTransaction({ transaction, onDelete }: DeleteTransactionProps) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="mt-2 min-w-[70px] grow md:mt-0" variant="destructive">
-          <Trash2 />
+          <Trash2 className="mr-4" /> Delete
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">
         <DialogHeader>
           <DialogTitle>Delete {transaction.type.toLowerCase()}</DialogTitle>
         </DialogHeader>
-        <DialogDescription>Are you sure you want to delete this {transaction.type.toLowerCase()}?</DialogDescription>
-        <DialogFooter className="flex">
+        <DialogDescription>
+          Are you sure you want to delete this {transaction.type.toLowerCase()}? This action cannot be undone.
+        </DialogDescription>
+        <DialogFooter className="flex flex-col gap-4">
           <Button type="button" variant="destructive" onClick={() => deleteTransaction.mutate({ id: transaction.id })}>
             {isLoading ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Delete'}
           </Button>
