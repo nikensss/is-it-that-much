@@ -110,7 +110,7 @@ export default function UpdateTransaction({ timezone, weekStartsOn, transaction,
           <DialogTitle>Update {transaction.type.toLowerCase()}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 pt-4">
             <FormField
               control={form.control}
               name="description"
@@ -266,7 +266,7 @@ function DeleteTransaction({ transaction, onDelete }: DeleteTransactionProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="min-w-[70px] grow" variant="destructive">
+        <Button className="mt-2 min-w-[70px] grow md:mt-0" variant="destructive">
           <Trash2 />
         </Button>
       </DialogTrigger>

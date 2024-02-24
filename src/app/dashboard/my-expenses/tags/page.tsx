@@ -10,7 +10,7 @@ export default async function TagsOverview() {
         <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
           <h2 className="text-lg font-bold capitalize text-slate-200">Tags</h2>
         </header>
-        <section className="flex flex-col space-x-4 md:flex-row">
+        <section className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
           <TransactionTags type={TransactionType.EXPENSE} />
           <TransactionTags type={TransactionType.INCOME} />
         </section>
