@@ -36,6 +36,8 @@ export default function UpdateTag({ tag }: UpdateTagProps) {
     setIsOpen(true);
     setIsLoading(false);
     form.reset();
+
+    form.setValue('name', tag.name);
   };
 
   const update = api.tags.update.useMutation({

@@ -47,6 +47,10 @@ export default function UpdateTransaction({ timezone, weekStartsOn, transaction,
     setIsOpen(true);
     setIsLoading(false);
     form.reset();
+
+    form.setValue('description', transaction.description);
+    form.setValue('amount', transaction.amount / 100);
+    form.setValue('date', new Date(transaction.date));
     form.setValue(
       'tags',
       transaction.TransactionsTags.map((t) => ({ id: t.tag.id, text: t.tag.name })),
