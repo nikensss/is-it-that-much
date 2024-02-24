@@ -56,10 +56,10 @@ model UsersGroups {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
 
-  group   Group  @relation(fields: [groupId], references: [id])
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   groupId String
 
   @@unique([userId, groupId])
@@ -76,10 +76,10 @@ enum TransactionType {
 model PersonalTransaction {
   id String @id @default(cuid())
 
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
 
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   transactionId String      @unique
 
   @@index([userId])
@@ -92,10 +92,10 @@ model SharedTransaction {
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String
 
-  group   Group  @relation(fields: [groupId], references: [id])
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   groupId String
 
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   transactionId String      @unique
 
   TransactionSplit TransactionSplit[]
@@ -115,7 +115,7 @@ model Transaction {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  category   Category? @relation(fields: [categoryId], references: [id])
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   categoryId String?
 
   PersonalTransaction PersonalTransaction?
@@ -134,11 +134,11 @@ model TransactionSplit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
 
-  SharedTransaction   SharedTransaction? @relation(fields: [sharedTransactionId], references: [id])
-  sharedTransactionId String?
+  SharedTransaction   SharedTransaction @relation(fields: [sharedTransactionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  sharedTransactionId String
 
   @@unique([sharedTransactionId, userId])
   @@index([sharedTransactionId])
@@ -152,10 +152,10 @@ model TransactionsTags {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   transactionId String
 
-  tag   Tag    @relation(fields: [tagId], references: [id])
+  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   tagId String
 
   @@unique([transactionId, tagId])
@@ -168,7 +168,7 @@ model Tag {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade, onUpdate: Cascade)
   createdById String
 
   TransactionsTags TransactionsTags[]
@@ -185,7 +185,7 @@ model Category {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade, onUpdate: Cascade)
   createdById String
 
   Transaction Transaction[]

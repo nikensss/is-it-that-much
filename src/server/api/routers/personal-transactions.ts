@@ -306,12 +306,14 @@ export const personalTransactionsRouter = createTRPCRouter({
     try {
       if (!user) throw new Error('Not authenticated');
 
-      return ctx.db.personalTransaction.delete({
+      return ctx.db.transaction.delete({
         where: {
-          user: {
-            externalId: user.id,
+          id,
+          PersonalTransaction: {
+            user: {
+              externalId: user.id,
+            },
           },
-          transactionId: id,
         },
       });
     } catch (error) {
