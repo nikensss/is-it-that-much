@@ -53,7 +53,7 @@ export default function RegisterTransaction({
     onSuccess: () => router.refresh(),
   };
 
-  const register = api.personalTransactions.create.useMutation(mutationConfig);
+  const register = api.transactions.personal.create.useMutation(mutationConfig);
 
   const formSchema = z.object({
     description: z.string().min(3).max(50),

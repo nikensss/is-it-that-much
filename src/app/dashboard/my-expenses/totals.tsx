@@ -4,8 +4,8 @@ import { api } from '~/trpc/server';
 
 export default async function DashboardTotals() {
   const [expenses, incomes, user] = await Promise.all([
-    api.personalTransactions.totalAmountInMonth.query({ type: TransactionType.EXPENSE }),
-    api.personalTransactions.totalAmountInMonth.query({ type: TransactionType.INCOME }),
+    api.transactions.personal.totalAmountInMonth.query({ type: TransactionType.EXPENSE }),
+    api.transactions.personal.totalAmountInMonth.query({ type: TransactionType.INCOME }),
     api.users.get.query(),
   ]);
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];

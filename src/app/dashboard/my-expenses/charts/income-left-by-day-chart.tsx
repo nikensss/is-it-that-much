@@ -7,8 +7,8 @@ import type { RouterOutputs } from '~/trpc/shared';
 
 export type IncomeLeftByDayProps = {
   timezone: string;
-  incomes: RouterOutputs['personalTransactions']['period'];
-  expenses: RouterOutputs['personalTransactions']['period'];
+  incomes: RouterOutputs['transactions']['personal']['period'];
+  expenses: RouterOutputs['transactions']['personal']['period'];
   from: Date;
   to: Date;
 };

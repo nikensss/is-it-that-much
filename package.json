@@ -11,6 +11,7 @@
     "db:seed": "prisma db seed",
     "db:seed:dev": "dotenv -e .env.dev -- prisma db seed",
     "db:fill": "dotenv -e .env -- tsx prisma/fill.ts",
+    "db:reset": "dotenv -e .env -- tsx prisma/reset.ts",
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",

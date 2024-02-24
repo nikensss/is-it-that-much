@@ -20,8 +20,8 @@ export default async function Charts() {
   const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
 
   const [expenses, incomes] = await Promise.all([
-    api.personalTransactions.period.query({ type: TransactionType.EXPENSE, from, to }),
-    api.personalTransactions.period.query({ type: TransactionType.INCOME, from, to }),
+    api.transactions.personal.period.query({ type: TransactionType.EXPENSE, from, to }),
+    api.transactions.personal.period.query({ type: TransactionType.INCOME, from, to }),
   ]);
 
   return (

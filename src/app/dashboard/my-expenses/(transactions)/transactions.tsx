@@ -17,7 +17,7 @@ export default async function TransactionsOverview({ type, searchParams }: Trans
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'] ?? '€';
 
   const { from, to } = searchParams;
-  const transactions = await api.personalTransactions.period.query({
+  const transactions = await api.transactions.personal.period.query({
     type,
     from: from ? new Date(from) : null,
     to: to ? new Date(to) : null,

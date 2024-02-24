@@ -33,7 +33,7 @@ import type { RouterOutputs } from '~/trpc/shared';
 export type UpdateTransactionProps = {
   timezone: string;
   weekStartsOn: number;
-  transaction: RouterOutputs['personalTransactions']['period'][number];
+  transaction: RouterOutputs['transactions']['personal']['period'][number];
   tags: RouterOutputs['tags']['all'];
 };
 
@@ -49,7 +49,7 @@ export default function UpdateTransaction({ timezone, weekStartsOn, transaction,
     form.reset();
   };
 
-  const update = api.personalTransactions.update.useMutation({
+  const update = api.transactions.personal.update.useMutation({
     onMutate: () => setIsLoading(true),
     onSettled: () => setIsOpen(false),
     onSuccess: () => router.refresh(),
@@ -250,7 +250,7 @@ function DeleteTransaction({ transaction, onDelete }: DeleteTransactionProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const deleteTransaction = api.personalTransactions.delete.useMutation({
+  const deleteTransaction = api.transactions.personal.delete.useMutation({
     onMutate: () => setIsLoading(true),
     onSettled: () => setIsOpen(false),
     onSuccess: () => {

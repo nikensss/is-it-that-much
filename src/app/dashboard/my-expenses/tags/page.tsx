@@ -44,3 +44,5 @@ async function TransactionTags({ type }: { type: TransactionType }) {
     </section>
   );
 }
+
+export const dynamic = 'force-dynamic';

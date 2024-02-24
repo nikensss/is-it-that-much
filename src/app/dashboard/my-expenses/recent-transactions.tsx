@@ -7,8 +7,8 @@ import type { RouterOutputs } from '~/trpc/shared';
 
 export default async function DashboardRecentTrasnsactions() {
   const [expenses, incomes, user] = await Promise.all([
-    api.personalTransactions.recent.query({ type: TransactionType.EXPENSE }),
-    api.personalTransactions.recent.query({ type: TransactionType.INCOME }),
+    api.transactions.personal.recent.query({ type: TransactionType.EXPENSE }),
+    api.transactions.personal.recent.query({ type: TransactionType.INCOME }),
     api.users.get.query(),
   ]);
 
@@ -42,7 +42,7 @@ type DashboardRecentTransactionCardParams = {
   currencySymbol: string;
   title: string;
   timezone: DateDisplayProps['timezone'];
-  transactions: RouterOutputs['personalTransactions']['recent'];
+  transactions: RouterOutputs['transactions']['personal']['recent'];
 };
 
 function DashboardRecentTransactionsCard({
@@ -51,7 +51,7 @@ function DashboardRecentTransactionsCard({
   timezone,
   transactions,
 }: DashboardRecentTransactionCardParams) {
-  function Transaction({ transaction }: RouterOutputs['personalTransactions']['recent'][number]) {
+  function Transaction({ transaction }: RouterOutputs['transactions']['personal']['recent'][number]) {
     return (
       <div key={transaction.id} className="flex h-12 items-center py-2">
         <div className="flex-shrink-0">
