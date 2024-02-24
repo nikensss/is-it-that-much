@@ -1,5 +1,4 @@
 import { auth } from '@clerk/nextjs';
-import { currentUser } from '@clerk/nextjs/server';
 import { TransactionType } from '@prisma/client';
 import { z } from 'zod';
 
@@ -26,43 +25,33 @@ export const tagsRouter = createTRPCRouter({
     });
   }),
 
-  createMany: publicProcedure.input(z.array(z.string().min(3).max(50))).mutation(async ({ ctx, input }) => {
-    const user = await currentUser();
-    if (!user) throw new Error('Not authenticated');
+  update: publicProcedure.input(z.object({ id: z.string(), name: z.string() })).mutation(({ ctx, input }) => {
+    const { userId } = auth();
+    if (!userId) throw new Error('Not authenticated');
 
-    const createdById = user.externalId;
-    if (!createdById) throw new Error('User has no externalId');
-
-    await ctx.db.tag.createMany({
-      data: input.map((name) => {
-        return { name, createdById };
-      }),
-      skipDuplicates: true,
-    });
-  }),
-
-  create: publicProcedure.input(z.object({ name: z.string().min(1) })).mutation(async ({ ctx, input }) => {
-    const user = await currentUser();
-    if (!user) throw new Error('Not authenticated');
-    // if the user record in clerk does not have the id we use internally, we throw
-    if (!user.externalId) throw new Error('User has no externalId');
-
-    // this user record is from clerk, so the 'externalId' is our 'id'
-    return ctx.db.category.create({
+    return ctx.db.tag.update({
+      where: {
+        createdBy: { externalId: userId },
+        id: input.id,
+      },
       data: {
         name: input.name,
-        createdById: user.externalId,
       },
     });
   }),
 
-  latest: publicProcedure.query(({ ctx }) => {
+  delete: publicProcedure.input(z.object({ id: z.string() })).mutation(({ ctx, input }) => {
     const { userId } = auth();
-    if (!userId) return null;
+    if (!userId) throw new Error('Not authenticated');
 
-    return ctx.db.tag.findFirst({
-      where: { createdBy: { externalId: userId } },
-      orderBy: { createdAt: 'desc' },
+    return ctx.db.tag.delete({
+      where: {
+        createdBy: { externalId: userId },
+        id: input.id,
+      },
+      include: {
+        TransactionsTags: true,
+      },
     });
   }),
 });

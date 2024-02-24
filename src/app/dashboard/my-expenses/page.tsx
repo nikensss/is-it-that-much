@@ -27,7 +27,7 @@ export default function MyExpenses() {
           <Link href="/dashboard/my-expenses/incomes">Incomes</Link>
         </Button>
         <Button asChild variant="outline" className="m-1">
-          <Link href="#">Tags</Link>
+          <Link href="/dashboard/my-expenses/tags">Tags</Link>
         </Button>
         <Button asChild variant="outline" className="m-1">
           <Link href="#">Categories</Link>

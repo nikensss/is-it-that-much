@@ -49,13 +49,11 @@ export default function UpdateTransaction({ timezone, weekStartsOn, transaction,
     form.reset();
   };
 
-  const mutationConfig = {
+  const update = api.personalTransactions.update.useMutation({
     onMutate: () => setIsLoading(true),
     onSettled: () => setIsOpen(false),
     onSuccess: () => router.refresh(),
-  };
-
-  const update = api.personalTransactions.update.useMutation(mutationConfig);
+  });
 
   const formSchema = z.object({
     description: z.string().min(3).max(50),

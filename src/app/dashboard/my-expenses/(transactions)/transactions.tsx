@@ -41,7 +41,6 @@ export default async function TransactionsOverview({ type, searchParams }: Trans
                 <TableHead className="font-bold text-slate-900">Description</TableHead>
                 <TableHead className="font-bold text-slate-900">{`Amount (${currencySymbol})`}</TableHead>
                 <TableHead className="font-bold text-slate-900">Tags</TableHead>
-                <TableHead className="font-bold text-slate-900">{/* Fake column for delete button */}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
