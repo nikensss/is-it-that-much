@@ -25,7 +25,7 @@ export default async function TransactionsOverview({ type, searchParams }: Trans
   const tags = await api.tags.all.query({ type });
 
   return (
-    <main className="flex grow flex-col bg-gray-100 p-2">
+    <main className="flex grow flex-col bg-slate-100 p-2">
       <div className="grow rounded-md bg-white p-4 shadow-md">
         <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
           <h2 className="text-lg font-bold capitalize text-slate-200">{type.toLowerCase() + 's'}</h2>

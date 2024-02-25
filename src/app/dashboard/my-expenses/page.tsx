@@ -8,7 +8,7 @@ import { Button } from '~/components/ui/button';
 
 export default function MyExpenses() {
   return (
-    <main className="flex-1 bg-gray-100 p-2">
+    <main className="flex-1 bg-slate-100 p-2">
       <section className="mb-2 flex justify-around rounded-md bg-white p-4 shadow-md">
         <DashboardRegisterPersonalExpense />
         <DashboardRegisterPersonalIncome />

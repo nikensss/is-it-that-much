@@ -7,7 +7,7 @@ export default function DashboardSidebar() {
       <div className="flex gap-2 px-2 py-2 max-md:justify-around md:sticky md:top-16 md:flex-col">
         {getButton('My expenses', '/dashboard/my-expenses')}
         {getButton('Groups', '#')}
-        {getButton('Friends', '#')}
+        {getButton('Friends', '/dashboard/friends')}
         {getButton('Settings', '/dashboard/settings')}
       </div>
     </aside>

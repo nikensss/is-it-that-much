@@ -104,4 +104,59 @@ export const usersRouter = createTRPCRouter({
         },
       });
     }),
+
+  find: publicProcedure
+    .input(
+      z.object({
+        search: z.string().min(3),
+      }),
+    )
+    .query(async ({ ctx, input: { search } }) => {
+      const { userId } = auth();
+      if (!userId) return null;
+
+      const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
+      if (!user) return null;
+
+      return ctx.db.user.findMany({
+        where: {
+          OR: [
+            {
+              firstName: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              lastName: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              email: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              username: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          ],
+          id: {
+            not: user.id,
+          },
+        },
+        select: {
+          id: true,
+          username: true,
+          firstName: true,
+          lastName: true,
+          imageUrl: true,
+        },
+      });
+    }),
 });
