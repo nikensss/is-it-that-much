@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "next build",
+    "db:snapshot": "dotenv -e .env -- ./scripts/snapshot-db",
+    "db:restore": "dotenv -e .env -- ./scripts/restore-db",
     "db:push": "prisma db push",
     "db:push:dev": "dotenv -e .env.dev -- prisma db push",
     "db:studio": "prisma studio",

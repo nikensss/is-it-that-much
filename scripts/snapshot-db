@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+pg_dump -d "$DATABASE_URL" -j 8 -Fd -f ./scripts/snapshots/

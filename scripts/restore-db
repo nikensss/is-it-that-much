@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+DB=$(echo "$DATABASE_URL" | perl -pe 's/^(.+)\/.+$/\1\/postgres/')
+pg_restore -d "$DB" -j 8 ./scripts/snapshots --create --clean
