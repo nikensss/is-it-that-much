@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -84,17 +84,17 @@ export default function SettingsForm({ timezone, currency, weekStartsOn }: Setti
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid flex-grow grid-cols-1  grid-rows-3 py-4 md:grid-cols-2 md:grid-rows-2 md:gap-4"
+        className="flex h-full w-full grow flex-col items-start justify-start pt-4"
       >
         <FormField
           control={form.control}
           name="timezone"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Timezone</FormLabel>
+            <FormItem className="w-full pb-4">
+              <FormLabel className="block text-center md:text-left">Timezone</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
-                  <FormControl className="w-full">
+                  <FormControl className="w-full md:w-[360px]">
                     <Button
                       ref={timezoneTrigger}
                       variant="outline"
@@ -142,11 +142,11 @@ export default function SettingsForm({ timezone, currency, weekStartsOn }: Setti
           control={form.control}
           name="currency"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Currency</FormLabel>
+            <FormItem className="w-full pb-4">
+              <FormLabel className="block text-center md:text-left">Currency</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
-                  <FormControl>
+                  <FormControl className="w-full md:w-[360px]">
                     <Button
                       ref={currencyTrigger}
                       variant="outline"
@@ -191,11 +191,11 @@ export default function SettingsForm({ timezone, currency, weekStartsOn }: Setti
           control={form.control}
           name="weekStartsOn"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Week starts on</FormLabel>
+            <FormItem className="w-full pb-4">
+              <FormLabel className="block text-center md:text-left">Week starts on</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
-                  <FormControl>
+                  <FormControl className="w-full md:w-[360px]">
                     <Button
                       ref={weekStartsOnTrigger}
                       variant="outline"
@@ -234,8 +234,14 @@ export default function SettingsForm({ timezone, currency, weekStartsOn }: Setti
             </FormItem>
           )}
         />
-        <Button disabled={isMutating} type="submit" className="col-span-full mt-auto">
-          {isMutating ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Save'}
+        <Button disabled={isMutating} type="submit" className="mt-auto w-full">
+          {isMutating ? (
+            <Loader2 className="m-4 h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              <Save className="mr-4" /> Save
+            </>
+          )}
         </Button>
       </form>
     </Form>
