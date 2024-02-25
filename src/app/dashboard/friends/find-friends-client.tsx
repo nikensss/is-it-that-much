@@ -1,6 +1,7 @@
 'use client';
 
 import { AvatarIcon } from '@radix-ui/react-icons';
+import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Input } from '~/components/ui/input';
@@ -11,7 +12,7 @@ export default function FindFriendsClient() {
   const [search, setSearch] = useState('');
   const [users, setUsers] = useState<RouterOutputs['users']['find']>([]);
 
-  api.users.find.useQuery(
+  const query = api.users.find.useQuery(
     { search },
     {
       initialData: [],
@@ -26,13 +27,15 @@ export default function FindFriendsClient() {
 
   return (
     <>
-      <div className="font-[16px] ">
+      <div className="relative w-full">
         <Input
           id="search"
+          className="text-[16px]"
           type="text"
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Name, email, username..."
         />
+        {query.isFetching ? <Loader2 className="absolute right-2 top-1.5 animate-spin text-slate-500" /> : null}
       </div>
       {users?.map((user) => <User key={user.id} user={user} />)}
     </>
