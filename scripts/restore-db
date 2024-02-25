@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
 
 DB=$(echo "$DATABASE_URL" | perl -pe 's/^(.+)\/.+$/\1\/postgres/')
-pg_restore -d "$DB" -j 8 ./scripts/snapshots --create --clean
+SELECTED_SNAPSHOT=$(ls -1 -d ./scripts/snapshots/*/ | fzf)
+
+if [ "$1" = "--vercel" ]; then
+  psql -d "$DB" -f ./scripts/pre-restore.psql
+  pg_restore -d "$DB" -j 8 "$SELECTED_SNAPSHOT" --create --clean 
+  psql -d "$DB" -f ./scripts/post-restore.psql
+else
+  pg_restore -d "$DB" -j 8 "$SELECTED_SNAPSHOT" --create --clean 
+fi
