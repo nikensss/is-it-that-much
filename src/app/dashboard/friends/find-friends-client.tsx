@@ -1,7 +1,7 @@
 'use client';
 
 import { AvatarIcon } from '@radix-ui/react-icons';
-import { Loader2 } from 'lucide-react';
+import { Dot } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Input } from '~/components/ui/input';
@@ -35,7 +35,9 @@ export default function FindFriendsClient() {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Name, email, username..."
         />
-        {query.isFetching ? <Loader2 className="absolute right-2 top-1.5 animate-spin text-slate-500" /> : null}
+        {query.isFetching ? (
+          <Dot size={43} className="absolute right-[-0rem] top-[-0.22rem] animate-ping text-slate-500" />
+        ) : null}
       </div>
       {users?.map((user) => <User key={user.id} user={user} />)}
     </>
@@ -44,7 +46,7 @@ export default function FindFriendsClient() {
 
 function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[number] }) {
   return (
-    <div className="my-2 flex items-center rounded-md border border-slate-100 p-4 transition hover:cursor-pointer hover:border-slate-700 hover:shadow-md">
+    <div className="my-2 flex scale-[99.5%] items-center rounded-md border border-slate-100 p-4 transition hover:scale-100 hover:cursor-pointer hover:border-slate-900 hover:shadow-md">
       <Avatar className="mr-4">
         <AvatarImage src={user.imageUrl ?? ''} alt={`@${user.username}`} />
         <AvatarFallback>
