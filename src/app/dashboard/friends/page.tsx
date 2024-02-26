@@ -1,4 +1,4 @@
-import { UserRoundPlus, UserRoundSearchIcon, Users } from 'lucide-react';
+import { UserRoundCog, UserRoundSearchIcon, UsersRound } from 'lucide-react';
 import FindFriendsClient from '~/app/dashboard/friends/find-friends-client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 
@@ -20,13 +20,13 @@ export default function FriendsPage() {
             </TabsTrigger>
             <TabsTrigger value="pending-friend-requests" className="responsive-tab-trigger">
               <span className="compact">
-                <UserRoundPlus size={20} />
+                <UserRoundCog size={20} />
               </span>
               <span className="full">Requests</span>
             </TabsTrigger>
             <TabsTrigger value="my-friends" className="responsive-tab-trigger">
               <span className="compact">
-                <Users size={20} />
+                <UsersRound size={20} />
               </span>
               <span className="full">My friends</span>
             </TabsTrigger>
