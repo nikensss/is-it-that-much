@@ -2,7 +2,7 @@ import { addDays, isAfter } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
-import LineChartClient from '~/app/dashboard/my-expenses/charts/line-chart-client';
+import LineChart from '~/app/dashboard/my-expenses/charts/line-chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type IncomeLeftByDayProps = {
@@ -46,7 +46,7 @@ export default async function IncomeLeftByDay({ timezone, incomes, expenses, fro
   const lastDayWithTransactions = Math.max(...expensesByDay.keys(), ...incomesByDay.keys());
 
   return (
-    <LineChartClient
+    <LineChart
       labels={labels}
       datasets={[
         {

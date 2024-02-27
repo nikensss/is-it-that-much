@@ -2,7 +2,7 @@ import { addDays, isAfter } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
-import BarChartClient from '~/app/dashboard/my-expenses/charts/bar-chart-client';
+import BarChart from '~/app/dashboard/my-expenses/charts/bar-chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type IncomesByDayChartProps = {
@@ -29,7 +29,7 @@ export default async function IncomesByDay({ timezone, incomes, from, to }: Inco
   const backgroundColor = fullConfig.theme.colors.slate[900];
 
   return (
-    <BarChartClient
+    <BarChart
       labels={labels}
       datasets={[{ backgroundColor, label: 'Incomes', data: labels.map((d) => incomesByDay.get(d) ?? 0) }]}
     />

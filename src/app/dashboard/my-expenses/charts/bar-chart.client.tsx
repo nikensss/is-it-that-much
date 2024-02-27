@@ -5,9 +5,9 @@ import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip);
 
-type BarChartClientProps = Parameters<typeof Bar<number[], string | number>>[0]['data'];
+type BarChartProps = Parameters<typeof Bar<number[], string | number>>[0]['data'];
 
-export default function BarChartClient({ labels, datasets }: BarChartClientProps) {
+export default function BarChart({ labels, datasets }: BarChartProps) {
   return (
     <Bar
       options={{

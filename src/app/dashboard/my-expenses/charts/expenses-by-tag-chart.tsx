@@ -1,6 +1,6 @@
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
-import BarChartClient from '~/app/dashboard/my-expenses/charts/bar-chart-client';
+import BarChart from '~/app/dashboard/my-expenses/charts/bar-chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type ExpensesByTagChartProps = {
@@ -23,7 +23,7 @@ export default async function ExpensesByTagChart({ expenses }: ExpensesByTagChar
   const labels = entries.map(([tag]) => tag);
 
   return (
-    <BarChartClient
+    <BarChart
       labels={labels}
       datasets={[{ backgroundColor, label: 'Expenses', data: labels.map((d) => expensesPerTag.get(d) ?? 0) }]}
     />
