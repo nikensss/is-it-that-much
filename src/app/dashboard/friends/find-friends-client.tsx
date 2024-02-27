@@ -16,7 +16,6 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~/components/ui/tooltip';
 import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
 
@@ -102,7 +101,7 @@ function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[nu
     },
   });
 
-  const removeFriend = api.friends.requests.delete.useMutation({
+  const removeFriend = api.friends.delete.useMutation({
     onSuccess: () => {
       refetch();
       router.refresh();
