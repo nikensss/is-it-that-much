@@ -3,7 +3,7 @@
 import { AvatarIcon } from '@radix-ui/react-icons';
 import { Dot, Loader2, UserRoundCheck, UserRoundPlus, UserRoundX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import {
@@ -47,7 +47,7 @@ export default function FindFriendsClient() {
           placeholder="Name, email, username..."
         />
         {query.isFetching ? (
-          <Dot size={43} className="absolute right-[-0rem] top-[-0.22rem] animate-ping text-slate-500" />
+          <Dot size={43} className="absolute right-[0rem] top-[-0.22rem] animate-ping text-slate-500" />
         ) : null}
       </div>
       {users?.map((user) => <User key={user.id} user={user} />)}
@@ -57,24 +57,35 @@ export default function FindFriendsClient() {
 
 function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[number] }) {
   const router = useRouter();
-  const [isFriendRequestPending, setIsFriendRequestPending] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const [isFriend, setIsFriend] = useState(false);
 
-  const queryIsFriendRequestPending = api.friends.requests.isPending.useQuery(
+  const queryIsSent = api.friends.requests.isSent.useQuery({ id: user.id }, { onSuccess: (d) => setIsSent(d) });
+  const queryIsPending = api.friends.requests.isPending.useQuery(
     { id: user.id },
-    { onSuccess: (d) => setIsFriendRequestPending(d) },
+    { onSuccess: (d) => setIsPending(d) },
   );
   const queryIsFriend = api.friends.requests.isFriend.useQuery({ id: user.id }, { onSuccess: (d) => setIsFriend(d) });
 
   const sendFriendRequest = api.friends.requests.send.useMutation({
-    onSuccess: () => router.refresh(),
+    onSuccess: () => {
+      queryIsSent.refetch().catch(console.error);
+      router.refresh();
+    },
   });
+
   const acceptFriendRequest = api.friends.requests.accept.useMutation({
     onSuccess: () => {
       queryIsFriend.refetch().catch(console.error);
       router.refresh();
     },
   });
+
+  const isFetching = useMemo(
+    () => queryIsSent.isFetching || queryIsPending.isFetching || queryIsFriend.isFetching,
+    [queryIsSent.isFetching, queryIsPending.isFetching, queryIsFriend.isFetching],
+  );
 
   return (
     <div className="my-2 flex items-center rounded-md border border-slate-100 p-4 hover:border-slate-900 hover:shadow-md">
@@ -90,17 +101,13 @@ function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[nu
         </div>
       </div>
       <div className="ml-auto flex gap-2">
-        {queryIsFriendRequestPending.isFetching || queryIsFriend.isFetching ? (
+        {isFetching ? (
           <Button disabled>
-            {' '}
             <Loader2 className="animate-spin" />
           </Button>
         ) : null}
 
-        {!queryIsFriendRequestPending.isFetching &&
-        !queryIsFriend.isFetching &&
-        !isFriendRequestPending &&
-        !isFriend ? (
+        {!isFetching && !isPending && !isFriend ? (
           <ButtonWithDialog
             onConfirm={async () => {
               await sendFriendRequest.mutateAsync({ id: user.id });
@@ -108,13 +115,13 @@ function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[nu
             title="Send friend request"
             description={`Are you sure you want to send a friend request to ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
           >
-            <Button className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
+            <Button disabled={isSent} className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
               <UserRoundPlus />
             </Button>
           </ButtonWithDialog>
         ) : null}
 
-        {!queryIsFriendRequestPending.isFetching && !queryIsFriend.isFetching && isFriendRequestPending && !isFriend ? (
+        {!isFetching && isPending && !isFriend ? (
           <ButtonWithDialog
             onConfirm={async () => {
               await acceptFriendRequest.mutateAsync({ id: user.id });
@@ -128,16 +135,19 @@ function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[nu
           </ButtonWithDialog>
         ) : null}
 
-        {!queryIsFriendRequestPending.isFetching && !queryIsFriend.isFetching && isFriend ? (
+        {!isFetching && isFriend ? (
           <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button disabled className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
+                <Button
+                  aria-description="already a friend"
+                  className="cursor-not-allowed bg-slate-100 text-slate-900 hover:bg-slate-100 hover:text-slate-900"
+                >
                   <UserRoundCheck />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Already a friend</p>
+                <p className="text-slate-100">Already a friend</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

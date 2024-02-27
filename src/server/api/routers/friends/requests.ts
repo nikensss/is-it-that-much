@@ -6,27 +6,35 @@ import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 export const friendRequestsRouters = createTRPCRouter({
   send: publicProcedure.input(z.object({ id: z.string().cuid() })).mutation(async ({ ctx, input: { id } }) => {
     const user = await currentUser();
-    if (!user?.externalId) return;
 
-    await ctx.db.friendRequest.upsert({
-      where: {
-        fromUserId_toUserId: {
+    await ctx.db.$transaction(async (db) => {
+      if (!user?.externalId) return;
+
+      const req = await db.friendRequest.findUnique({
+        where: {
+          uniqueId: [user.externalId, id].sort().join('_'),
+        },
+      });
+
+      if (req?.status !== FriendRequestStatus.ACCEPTED && req?.toUserId === user.externalId) {
+        await db.friendRequest.update({
+          where: { id: req.id },
+          data: { status: FriendRequestStatus.ACCEPTED },
+        });
+
+        return;
+      }
+
+      if (req) return;
+
+      await db.friendRequest.create({
+        data: {
+          uniqueId: [user.externalId, id].sort().join('_'),
           fromUserId: user.externalId,
           toUserId: id,
+          status: FriendRequestStatus.PENDING,
         },
-        status: {
-          not: {
-            in: [FriendRequestStatus.ACCEPTED, FriendRequestStatus.REJECTED],
-          },
-        },
-      },
-      create: {
-        fromUserId: user.externalId,
-        toUserId: id,
-      },
-      update: {
-        status: FriendRequestStatus.PENDING,
-      },
+      });
     });
   }),
 
@@ -36,10 +44,7 @@ export const friendRequestsRouters = createTRPCRouter({
 
     await ctx.db.friendRequest.update({
       where: {
-        fromUserId_toUserId: {
-          fromUserId: id,
-          toUserId: user.externalId,
-        },
+        uniqueId: [user.externalId, id].sort().join('_'),
         status: FriendRequestStatus.PENDING,
       },
       data: {
@@ -52,13 +57,10 @@ export const friendRequestsRouters = createTRPCRouter({
     const user = await currentUser();
     if (!user?.externalId) return;
 
-    await ctx.db.friendRequest.update({
+    await ctx.db.friendRequest.delete({
       where: {
-        id,
+        uniqueId: [user.externalId, id].sort().join('_'),
         toUserId: user.externalId,
-      },
-      data: {
-        status: FriendRequestStatus.REJECTED,
       },
     });
   }),
@@ -69,7 +71,7 @@ export const friendRequestsRouters = createTRPCRouter({
 
     await ctx.db.friendRequest.delete({
       where: {
-        id,
+        uniqueId: [user.externalId, id].sort().join('_'),
         fromUserId: user.externalId,
         status: {
           not: FriendRequestStatus.ACCEPTED,
@@ -84,12 +86,25 @@ export const friendRequestsRouters = createTRPCRouter({
 
     await ctx.db.friendRequest.deleteMany({
       where: {
-        OR: [
-          { fromUserId: user.externalId, toUserId: id },
-          { fromUserId: id, toUserId: user.externalId },
-        ],
+        uniqueId: [user.externalId, id].sort().join('_'),
       },
     });
+  }),
+
+  isSent: publicProcedure.input(z.object({ id: z.string().cuid() })).query(async ({ ctx, input: { id } }) => {
+    const user = await currentUser();
+    if (!user?.externalId) return false;
+
+    const request = await ctx.db.friendRequest.findUnique({
+      where: {
+        uniqueId: [user.externalId, id].sort().join('_'),
+        fromUserId: user.externalId,
+        toUserId: id,
+        status: FriendRequestStatus.PENDING,
+      },
+    });
+
+    return request !== null;
   }),
 
   isPending: publicProcedure.input(z.object({ id: z.string().cuid() })).query(async ({ ctx, input: { id } }) => {
@@ -98,10 +113,9 @@ export const friendRequestsRouters = createTRPCRouter({
 
     const request = await ctx.db.friendRequest.findUnique({
       where: {
-        fromUserId_toUserId: {
-          fromUserId: id,
-          toUserId: user.externalId,
-        },
+        uniqueId: [user.externalId, id].sort().join('_'),
+        fromUserId: id,
+        toUserId: user.externalId,
         status: FriendRequestStatus.PENDING,
       },
     });
@@ -115,16 +129,7 @@ export const friendRequestsRouters = createTRPCRouter({
 
     const request = await ctx.db.friendRequest.findMany({
       where: {
-        OR: [
-          {
-            fromUserId: id,
-            toUserId: user.externalId,
-          },
-          {
-            fromUserId: user.externalId,
-            toUserId: id,
-          },
-        ],
+        uniqueId: [user.externalId, id].sort().join('_'),
         status: FriendRequestStatus.ACCEPTED,
       },
     });
