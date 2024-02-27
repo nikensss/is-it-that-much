@@ -1,7 +1,7 @@
 'use client';
 
 import { AvatarIcon } from '@radix-ui/react-icons';
-import { Ban, Dot, Loader2, UserRoundCheck, UserRoundPlus, UserRoundX } from 'lucide-react';
+import { Ban, Dot, Loader2, RotateCcw, UserRoundCheck, UserRoundMinus, UserRoundPlus, UserRoundX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -81,6 +81,13 @@ function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[nu
     },
   });
 
+  const cancelFriendRequest = api.friends.requests.cancel.useMutation({
+    onSuccess: () => {
+      refetch();
+      router.refresh();
+    },
+  });
+
   const acceptFriendRequest = api.friends.requests.accept.useMutation({
     onSuccess: () => {
       refetch();
@@ -89,6 +96,13 @@ function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[nu
   });
 
   const rejectFriendRequest = api.friends.requests.reject.useMutation({
+    onSuccess: () => {
+      refetch();
+      router.refresh();
+    },
+  });
+
+  const removeFriend = api.friends.requests.delete.useMutation({
     onSuccess: () => {
       refetch();
       router.refresh();
@@ -121,17 +135,31 @@ function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[nu
         ) : null}
 
         {!isFetching && !isPending && !isFriend ? (
-          <ButtonWithDialog
-            onConfirm={async () => {
-              await sendFriendRequest.mutateAsync({ id: user.id });
-            }}
-            title="Send friend request"
-            description={`Are you sure you want to send a friend request to ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
-          >
-            <Button disabled={isSent} className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
-              <UserRoundPlus />
-            </Button>
-          </ButtonWithDialog>
+          isSent ? (
+            <ButtonWithDialog
+              onConfirm={async () => {
+                await cancelFriendRequest.mutateAsync({ id: user.id });
+              }}
+              title="Cancel friend request"
+              description={`Are you sure you want to cancel your friend request sent to ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
+            >
+              <Button className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
+                <RotateCcw />
+              </Button>
+            </ButtonWithDialog>
+          ) : (
+            <ButtonWithDialog
+              onConfirm={async () => {
+                await sendFriendRequest.mutateAsync({ id: user.id });
+              }}
+              title="Send friend request"
+              description={`Are you sure you want to send a friend request to ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
+            >
+              <Button className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
+                <UserRoundPlus />
+              </Button>
+            </ButtonWithDialog>
+          )
         ) : null}
 
         {!isFetching && isPending && !isFriend ? (
@@ -163,21 +191,17 @@ function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[nu
         ) : null}
 
         {!isFetching && isFriend ? (
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  aria-description="already a friend"
-                  className="cursor-not-allowed bg-slate-100 text-slate-900 hover:bg-slate-100 hover:text-slate-900"
-                >
-                  <UserRoundCheck />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-slate-100">Already a friend</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <ButtonWithDialog
+            onConfirm={async () => {
+              await removeFriend.mutateAsync({ id: user.id });
+            }}
+            title="Remove friend"
+            description={`Are you sure you want to remove ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''} from your friends list?`}
+          >
+            <Button className="bg-red-100 text-slate-900 hover:bg-red-600 hover:text-slate-100">
+              <UserRoundMinus />
+            </Button>
+          </ButtonWithDialog>
         ) : null}
 
         <ButtonWithDialog
