@@ -1,7 +1,7 @@
 'use client';
 
 import { AvatarIcon } from '@radix-ui/react-icons';
-import { Dot, Loader2, UserRoundCheck, UserRoundPlus, UserRoundX } from 'lucide-react';
+import { Ban, Dot, Loader2, UserRoundCheck, UserRoundPlus, UserRoundX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -68,16 +68,29 @@ function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[nu
   );
   const queryIsFriend = api.friends.requests.isFriend.useQuery({ id: user.id }, { onSuccess: (d) => setIsFriend(d) });
 
+  const refetch = () => {
+    queryIsSent.refetch().catch(console.error);
+    queryIsPending.refetch().catch(console.error);
+    queryIsFriend.refetch().catch(console.error);
+  };
+
   const sendFriendRequest = api.friends.requests.send.useMutation({
     onSuccess: () => {
-      queryIsSent.refetch().catch(console.error);
+      refetch();
       router.refresh();
     },
   });
 
   const acceptFriendRequest = api.friends.requests.accept.useMutation({
     onSuccess: () => {
-      queryIsFriend.refetch().catch(console.error);
+      refetch();
+      router.refresh();
+    },
+  });
+
+  const rejectFriendRequest = api.friends.requests.reject.useMutation({
+    onSuccess: () => {
+      refetch();
       router.refresh();
     },
   });
@@ -122,17 +135,31 @@ function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[nu
         ) : null}
 
         {!isFetching && isPending && !isFriend ? (
-          <ButtonWithDialog
-            onConfirm={async () => {
-              await acceptFriendRequest.mutateAsync({ id: user.id });
-            }}
-            title="Accept friend request"
-            description={`Are you sure you want to accept the friend request from ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
-          >
-            <Button className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
-              <UserRoundCheck />
-            </Button>
-          </ButtonWithDialog>
+          <>
+            <ButtonWithDialog
+              onConfirm={async () => {
+                await acceptFriendRequest.mutateAsync({ id: user.id });
+              }}
+              title="Accept friend request"
+              description={`Are you sure you want to accept the friend request from ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
+            >
+              <Button className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
+                <UserRoundCheck />
+              </Button>
+            </ButtonWithDialog>
+
+            <ButtonWithDialog
+              onConfirm={async () => {
+                await rejectFriendRequest.mutateAsync({ id: user.id });
+              }}
+              title="Reject friend request"
+              description={`Are you sure you want to reject the friend request from ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
+            >
+              <Button className="bg-red-100 text-slate-900 hover:bg-red-600 hover:text-slate-100">
+                <UserRoundX />
+              </Button>
+            </ButtonWithDialog>
+          </>
         ) : null}
 
         {!isFetching && isFriend ? (
@@ -163,7 +190,7 @@ function User({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[nu
           description={`Are you sure you want to block ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
         >
           <Button disabled className="bg-red-100 text-slate-900 hover:bg-red-600 hover:text-slate-100">
-            <UserRoundX />
+            <Ban />
           </Button>
         </ButtonWithDialog>
       </div>
