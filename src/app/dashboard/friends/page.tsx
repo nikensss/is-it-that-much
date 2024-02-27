@@ -1,9 +1,10 @@
 import { UserRoundCog, UserRoundSearchIcon, UsersRound } from 'lucide-react';
 import FindFriendsClient from '~/app/dashboard/friends/find-friends-client';
+import MyFriends from '~/app/dashboard/friends/my-friends';
+import PendingFriendRequests from '~/app/dashboard/friends/pending-friend-requests';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 
-export default function FriendsPage() {
-  // className="flex grow flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0"
+export default async function FriendsPage() {
   return (
     <main className="flex grow flex-col bg-slate-100 p-2">
       <div className="flex grow flex-col rounded-md bg-white p-4 shadow-md">
@@ -33,7 +34,7 @@ export default function FriendsPage() {
           </TabsList>
           <div className="grow">
             <TabsContent value="find-friends" className="h-full">
-              <FindFriends />
+              <FindFriendsClient />
             </TabsContent>
             <TabsContent value="pending-friend-requests" className="h-full">
               <PendingFriendRequests />
@@ -44,26 +45,6 @@ export default function FriendsPage() {
           </div>
         </Tabs>
       </div>
-    </main>
-  );
-}
-
-function FindFriends() {
-  return <FindFriendsClient />;
-}
-
-function PendingFriendRequests() {
-  return (
-    <main className="flex h-full grow items-center justify-center">
-      <p>Under construction... 🚧</p>
-    </main>
-  );
-}
-
-function MyFriends() {
-  return (
-    <main className="flex h-full grow items-center justify-center">
-      <p>Under construction... 🚧</p>
     </main>
   );
 }

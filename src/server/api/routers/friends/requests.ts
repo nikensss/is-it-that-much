@@ -80,6 +80,21 @@ export const friendRequestsRouters = createTRPCRouter({
     });
   }),
 
+  pending: publicProcedure.query(async ({ ctx }) => {
+    const user = await currentUser();
+    if (!user?.externalId) return [];
+
+    return ctx.db.friendRequest.findMany({
+      where: {
+        toUserId: user.externalId,
+        status: FriendRequestStatus.PENDING,
+      },
+      include: {
+        fromUser: true,
+      },
+    });
+  }),
+
   isSent: publicProcedure.input(z.object({ id: z.string().cuid() })).query(async ({ ctx, input: { id } }) => {
     const user = await currentUser();
     if (!user?.externalId) return false;
