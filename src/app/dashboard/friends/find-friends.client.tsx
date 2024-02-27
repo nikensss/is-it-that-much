@@ -7,7 +7,7 @@ import { Input } from '~/components/ui/input';
 import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
 
-export default function FindFriendsClient() {
+export default function FindFriends() {
   const [search, setSearch] = useState('');
   const [users, setUsers] = useState<RouterOutputs['users']['find']>([]);
 
