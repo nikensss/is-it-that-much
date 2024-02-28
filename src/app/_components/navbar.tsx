@@ -1,4 +1,4 @@
-import { SignedIn, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import { Button } from '~/components/ui/button';
 
@@ -13,11 +13,20 @@ export function NavBar() {
         </Link>
       </Button>
       <nav className="z-10 flex items-center justify-center md:ml-auto md:mr-2 md:gap-2">
-        {getButton('Features', '#')}
-        {getButton('Pricing', '#')}
-        {getButton('About', '#')}
-        {getButton('Contact', '#')}
+        <SignedOut>
+          {getButton('Features', '#')}
+          {getButton('Pricing', '#')}
+          {getButton('About', '#')}
+          {getButton('Contact', '#')}
+        </SignedOut>
+        <SignedIn>
+          {getButton('Dashboard', '/dashboard/my-expenses')}
+          {getButton('Groups', '#')}
+          {getButton('Friends', '/dashboard/friends')}
+          {getButton('Settings', '/dashboard/settings')}
+        </SignedIn>
       </nav>
+
       <SignedIn>
         <UserButton afterSignOutUrl="/" />
       </SignedIn>
