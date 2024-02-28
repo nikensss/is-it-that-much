@@ -9,7 +9,7 @@ import { Button } from '~/components/ui/button';
 export default function MyExpenses() {
   return (
     <main className="flex-1 bg-slate-100 p-2">
-      <section className="mb-2 flex justify-around rounded-md bg-white p-4 shadow-md">
+      <section className="mb-2 flex justify-around rounded-md bg-white p-2 shadow-md">
         <DashboardRegisterPersonalExpense />
         <DashboardRegisterPersonalIncome />
       </section>
@@ -19,7 +19,7 @@ export default function MyExpenses() {
           <Charts />
         </div>
       </section>
-      <section className="my-2 grid grid-cols-2 grid-rows-2 rounded-md bg-white p-4 shadow-md md:grid-cols-4 md:grid-rows-1">
+      <section className="my-2 grid grid-cols-2 grid-rows-2 rounded-md bg-white p-2 shadow-md md:grid-cols-4 md:grid-rows-1">
         <Button asChild variant="outline" className="m-1">
           <Link href="/dashboard/expenses">Expenses</Link>
         </Button>

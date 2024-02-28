@@ -11,7 +11,7 @@ export default function DateDisplay({ date, timezone }: DateDisplayProps) {
   const formattedDate = formatInTimeZone(date, timezone ?? 'Europe/Amsterdam', 'LLLL d, yyyy');
 
   return (
-    <TooltipProvider delayDuration={300}>
+    <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
           <time dateTime={formattedDate}>{formatDistanceToNow(date, { addSuffix: true })}</time>
