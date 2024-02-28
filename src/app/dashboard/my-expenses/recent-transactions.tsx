@@ -1,5 +1,6 @@
 import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
+import Link from 'next/link';
 import DateDisplay, { type DateDisplayProps } from '~/app/_components/date-display';
 import { Badge } from '~/components/ui/badge';
 import { api } from '~/trpc/server';
@@ -23,6 +24,7 @@ export default async function DashboardRecentTrasnsactions() {
         <DashboardRecentTransactionsCard
           currencySymbol={currencySymbol ?? '€'}
           timezone={user?.timezone}
+          href="/dashboard/my-expenses/expenses"
           title={'Expenses'}
           transactions={expenses}
         />
@@ -30,6 +32,7 @@ export default async function DashboardRecentTrasnsactions() {
         <DashboardRecentTransactionsCard
           currencySymbol={currencySymbol ?? '€'}
           timezone={user?.timezone}
+          href="/dashboard/my-expenses/incomes"
           title={'Incomes'}
           transactions={incomes}
         />
@@ -41,12 +44,14 @@ export default async function DashboardRecentTrasnsactions() {
 type DashboardRecentTransactionCardParams = {
   currencySymbol: string;
   title: string;
+  href: string;
   timezone: DateDisplayProps['timezone'];
   transactions: RouterOutputs['transactions']['personal']['recent'];
 };
 
 function DashboardRecentTransactionsCard({
   currencySymbol,
+  href,
   title,
   timezone,
   transactions,
@@ -86,7 +91,14 @@ function DashboardRecentTransactionsCard({
 
   return (
     <div className="m-2 flex-1 bg-white p-4">
-      <h2 className="mb-2 text-center text-lg font-bold">{title}</h2>
+      <h2 className="relative mb-2 text-center text-lg font-bold">
+        <Link
+          href={href}
+          className="relative md:after:absolute md:after:right-[-1.5rem] md:after:top-0 md:after:ml-0.5 md:after:block md:after:opacity-0 md:after:transition-all md:after:content-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWFycm93LXJpZ2h0Ij48cGF0aCBkPSJNNSAxMmgxNCIvPjxwYXRoIGQ9Im0xMiA1IDcgNy03IDciLz48L3N2Zz4=')] md:hover:underline md:after:hover:translate-x-2 md:after:hover:opacity-100"
+        >
+          {title}
+        </Link>
+      </h2>
       <div className="divide-y divide-gray-200">{transactionElements}</div>
     </div>
   );
