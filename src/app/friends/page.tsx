@@ -1,7 +1,7 @@
 import { UserRoundCog, UserRoundSearchIcon, UsersRound } from 'lucide-react';
-import FindFriends from '~/app/dashboard/friends/find-friends.client';
-import MyFriends from '~/app/dashboard/friends/my-friends.client';
-import PendingFriendRequests from '~/app/dashboard/friends/pending-friend-requests.client';
+import FindFriends from '~/app/friends/find-friends.client';
+import MyFriends from '~/app/friends/my-friends.client';
+import PendingFriendRequests from '~/app/friends/pending-friend-requests.client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 
 export default async function FriendsPage() {

@@ -24,7 +24,7 @@ export default async function DashboardRecentTrasnsactions() {
         <DashboardRecentTransactionsCard
           currencySymbol={currencySymbol ?? '€'}
           timezone={user?.timezone}
-          href="/dashboard/my-expenses/expenses"
+          href="/dashboard/expenses"
           title={'Expenses'}
           transactions={expenses}
         />
@@ -32,7 +32,7 @@ export default async function DashboardRecentTrasnsactions() {
         <DashboardRecentTransactionsCard
           currencySymbol={currencySymbol ?? '€'}
           timezone={user?.timezone}
-          href="/dashboard/my-expenses/incomes"
+          href="/dashboard/incomes"
           title={'Incomes'}
           transactions={incomes}
         />

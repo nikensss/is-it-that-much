@@ -1,5 +1,5 @@
 import { TransactionType } from '@prisma/client';
-import UpdateTag from '~/app/dashboard/my-expenses/tags/update-tag';
+import UpdateTag from '~/app/dashboard/tags/update-tag';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { api } from '~/trpc/server';
 

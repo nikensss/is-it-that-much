@@ -1,4 +1,4 @@
-import SettingsForm from '~/app/dashboard/settings/settings-form';
+import SettingsForm from '~/app/settings/settings-form';
 import { api } from '~/trpc/server';
 
 export default async function SettingsPage() {

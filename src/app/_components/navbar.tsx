@@ -20,10 +20,10 @@ export function NavBar() {
           {getButton('Contact', '#')}
         </SignedOut>
         <SignedIn>
-          {getButton('Dashboard', '/dashboard/my-expenses')}
+          {getButton('Dashboard', '/dashboard')}
           {getButton('Groups', '#')}
-          {getButton('Friends', '/dashboard/friends')}
-          {getButton('Settings', '/dashboard/settings')}
+          {getButton('Friends', '/friends')}
+          {getButton('Settings', '/settings')}
         </SignedIn>
       </nav>
 

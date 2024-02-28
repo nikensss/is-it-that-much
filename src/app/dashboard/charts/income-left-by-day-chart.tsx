@@ -2,7 +2,7 @@ import { addDays, isAfter } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
-import LineChart from '~/app/dashboard/my-expenses/charts/line-chart.client';
+import LineChart from '~/app/dashboard/charts/line-chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type IncomeLeftByDayProps = {

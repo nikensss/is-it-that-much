@@ -2,7 +2,7 @@ import { addDays, isAfter } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '~/../tailwind.config';
-import BarChart from '~/app/dashboard/my-expenses/charts/bar-chart.client';
+import BarChart from '~/app/dashboard/charts/bar-chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type IncomesByDayChartProps = {

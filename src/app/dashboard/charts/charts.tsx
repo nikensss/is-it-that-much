@@ -1,10 +1,10 @@
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { api } from '~/trpc/server';
-import ExpensesByDayChart from '~/app/dashboard/my-expenses/charts/expenses-by-day-chart';
+import ExpensesByDayChart from '~/app/dashboard/charts/expenses-by-day-chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
-import ExpensesByTagChart from '~/app/dashboard/my-expenses/charts/expenses-by-tag-chart';
-import IncomesByDay from '~/app/dashboard/my-expenses/charts/incomes-by-day-chart';
-import IncomeLeftByDay from '~/app/dashboard/my-expenses/charts/income-left-by-day-chart';
+import ExpensesByTagChart from '~/app/dashboard/charts/expenses-by-tag-chart';
+import IncomesByDay from '~/app/dashboard/charts/incomes-by-day-chart';
+import IncomeLeftByDay from '~/app/dashboard/charts/income-left-by-day-chart';
 import { getTimezoneOffset } from 'date-fns-tz';
 import { BarChart3 } from 'lucide-react';
 import { TransactionType } from '@prisma/client';

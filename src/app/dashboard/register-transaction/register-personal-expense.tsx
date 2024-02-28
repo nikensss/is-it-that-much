@@ -1,5 +1,5 @@
 import { TransactionType } from '@prisma/client';
-import RegisterTransaction from '~/app/dashboard/my-expenses/register-transaction/register-transaction';
+import RegisterTransaction from '~/app/dashboard/register-transaction/register-transaction';
 import { api } from '~/trpc/server';
 
 export default async function DashboardRegisterPersonalExpense() {

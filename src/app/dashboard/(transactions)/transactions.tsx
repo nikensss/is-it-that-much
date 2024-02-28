@@ -1,7 +1,7 @@
 import type { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
-import DateRangePicker from '~/app/dashboard/my-expenses/(transactions)/date-range-picker';
-import UpdateTransaction from '~/app/dashboard/my-expenses/(transactions)/update-transaction';
+import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker';
+import UpdateTransaction from '~/app/dashboard/(transactions)/update-transaction';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { api } from '~/trpc/server';
 

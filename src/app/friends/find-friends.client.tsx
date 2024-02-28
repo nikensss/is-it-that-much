@@ -2,7 +2,7 @@
 
 import { Dot } from 'lucide-react';
 import { useState } from 'react';
-import UserBannerClient from '~/app/dashboard/friends/user-banner.client';
+import UserBannerClient from '~/app/friends/user-banner.client';
 import { Input } from '~/components/ui/input';
 import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
