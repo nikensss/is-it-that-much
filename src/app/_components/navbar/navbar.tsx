@@ -1,5 +1,6 @@
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
+import DesktopNavbar from '~/app/_components/navbar/navbar.desktop';
+import MobileNavbar from '~/app/_components/navbar/navbar.mobile';
 import { Button } from '~/components/ui/button';
 
 export function NavBar() {
@@ -12,24 +13,12 @@ export function NavBar() {
           <span className="sr-only">Expense Tracker</span>
         </Link>
       </Button>
-      <nav className="z-10 flex items-center justify-center md:ml-auto md:mr-2 md:gap-2">
-        <SignedOut>
-          {getButton('Features', '#')}
-          {getButton('Pricing', '#')}
-          {getButton('About', '#')}
-          {getButton('Contact', '#')}
-        </SignedOut>
-        <SignedIn>
-          {getButton('Dashboard', '/dashboard')}
-          {getButton('Groups', '#')}
-          {getButton('Friends', '/friends')}
-          {getButton('Settings', '/settings')}
-        </SignedIn>
+      <nav className="z-10 hidden items-center justify-center md:ml-auto md:mr-2 md:flex md:gap-2">
+        <DesktopNavbar />
       </nav>
-
-      <SignedIn>
-        <UserButton afterSignOutUrl="/" />
-      </SignedIn>
+      <nav className="z-10 flex px-2 md:hidden">
+        <MobileNavbar />
+      </nav>
     </header>
   );
 }
@@ -52,15 +41,5 @@ function WalletIcon(props: { className: string }) {
       <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
       <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
     </svg>
-  );
-}
-
-function getButton(text: string, href: string) {
-  return (
-    <Button asChild className="px-2 hover:bg-slate-300" variant="ghost">
-      <Link className="text-sm font-medium" href={href}>
-        {text}
-      </Link>
-    </Button>
   );
 }
