@@ -54,17 +54,17 @@ function AccordionUserButton() {
             <div className="flex flex-col gap-2">
               <Button className="justify-start">
                 <SheetClose asChild>
-                  <Link className="flex grow items-center justify-start" href="/sign-out">
-                    <ArrowRightFromLine className="mr-2" />
+                  <Link className="flex grow items-center justify-between" href="/sign-out">
                     Sign out
+                    <ArrowRightFromLine className="mr-2" />
                   </Link>
                 </SheetClose>
               </Button>
               <Button className="justify-start">
                 <SheetClose asChild>
-                  <Link className="flex grow items-center justify-start" href="/user">
-                    <Cog className="mr-2" />
+                  <Link className="flex grow items-center justify-between" href="/user">
                     Manage account
+                    <Cog className="mr-2" />
                   </Link>
                 </SheetClose>
               </Button>
