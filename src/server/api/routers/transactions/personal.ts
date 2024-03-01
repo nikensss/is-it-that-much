@@ -115,15 +115,18 @@ export const personalTransactionsRouter = createTRPCRouter({
         },
       });
 
-      const date = input?.date ?? utcToZonedTime(Date.now(), user?.timezone ?? 'Europe/Amsterdam');
-      const start = startOfMonth(date);
-      const end = endOfMonth(date);
+      const timezone = user?.timezone ?? 'Europe/Amsterdam';
+      const now = utcToZonedTime(input.date ?? Date.now(), timezone);
+      const preferredTimezoneOffset = getTimezoneOffset(timezone);
+      const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+      const from = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+      const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
 
       return ctx.db.transaction.aggregate({
         where: {
           date: {
-            gte: start,
-            lte: end,
+            gte: from,
+            lte: to,
           },
           type: input.type,
           PersonalTransaction: {
