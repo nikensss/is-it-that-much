@@ -1,19 +1,15 @@
 import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { parse } from 'date-fns';
-import MonthSelector from '~/app/dashboard/month-selector';
+import MonthAndYearSelector from '~/app/dashboard/month-and-year-selector';
 import { api } from '~/trpc/server';
 
-export default async function DashboardTotals({ month }: { month: string }) {
+export default async function DashboardTotals({ month, year }: { month: string; year: string }) {
+  const date = parse(`${month}, ${year}`, 'LLLL, yyyy', new Date());
+
   const [expenses, incomes, user] = await Promise.all([
-    api.transactions.personal.totalAmountInMonth.query({
-      type: TransactionType.EXPENSE,
-      date: parse(month, 'LLLL', new Date()),
-    }),
-    api.transactions.personal.totalAmountInMonth.query({
-      type: TransactionType.INCOME,
-      date: parse(month, 'LLLL', new Date()),
-    }),
+    api.transactions.personal.totalAmountInMonth.query({ type: TransactionType.EXPENSE, date }),
+    api.transactions.personal.totalAmountInMonth.query({ type: TransactionType.INCOME, date }),
     api.users.get.query(),
   ]);
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];
@@ -24,7 +20,7 @@ export default async function DashboardTotals({ month }: { month: string }) {
     <section className="rounded-md bg-white p-4 shadow-md">
       <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
         <h2 className="flex items-center justify-center text-lg font-bold text-slate-200">
-          <p>Totals in</p> {<MonthSelector month={month} />}
+          <p>Totals in</p> {<MonthAndYearSelector month={month} year={year} />}
         </h2>
       </header>
       <div className="grid items-start gap-4 md:gap-10">

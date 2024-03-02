@@ -9,11 +9,11 @@ import { getTimezoneOffset } from 'date-fns-tz';
 import { BarChart3 } from 'lucide-react';
 import { TransactionType } from '@prisma/client';
 
-export default async function Charts({ month }: { month: string }) {
+export default async function Charts({ month, year }: { month: string; year: string }) {
   const user = await api.users.get.query();
   const timezone = user?.timezone ?? 'Europe/Amsterdam';
 
-  const time = parse(month, 'LLLL', new Date());
+  const time = parse(`${month}, ${year}`, 'LLLL, yyyy', new Date());
   const preferredTimezoneOffset = getTimezoneOffset(timezone);
   const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
   const from = new Date(startOfMonth(time).getTime() - preferredTimezoneOffset - localeTimezoneOffset);

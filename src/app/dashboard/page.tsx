@@ -1,4 +1,4 @@
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 import Link from 'next/link';
 import Charts from '~/app/dashboard/charts/charts';
 import DashboardRecentTrasnsactions from '~/app/dashboard/recent-transactions';
@@ -9,6 +9,7 @@ import { Button } from '~/components/ui/button';
 
 export default function Dashboard({ searchParams }: { searchParams: Record<string, string | undefined> }) {
   const month = searchParams?.month ?? format(new Date(), 'LLLL');
+  const year = searchParams?.year ?? format(new Date(), 'yyyy');
 
   return (
     <main className="flex-1 bg-slate-100 p-2">
@@ -18,8 +19,8 @@ export default function Dashboard({ searchParams }: { searchParams: Record<strin
       </section>
       <section className="my-2">
         <div className="grid gap-2 md:grid-cols-2">
-          <DashboardTotals month={month} />
-          <Charts month={month} />
+          <DashboardTotals {...{ month, year }} />
+          <Charts {...{ month, year }} />
         </div>
       </section>
       <section className="my-2 grid grid-cols-2 grid-rows-2 rounded-md bg-white p-2 shadow-md md:grid-cols-4 md:grid-rows-1">
