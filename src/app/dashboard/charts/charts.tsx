@@ -1,4 +1,4 @@
-import { endOfMonth, startOfMonth } from 'date-fns';
+import { endOfMonth, parse, startOfMonth } from 'date-fns';
 import { api } from '~/trpc/server';
 import ExpensesByDayChart from '~/app/dashboard/charts/expenses-by-day-chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
@@ -9,15 +9,15 @@ import { getTimezoneOffset } from 'date-fns-tz';
 import { BarChart3 } from 'lucide-react';
 import { TransactionType } from '@prisma/client';
 
-export default async function Charts() {
+export default async function Charts({ month }: { month: string }) {
   const user = await api.users.get.query();
   const timezone = user?.timezone ?? 'Europe/Amsterdam';
 
-  const now = Date.now();
+  const time = parse(month, 'LLLL', new Date());
   const preferredTimezoneOffset = getTimezoneOffset(timezone);
   const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-  const from = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
-  const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+  const from = new Date(startOfMonth(time).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+  const to = new Date(endOfMonth(time).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
 
   const [expenses, incomes] = await Promise.all([
     api.transactions.personal.period.query({ type: TransactionType.EXPENSE, from, to }),

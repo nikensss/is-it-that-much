@@ -1,3 +1,4 @@
+import { format, parse } from 'date-fns';
 import Link from 'next/link';
 import Charts from '~/app/dashboard/charts/charts';
 import DashboardRecentTrasnsactions from '~/app/dashboard/recent-transactions';
@@ -6,7 +7,9 @@ import DashboardRegisterPersonalIncome from '~/app/dashboard/register-transactio
 import DashboardTotals from '~/app/dashboard/totals';
 import { Button } from '~/components/ui/button';
 
-export default function MyExpenses() {
+export default function Dashboard({ searchParams }: { searchParams: Record<string, string | undefined> }) {
+  const month = searchParams?.month ?? format(new Date(), 'LLLL');
+
   return (
     <main className="flex-1 bg-slate-100 p-2">
       <section className="mb-2 flex justify-around rounded-md bg-white p-2 shadow-md">
@@ -15,8 +18,8 @@ export default function MyExpenses() {
       </section>
       <section className="my-2">
         <div className="grid gap-2 md:grid-cols-2">
-          <DashboardTotals />
-          <Charts />
+          <DashboardTotals month={month} />
+          <Charts month={month} />
         </div>
       </section>
       <section className="my-2 grid grid-cols-2 grid-rows-2 rounded-md bg-white p-2 shadow-md md:grid-cols-4 md:grid-rows-1">
