@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import UserBannerClient from '~/app/friends/user-banner.client';
+import UserBannerLoading from '~/app/friends/user-banner.loading';
 import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export default function MyFriends() {
   const [friends, setFriends] = useState<RouterOutputs['friends']['all']>([]);
 
-  api.friends.all.useQuery(undefined, {
+  const query = api.friends.all.useQuery(undefined, {
     enabled: true,
     onError: () => setFriends(() => []),
     onSuccess: (d) => setFriends(d),
@@ -16,7 +17,7 @@ export default function MyFriends() {
 
   return (
     <main className="flex grow flex-col items-stretch">
-      {friends?.map((f) => <UserBannerClient key={f.id} user={f} />)}
+      {query.isFetching ? <UserBannerLoading /> : friends?.map((f) => <UserBannerClient key={f.id} user={f} />)}
     </main>
   );
 }

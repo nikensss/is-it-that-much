@@ -1,8 +1,8 @@
 'use client';
 
-import { Dot } from 'lucide-react';
 import { useState } from 'react';
 import UserBannerClient from '~/app/friends/user-banner.client';
+import UserBannerLoading from '~/app/friends/user-banner.loading';
 import { Input } from '~/components/ui/input';
 import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
@@ -33,11 +33,8 @@ export default function FindFriends() {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Name, email, username..."
         />
-        {query.isFetching ? (
-          <Dot size={43} className="absolute right-[0rem] top-[-0.22rem] animate-ping text-slate-500" />
-        ) : null}
       </div>
-      {users?.map((user) => <UserBannerClient key={user.id} user={user} />)}
+      {query.isFetching ? <UserBannerLoading /> : users?.map((user) => <UserBannerClient key={user.id} user={user} />)}
     </>
   );
 }

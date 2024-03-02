@@ -86,8 +86,11 @@ export default function UserBannerClient({ user }: { user: Exclude<RouterOutputs
             <AvatarIcon />
           </AvatarFallback>
         </Avatar>
-        <div>
-          {user.firstName} {user.lastName} {user.username ? `(@${user.username})` : ''}
+        <div className="space-y-2">
+          <p>
+            {user.firstName} {user.lastName}
+          </p>
+          <p>{user.username ? `@${user.username}` : ''}</p>
         </div>
       </div>
       <div className="ml-auto flex gap-2">
