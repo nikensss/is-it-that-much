@@ -17,7 +17,9 @@ export default function MyFriends() {
 
   return (
     <main className="flex grow flex-col items-stretch">
-      {query.isFetching ? <UserBannerLoading /> : friends?.map((f) => <UserBannerClient key={f.id} user={f} />)}
+      {query.isFetching
+        ? Array.from({ length: Math.ceil(Math.random() * 5) }, (_, i) => <UserBannerLoading key={i} />)
+        : friends?.map((f) => <UserBannerClient key={f.id} user={f} />)}
     </main>
   );
 }

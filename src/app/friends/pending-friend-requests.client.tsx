@@ -17,11 +17,9 @@ export default function PendingFriendRequests() {
 
   return (
     <main className="flex grow flex-col items-stretch">
-      {query.isFetching ? (
-        <UserBannerLoading />
-      ) : (
-        requests?.map((r) => <UserBannerClient key={r.id} user={r.fromUser} />)
-      )}
+      {query.isFetching
+        ? Array.from({ length: Math.ceil(Math.random() * 5) }, (_, i) => <UserBannerLoading key={i} />)
+        : requests?.map((r) => <UserBannerClient key={r.id} user={r.fromUser} />)}
     </main>
   );
 }
