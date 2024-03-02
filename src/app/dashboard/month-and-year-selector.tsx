@@ -30,17 +30,14 @@ export default function MonthAndYearSelector({ month, year }: { month: string; y
   );
 }
 
-function YearSelector({
-  month,
-  year,
-  router,
-  pathname,
-}: {
+type MonthAndYearSelectorChild = {
   month: string;
   year: string;
   router: AppRouterInstance;
   pathname: string;
-}) {
+};
+
+function YearSelector({ month, year, router, pathname }: MonthAndYearSelectorChild) {
   return (
     <div className="flex items-center rounded-lg border border-slate-200 shadow-lg">
       <div
@@ -76,11 +73,7 @@ function MonthSelector({
   router,
   pathname,
   onClick,
-}: {
-  month: string;
-  year: string;
-  router: AppRouterInstance;
-  pathname: string;
+}: MonthAndYearSelectorChild & {
   onClick: () => void;
 }) {
   const months = [

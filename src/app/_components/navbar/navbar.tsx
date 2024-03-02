@@ -8,11 +8,12 @@ export function NavBar() {
       <div className="absolute bottom-1 left-1 right-1 top-1 z-0 rounded-md bg-slate-900"></div>
       <Link className="z-10 flex items-center justify-center px-2" href="/">
         <WalletIcon className="h-6 w-6" />
-        <span className="sr-only">Expense Tracker</span>
+        <span className="sr-only">Is It That Much?</span>
       </Link>
       <nav className="z-10 hidden items-center justify-center md:ml-auto md:mr-2 md:flex md:gap-2">
         <DesktopNavbar />
       </nav>
+      <h1 className="z-10 text-slate-100 md:hidden">Is It That Much?</h1>
       <nav className="z-10 flex px-2 md:hidden">
         <MobileNavbar />
       </nav>

@@ -20,7 +20,7 @@ export default async function DashboardTotals({ month, year }: { month: string; 
     <section className="rounded-md bg-white p-4 shadow-md">
       <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
         <h2 className="flex items-center justify-center text-lg font-bold text-slate-200">
-          <p>Totals in</p> {<MonthAndYearSelector month={month} year={year} />}
+          Totals in <MonthAndYearSelector {...{ month, year }} />
         </h2>
       </header>
       <div className="grid items-start gap-4 md:gap-10">
