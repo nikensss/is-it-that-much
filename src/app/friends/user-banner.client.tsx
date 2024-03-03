@@ -107,7 +107,7 @@ export default function UserBannerClient({ user }: { user: Exclude<RouterOutputs
                 await cancelFriendRequest.mutateAsync({ id: user.id });
               }}
               title="Cancel friend request"
-              description={`Are you sure you want to cancel your friend request sent to ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
+              description={`Are you sure you want to cancel your friend request sent to ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
             >
               <Button className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
                 <RotateCcw />
@@ -119,7 +119,7 @@ export default function UserBannerClient({ user }: { user: Exclude<RouterOutputs
                 await sendFriendRequest.mutateAsync({ id: user.id });
               }}
               title="Send friend request"
-              description={`Are you sure you want to send a friend request to ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
+              description={`Are you sure you want to send a friend request to ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
             >
               <Button className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
                 <UserRoundPlus />
@@ -135,7 +135,7 @@ export default function UserBannerClient({ user }: { user: Exclude<RouterOutputs
                 await acceptFriendRequest.mutateAsync({ id: user.id });
               }}
               title="Accept friend request"
-              description={`Are you sure you want to accept the friend request from ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
+              description={`Are you sure you want to accept the friend request from ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
             >
               <Button className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
                 <UserRoundCheck />
@@ -147,7 +147,7 @@ export default function UserBannerClient({ user }: { user: Exclude<RouterOutputs
                 await rejectFriendRequest.mutateAsync({ id: user.id });
               }}
               title="Reject friend request"
-              description={`Are you sure you want to reject the friend request from ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
+              description={`Are you sure you want to reject the friend request from ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
             >
               <Button className="bg-red-100 text-slate-900 hover:bg-red-600 hover:text-slate-100">
                 <UserRoundX />
@@ -162,7 +162,7 @@ export default function UserBannerClient({ user }: { user: Exclude<RouterOutputs
               await removeFriend.mutateAsync({ id: user.id });
             }}
             title="Remove friend"
-            description={`Are you sure you want to remove ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''} from your friends list?`}
+            description={`Are you sure you want to remove ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''} from your friends list?`}
           >
             <Button className="bg-red-100 text-slate-900 hover:bg-red-600 hover:text-slate-100">
               <UserRoundMinus />
@@ -177,7 +177,7 @@ export default function UserBannerClient({ user }: { user: Exclude<RouterOutputs
             console.log('blocked ', user.id);
           }}
           title="Block user"
-          description={`Are you sure you want to block ${user.firstName} ${user.lastName}${user.username ? `(@${user.username})` : ''}?`}
+          description={`Are you sure you want to block ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
         >
           <Button disabled className="bg-red-100 text-slate-900 hover:bg-red-600 hover:text-slate-100">
             <Ban />
