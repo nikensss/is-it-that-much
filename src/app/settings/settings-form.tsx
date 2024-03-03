@@ -5,9 +5,9 @@ import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { Check, Dot, Loader2, Save, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { nextTick } from 'process';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDebounce } from 'use-debounce';
 import { z } from 'zod';
 import { Button } from '~/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '~/components/ui/command';
@@ -56,7 +56,6 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
   const timezones = Intl.supportedValuesOf('timeZone');
   const currencies = Object.keys(currencySymbolMap);
 
-  const [isInitialState, setIsInitialState] = useState(username ? false : true);
   const [isLockOwned, setIsLockOwned] = useState(username ? true : false);
 
   const formSchema = z.object({
@@ -97,7 +96,11 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
     { username: requestedUsername },
     {
       onSuccess: (d) => setIsLockOwned(d ?? false),
-      onSettled: () => setIsInitialState(false),
+      onSettled: () => {
+        nextTick(() => {
+          form.trigger('username').catch(console.error);
+        });
+      },
     },
   );
 
@@ -118,9 +121,10 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                   className={cn(
                     'flex items-stretch justify-start rounded-md border',
                     (() => {
-                      if (isInitialState) return 'border-slate-900';
                       if (usernameLockQuery.isFetching) return 'border-slate-900';
-                      if (!isLockOwned || requestedUsername.length < 3) return 'border-red-500';
+                      if (!isLockOwned || requestedUsername.length < 3 || requestedUsername.length > 120) {
+                        return 'border-red-500';
+                      }
                       if (isLockOwned) return 'border-green-500';
                     })(),
                   )}
@@ -130,9 +134,8 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                       className={cn(
                         'animate-ping',
                         (() => {
-                          if (isInitialState) return 'invisible';
-                          if (form.getValues('username').length < 3) return 'hidden';
                           if (usernameLockQuery.isFetching) return 'block';
+                          if (requestedUsername.length < 3 || requestedUsername.length > 120) return 'hidden';
 
                           return 'hidden';
                         })(),
@@ -141,18 +144,25 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                     <Check
                       className={cn(
                         'text-green-500',
-                        !isInitialState && !usernameLockQuery.isFetching && isLockOwned && requestedUsername.length >= 3
-                          ? 'block'
-                          : 'hidden',
+                        (() => {
+                          if (usernameLockQuery.isFetching) return 'hidden';
+                          if (isLockOwned) return 'block';
+
+                          return 'hidden';
+                        })(),
                       )}
                     />
                     <X
                       className={cn(
                         'text-red-500',
-                        (!isInitialState && !usernameLockQuery.isFetching && !isLockOwned) ||
-                          requestedUsername.length < 3
-                          ? 'block'
-                          : 'hidden',
+                        (() => {
+                          if (usernameLockQuery.isFetching) return 'hidden';
+                          if (!isLockOwned || requestedUsername.length < 3 || requestedUsername.length > 120) {
+                            return 'block';
+                          }
+
+                          return 'hidden';
+                        })(),
                       )}
                     />
                   </div>

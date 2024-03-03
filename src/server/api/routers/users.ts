@@ -98,7 +98,12 @@ export const usersRouter = createTRPCRouter({
       const currency = input.currency?.match(/^(?<name>\w+) \((?<symbol>.)\)$/)?.groups?.name?.trim() ?? undefined;
 
       if (input.username !== user.username) {
-        await clerk.users.updateUser(user.externalId, { username: input.username });
+        await Promise.all([
+          clerk.users.updateUser(user.externalId, { username: input.username }),
+          ctx.db.usernameLocks.deleteMany({
+            where: { OR: [{ userId: user.id }, user.username ? { username: user.username } : {}] },
+          }),
+        ]);
       }
 
       return ctx.db.user.update({
@@ -169,20 +174,34 @@ export const usersRouter = createTRPCRouter({
 
   usernames: createTRPCRouter({
     lock: publicProcedure.input(z.object({ username: z.string() })).query(async ({ ctx, input: { username } }) => {
+      if (username.length < 3 || username.length > 120) return false;
+
       const { userId } = auth();
-      if (!userId) return null;
+      if (!userId) return false;
 
       const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
-      if (!user) return null;
+      if (!user) return false;
 
       if (username === user.username) return true;
-      if (username.length < 3 || username.length > 120) return false;
 
       const isAlreadyInUse = (await ctx.db.user.count({ where: { username } })) > 0;
       if (isAlreadyInUse) return false;
 
-      await ctx.db.usernameLocks.deleteMany({ where: { userId: user.id } });
-      await ctx.db.usernameLocks.deleteMany({ where: { username, createdAt: { lt: subMinutes(new Date(), 2) } } });
+      await ctx.db.usernameLocks.deleteMany({
+        where: {
+          OR: [
+            {
+              userId: user.id,
+            },
+            {
+              username,
+              createdAt: {
+                lt: subMinutes(new Date(), 2),
+              },
+            },
+          ],
+        },
+      });
 
       const isAlreadyLocked = (await ctx.db.usernameLocks.count({ where: { username } })) > 0;
       if (isAlreadyLocked) return false;
