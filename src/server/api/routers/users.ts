@@ -2,6 +2,7 @@ import { auth, clerkClient as clerk, currentUser } from '@clerk/nextjs';
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 import { log } from 'next-axiom';
 import { z } from 'zod';
+import { subMinutes } from 'date-fns';
 
 export const usersRouter = createTRPCRouter({
   exists: publicProcedure.query(async ({ ctx }) => {
@@ -75,6 +76,7 @@ export const usersRouter = createTRPCRouter({
   update: publicProcedure
     .input(
       z.object({
+        username: z.string().min(1).max(120).optional(),
         timezone: z.string().optional(),
         currency: z.string().optional(),
         weekStartsOn: z.number().min(0).max(6).optional(),
@@ -95,9 +97,14 @@ export const usersRouter = createTRPCRouter({
 
       const currency = input.currency?.match(/^(?<name>\w+) \((?<symbol>.)\)$/)?.groups?.name?.trim() ?? undefined;
 
+      if (input.username !== user.username) {
+        await clerk.users.updateUser(user.externalId, { username: input.username });
+      }
+
       return ctx.db.user.update({
         where: { id: user.id },
         data: {
+          username: input.username,
           timezone,
           currency,
           weekStartsOn: input.weekStartsOn,
@@ -159,4 +166,40 @@ export const usersRouter = createTRPCRouter({
         },
       });
     }),
+
+  usernames: createTRPCRouter({
+    lock: publicProcedure.input(z.object({ username: z.string() })).query(async ({ ctx, input: { username } }) => {
+      const { userId } = auth();
+      if (!userId) return null;
+
+      const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
+      if (!user) return null;
+
+      if (username === user.username) return true;
+      if (username.length < 3 || username.length > 120) return false;
+
+      const isAlreadyInUse = (await ctx.db.user.count({ where: { username } })) > 0;
+      if (isAlreadyInUse) return false;
+
+      await ctx.db.usernameLocks.deleteMany({ where: { userId: user.id } });
+      await ctx.db.usernameLocks.deleteMany({ where: { username, createdAt: { lt: subMinutes(new Date(), 2) } } });
+
+      const isAlreadyLocked = (await ctx.db.usernameLocks.count({ where: { username } })) > 0;
+      if (isAlreadyLocked) return false;
+
+      try {
+        await ctx.db.usernameLocks.create({
+          data: {
+            username,
+            userId: user.id,
+          },
+        });
+
+        return true;
+      } catch (e) {
+        console.log('error locking username', e, user);
+        return false;
+      }
+    }),
+  }),
 });

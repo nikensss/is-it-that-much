@@ -3,25 +3,28 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
-import { Loader2, Save } from 'lucide-react';
+import { Check, Dot, Loader2, Save, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDebounce } from 'use-debounce';
 import { z } from 'zod';
 import { Button } from '~/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '~/components/ui/command';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
+import { Input } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { cn, displayCurrency, displayTimezone } from '~/lib/utils';
 import { api } from '~/trpc/react';
 
 export type SettingsFormProps = {
+  username: string | null | undefined;
   timezone: string | null | undefined;
   currency: string | null | undefined;
   weekStartsOn: number | null | undefined;
 };
 
-export default function SettingsForm({ timezone, currency, weekStartsOn }: SettingsFormProps) {
+export default function SettingsForm({ username, timezone, currency, weekStartsOn }: SettingsFormProps) {
   const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
 
   const router = useRouter();
@@ -53,7 +56,15 @@ export default function SettingsForm({ timezone, currency, weekStartsOn }: Setti
   const timezones = Intl.supportedValuesOf('timeZone');
   const currencies = Object.keys(currencySymbolMap);
 
+  const [isInitialState, setIsInitialState] = useState(username ? false : true);
+  const [isLockOwned, setIsLockOwned] = useState(username ? true : false);
+
   const formSchema = z.object({
+    username: z
+      .string()
+      .min(3, { message: 'Username must at least be 3 characters' })
+      .max(120, { message: 'Username cannot be longer than 120 characters' })
+      .refine(() => isLockOwned, { message: 'Username is already taken' }),
     timezone: z.string(),
     currency: z.string(),
     weekStartsOn: z.number().min(0).max(6),
@@ -62,13 +73,14 @@ export default function SettingsForm({ timezone, currency, weekStartsOn }: Setti
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      username: username ?? '',
       timezone: timezone ? displayTimezone(timezone) : 'No timezone set',
       currency: currency ? displayCurrency(currency) : 'No currency set',
       weekStartsOn: weekStartsOn ?? 1,
     },
   });
 
-  const updateUser = api.users.update.useMutation({
+  const update = api.users.update.useMutation({
     onMutate: () => setIsMutating(true),
     onSettled: () => {
       setIsMutating(false);
@@ -77,8 +89,19 @@ export default function SettingsForm({ timezone, currency, weekStartsOn }: Setti
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    updateUser.mutate(data);
+    update.mutate(data);
   }
+
+  const [requestedUsername, setRequestedUsername] = useDebounce(form.getValues('username'), 1000);
+
+  const usernameLockQuery = api.users.usernames.lock.useQuery(
+    { username: requestedUsername },
+    {
+      enabled: requestedUsername.length >= 3,
+      onSuccess: (d) => setIsLockOwned(d ?? false),
+      onSettled: () => setIsInitialState(false),
+    },
+  );
 
   return (
     <Form {...form}>
@@ -86,6 +109,64 @@ export default function SettingsForm({ timezone, currency, weekStartsOn }: Setti
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex h-full w-full grow flex-col items-start justify-start pt-4"
       >
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem className="w-full pb-4 md:w-[360px]">
+              <FormLabel className="block text-center md:text-left">Username</FormLabel>
+              <FormControl>
+                <div
+                  className={cn(
+                    'flex items-stretch justify-start rounded-md border',
+                    (() => {
+                      if (isInitialState) return 'border-slate-900';
+                      if (usernameLockQuery.isFetching) return 'border-slate-900';
+                      if (!isLockOwned) return 'border-red-500';
+                      if (isLockOwned) return 'border-green-500';
+                    })(),
+                  )}
+                >
+                  <div className="flex w-9 items-center justify-center rounded-l-md bg-slate-100 px-1">
+                    <Dot
+                      className={cn(
+                        'animate-ping',
+                        (() => {
+                          if (isInitialState) return 'invisible';
+                          if (requestedUsername.length < 3) return 'hidden';
+                          if (usernameLockQuery.isFetching) return 'block';
+
+                          return 'hidden';
+                        })(),
+                      )}
+                    />
+                    <Check
+                      className={cn(
+                        'text-green-500',
+                        !isInitialState && !usernameLockQuery.isFetching && isLockOwned ? 'block' : 'hidden',
+                      )}
+                    />
+                    <X
+                      className={cn(
+                        'text-red-500',
+                        !isInitialState && !usernameLockQuery.isFetching && !isLockOwned ? 'block' : 'hidden',
+                      )}
+                    />
+                  </div>
+                  <Input
+                    className="rounded-none border-l border-none focus-visible:ring-0"
+                    {...field}
+                    onChange={(e) => {
+                      form.setValue('username', e.target.value);
+                      setRequestedUsername(e.target.value);
+                    }}
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="timezone"

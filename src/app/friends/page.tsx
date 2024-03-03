@@ -9,7 +9,7 @@ export default async function FriendsPage() {
     <main className="flex grow flex-col bg-slate-100 p-2">
       <div className="flex grow flex-col rounded-md bg-white p-4 shadow-md">
         <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
-          <h2 className="text-lg font-bold capitalize text-slate-200">Friends</h2>
+          <h2 className="text-lg font-bold text-slate-200">Friends</h2>
         </header>
         <Tabs defaultValue="find-friends" className="flex grow flex-col">
           <TabsList className="grid grid-cols-3 items-center justify-center">
