@@ -92,12 +92,10 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
     update.mutate(data);
   }
 
-  const [requestedUsername, setRequestedUsername] = useDebounce(form.getValues('username'), 1000);
-
+  const requestedUsername = form.watch('username');
   const usernameLockQuery = api.users.usernames.lock.useQuery(
     { username: requestedUsername },
     {
-      enabled: requestedUsername.length >= 3,
       onSuccess: (d) => setIsLockOwned(d ?? false),
       onSettled: () => setIsInitialState(false),
     },
@@ -122,7 +120,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                     (() => {
                       if (isInitialState) return 'border-slate-900';
                       if (usernameLockQuery.isFetching) return 'border-slate-900';
-                      if (!isLockOwned) return 'border-red-500';
+                      if (!isLockOwned || requestedUsername.length < 3) return 'border-red-500';
                       if (isLockOwned) return 'border-green-500';
                     })(),
                   )}
@@ -133,7 +131,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                         'animate-ping',
                         (() => {
                           if (isInitialState) return 'invisible';
-                          if (requestedUsername.length < 3) return 'hidden';
+                          if (form.getValues('username').length < 3) return 'hidden';
                           if (usernameLockQuery.isFetching) return 'block';
 
                           return 'hidden';
@@ -143,13 +141,18 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                     <Check
                       className={cn(
                         'text-green-500',
-                        !isInitialState && !usernameLockQuery.isFetching && isLockOwned ? 'block' : 'hidden',
+                        !isInitialState && !usernameLockQuery.isFetching && isLockOwned && requestedUsername.length >= 3
+                          ? 'block'
+                          : 'hidden',
                       )}
                     />
                     <X
                       className={cn(
                         'text-red-500',
-                        !isInitialState && !usernameLockQuery.isFetching && !isLockOwned ? 'block' : 'hidden',
+                        (!isInitialState && !usernameLockQuery.isFetching && !isLockOwned) ||
+                          requestedUsername.length < 3
+                          ? 'block'
+                          : 'hidden',
                       )}
                     />
                   </div>
@@ -158,7 +161,6 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                     {...field}
                     onChange={(e) => {
                       form.setValue('username', e.target.value);
-                      setRequestedUsername(e.target.value);
                     }}
                   />
                 </div>
@@ -315,7 +317,11 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
             </FormItem>
           )}
         />
-        <Button disabled={isMutating} type="submit" className="mt-auto w-full">
+        <Button
+          disabled={isMutating || !isLockOwned || usernameLockQuery.isFetching}
+          type="submit"
+          className="mt-auto w-full"
+        >
           {isMutating ? (
             <Loader2 className="m-4 h-4 w-4 animate-spin" />
           ) : (
