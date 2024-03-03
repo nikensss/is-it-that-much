@@ -157,7 +157,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                     />
                   </div>
                   <Input
-                    className="rounded-none border-l border-none focus-visible:ring-0"
+                    className="rounded-none border-l border-none text-[16px] focus-visible:ring-0"
                     {...field}
                     onChange={(e) => {
                       form.setValue('username', e.target.value);
