@@ -20,6 +20,10 @@ export const usersRouter = createTRPCRouter({
 
       log.debug(`creating user ${clerkUser.id} in db`);
 
+      const emailParts = clerkUser.emailAddresses[0]?.emailAddress?.split('@') ?? [];
+      emailParts.pop();
+      const emailLocalPart = emailParts.join('@');
+
       const userInDb = await ctx.db.user.create({
         data: {
           username: clerkUser.username,
@@ -28,6 +32,7 @@ export const usersRouter = createTRPCRouter({
           lastName: clerkUser.lastName,
           imageUrl: clerkUser.imageUrl,
           email: clerkUser.emailAddresses[0]?.emailAddress,
+          emailLocalPart,
         },
       });
 
@@ -146,7 +151,7 @@ export const usersRouter = createTRPCRouter({
               },
             },
             {
-              email: {
+              emailLocalPart: {
                 contains: search,
                 mode: 'insensitive',
               },
