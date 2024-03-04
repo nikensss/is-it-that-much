@@ -15,7 +15,7 @@ model User {
   externalId     String  @unique
   username       String? @unique
   email          String? @unique
-  emailLocalPart String? @unique
+  emailLocalPart String?
   firstName      String?
   lastName       String?
   imageUrl       String?
@@ -38,6 +38,7 @@ model User {
   ReceivedFriendRequests FriendRequest[] @relation("ToUser")
   UsernameLocks          UsernameLocks[]
 
+  @@index([emailLocalPart])
   @@map("users")
 }
 
