@@ -189,28 +189,34 @@ export const usersRouter = createTRPCRouter({
 
       await ctx.db.usernameLocks.deleteMany({
         where: {
-          OR: [
-            {
-              userId: user.id,
-            },
-            {
-              username,
-              createdAt: {
-                lt: subMinutes(new Date(), 2),
-              },
-            },
-          ],
+          updatedAt: {
+            lt: subMinutes(new Date(), 2),
+          },
         },
       });
 
-      const isAlreadyLocked = (await ctx.db.usernameLocks.count({ where: { username } })) > 0;
-      if (isAlreadyLocked) return false;
+      const isLockedBySomebodyElse =
+        (await ctx.db.usernameLocks.count({
+          where: {
+            username,
+            userId: {
+              not: user.id,
+            },
+          },
+        })) > 0;
+      if (isLockedBySomebodyElse) return false;
 
       try {
-        await ctx.db.usernameLocks.create({
-          data: {
+        await ctx.db.usernameLocks.upsert({
+          where: {
+            username,
+          },
+          create: {
             username,
             userId: user.id,
+          },
+          update: {
+            username,
           },
         });
 
