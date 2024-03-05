@@ -19,8 +19,24 @@ export const friendsRouters = createTRPCRouter({
         status: FriendRequestStatus.ACCEPTED,
       },
       include: {
-        fromUser: true,
-        toUser: true,
+        fromUser: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            imageUrl: true,
+          },
+        },
+        toUser: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            imageUrl: true,
+          },
+        },
       },
     });
 
