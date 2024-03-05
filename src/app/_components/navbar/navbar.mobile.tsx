@@ -1,9 +1,12 @@
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '~/components/ui/sheet';
 import Link from 'next/link';
 import { ArrowRightFromLine, Cog, Menu } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/components/ui/accordion';
 import { Button } from '~/components/ui/button';
+import { api } from '~/trpc/server';
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { AvatarIcon } from '@radix-ui/react-icons';
 
 export default function MobileNavbar() {
   return (
@@ -45,7 +48,9 @@ function SheetLinkClose({ href, text }: SheetLinkCloseProps) {
   );
 }
 
-function AccordionUserButton() {
+async function AccordionUserButton() {
+  const user = await api.users.get.query();
+
   return (
     <div className="mt-auto w-full">
       <Accordion type="single" collapsible className="w-full">
@@ -71,8 +76,19 @@ function AccordionUserButton() {
             </div>
           </AccordionContent>
           <AccordionTrigger dir="up" className="outline-none hover:no-underline">
-            <div className="pointer-events-none">
-              <UserButton showName={true} afterSignOutUrl="/" />
+            <div className="pointer-events-none flex flex-row-reverse">
+              <Avatar className="ml-4">
+                <AvatarImage src={user?.imageUrl ?? ''} alt={`@${user?.username}`} />
+                <AvatarFallback>
+                  <AvatarIcon />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col items-start">
+                <p className="capitalize">
+                  {user?.firstName} {user?.lastName}
+                </p>
+                {user?.username ? <p>@{user?.username}</p> : null}
+              </div>
             </div>
           </AccordionTrigger>
         </AccordionItem>
