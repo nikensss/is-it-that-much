@@ -22,7 +22,7 @@ export const usersRouter = createTRPCRouter({
 
       const emailParts = clerkUser.emailAddresses[0]?.emailAddress?.split('@') ?? [];
       emailParts.pop();
-      const emailLocalPart = emailParts.join('@');
+      const emailLocalPart = emailParts.join('@').toLowerCase();
 
       const userInDb = await ctx.db.user.create({
         data: {
@@ -31,7 +31,7 @@ export const usersRouter = createTRPCRouter({
           firstName: clerkUser.firstName,
           lastName: clerkUser.lastName,
           imageUrl: clerkUser.imageUrl,
-          email: clerkUser.emailAddresses[0]?.emailAddress,
+          email: clerkUser.emailAddresses[0]?.emailAddress?.toLowerCase(),
           emailLocalPart,
         },
       });
