@@ -78,7 +78,7 @@ export default function UserBannerClient({ user }: { user: Exclude<RouterOutputs
   );
 
   return (
-    <div className="my-2 flex items-center rounded-md border border-slate-100 p-4 hover:border-slate-900 hover:shadow-md">
+    <div className="my-2 flex items-center rounded-md border border-slate-100 p-4 md:hover:border-slate-900 md:hover:shadow-md">
       <div className="flex items-center justify-center">
         <Avatar className="mr-4">
           <AvatarImage src={user.imageUrl ?? ''} alt={`@${user.username}`} />

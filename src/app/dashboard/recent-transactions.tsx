@@ -16,8 +16,8 @@ export default async function DashboardRecentTrasnsactions() {
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];
 
   return (
-    <div className="rounded-md bg-white p-2 shadow-md">
-      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
+    <div className="rounded-md border border-slate-200 bg-white p-2">
+      <header className="mb-0 mt-0.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
         <h2 className="text-lg font-bold text-slate-200">Recent Transactions</h2>
       </header>
       <div className="flex flex-col md:my-4 md:flex-row">
@@ -56,41 +56,13 @@ function DashboardRecentTransactionsCard({
   timezone,
   transactions,
 }: DashboardRecentTransactionCardParams) {
-  function Transaction({ transaction }: RouterOutputs['transactions']['personal']['recent'][number]) {
-    return (
-      <div key={transaction.id} className="flex h-12 items-center py-2">
-        <div className="flex-shrink-0">
-          <p className="text-sm">
-            {transaction.description}:
-            <span className="ml-4 text-xs text-gray-500 dark:text-gray-400">
-              {currencySymbol}
-              {transaction.amount / 100}
-            </span>
-          </p>
-          <div className="cursor-pointer select-all text-xs text-gray-500 dark:text-gray-400">
-            <DateDisplay timezone={timezone} date={transaction.date} />
-          </div>
-        </div>
-        <div className="ml-6 h-full overflow-hidden">
-          {transaction.TransactionsTags.map(({ tag }) => {
-            return (
-              <Badge key={tag.id} className="pointer-events-none mx-0.5 mt-1.5 inline-block" variant="secondary">
-                {tag.name}
-              </Badge>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  const transactionElements = transactions.map((e) => Transaction(e));
+  const transactionElements = transactions.map((e) => Transaction({ ...e, timezone, currencySymbol }));
   while (transactionElements.length < 3) {
     transactionElements.push(PlaceholderTransaction(transactionElements.length + 1));
   }
 
   return (
-    <div className="m-2 flex-1 bg-white p-4">
+    <div className="m-2 flex-1 bg-white">
       <h2 className="relative mb-2 text-center text-lg font-bold">
         <Link
           href={href}
@@ -113,6 +85,41 @@ function PlaceholderTransaction(id: number) {
           <DateDisplay timezone={null} date={new Date()} />
         </div>
       </span>
+    </div>
+  );
+}
+
+function Transaction({
+  transaction,
+  currencySymbol,
+  timezone,
+}: RouterOutputs['transactions']['personal']['recent'][number] & {
+  currencySymbol: string;
+  timezone: DateDisplayProps['timezone'];
+}) {
+  return (
+    <div key={transaction.id} className="flex h-12 items-center py-2">
+      <div className="flex-shrink-0">
+        <p className="text-sm">
+          {transaction.description}:
+          <span className="ml-4 text-xs text-gray-500 dark:text-gray-400">
+            {currencySymbol}
+            {transaction.amount / 100}
+          </span>
+        </p>
+        <div className="cursor-pointer select-all text-xs text-gray-500 dark:text-gray-400">
+          <DateDisplay timezone={timezone} date={transaction.date} />
+        </div>
+      </div>
+      <div className="ml-6 h-full overflow-hidden">
+        {transaction.TransactionsTags.map(({ tag }) => {
+          return (
+            <Badge key={tag.id} className="pointer-events-none mx-0.5 mt-1.5 inline-block" variant="secondary">
+              {tag.name}
+            </Badge>
+          );
+        })}
+      </div>
     </div>
   );
 }

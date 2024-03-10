@@ -12,35 +12,35 @@ export default function Dashboard({ searchParams }: { searchParams: Record<strin
   const year = searchParams?.year ?? format(new Date(), 'yyyy');
 
   return (
-    <main className="flex-1 bg-slate-100 p-2">
-      <section className="mb-2 flex justify-around rounded-md bg-white p-2 shadow-md">
+    <>
+      <section className="mb-2 grid grid-cols-2 gap-2">
         <DashboardRegisterPersonalExpense />
         <DashboardRegisterPersonalIncome />
       </section>
-      <section className="my-2">
+      <section className="mb-2">
         <div className="grid gap-2 md:grid-cols-2">
           <DashboardTotals {...{ month, year }} />
           <Charts {...{ month, year }} />
         </div>
       </section>
-      <section className="my-2 grid grid-cols-2 grid-rows-2 rounded-md bg-white p-2 shadow-md md:grid-cols-4 md:grid-rows-1">
-        <Button asChild variant="outline" className="m-1">
+      <section className="mb-2 grid grid-cols-2 grid-rows-2 gap-2 md:grid-cols-4 md:grid-rows-1">
+        <Button asChild variant="outline">
           <Link href="/dashboard/expenses">Expenses</Link>
         </Button>
-        <Button asChild variant="outline" className="m-1">
+        <Button asChild variant="outline">
           <Link href="/dashboard/incomes">Incomes</Link>
         </Button>
-        <Button asChild variant="outline" className="m-1">
+        <Button asChild variant="outline">
           <Link href="/dashboard/tags">Tags</Link>
         </Button>
-        <Button asChild variant="outline" className="m-1">
+        <Button asChild variant="outline">
           <Link href="#">Categories</Link>
         </Button>
       </section>
-      <section className="mt-2">
+      <section>
         <DashboardRecentTrasnsactions />
       </section>
-    </main>
+    </>
   );
 }
 

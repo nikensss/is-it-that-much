@@ -12,6 +12,10 @@
   p {
     @apply text-slate-900;
   }
+
+  html {
+    @apply bg-slate-900;
+  }
 }
 
 .responsive-tab-trigger .compact {

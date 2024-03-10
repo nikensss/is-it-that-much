@@ -25,7 +25,7 @@ export default async function Charts({ month, year }: { month: string; year: str
   ]);
 
   return (
-    <section className="flex items-center justify-center rounded-md bg-white p-2 shadow-md">
+    <section className="flex items-center justify-center rounded-md border border-slate-200 bg-white p-2">
       <div className="h-full w-full">
         <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
           <h2 className="text-lg font-bold text-slate-200">Charts</h2>

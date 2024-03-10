@@ -94,7 +94,7 @@ export default function RegisterTransaction({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="mx-1 w-1/2 md:w-1/4" onClick={resetForm}>
+        <Button variant="outline" className="grow" onClick={resetForm}>
           Register {transactionType.toLowerCase()}
         </Button>
       </DialogTrigger>
