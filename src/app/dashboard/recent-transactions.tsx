@@ -16,11 +16,11 @@ export default async function DashboardRecentTrasnsactions() {
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];
 
   return (
-    <div className="rounded-md bg-white p-4 shadow-md">
+    <div className="rounded-md bg-white p-2 shadow-md">
       <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
         <h2 className="text-lg font-bold text-slate-200">Recent Transactions</h2>
       </header>
-      <div className="flex flex-col md:flex-row">
+      <div className="flex flex-col md:my-4 md:flex-row">
         <DashboardRecentTransactionsCard
           currencySymbol={currencySymbol ?? '€'}
           timezone={user?.timezone}
