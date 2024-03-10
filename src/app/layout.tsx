@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <ClerkProvider>
       <html lang="en">
         <body className={cn('bg-background min-h-screen font-sans antialiased', inter.variable)}>
-          <div className="flex min-h-screen flex-col">
+          <div className="flex min-h-screen flex-col bg-white">
             <NavBar />
             <main className="flex flex-1 justify-center">
               <TRPCReactProvider>{children}</TRPCReactProvider>
