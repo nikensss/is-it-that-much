@@ -12,7 +12,7 @@ export default function DesktopNavbar() {
       </SignedOut>
       <SignedIn>
         <NavBarLink text={'Dashboard'} href={'/dashboard'} />
-        <NavBarLink text={'Groups'} href={'#'} />
+        <NavBarLink text={'Groups'} href={'/groups'} />
         <NavBarLink text={'Friends'} href={'/friends'} />
         <NavBarLink text={'Settings'} href={'/settings'} />
       </SignedIn>

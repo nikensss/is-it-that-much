@@ -23,7 +23,7 @@ export default function MobileNavbar() {
         </SignedOut>
         <SignedIn>
           <SheetLinkClose text={'Dashboard'} href={'/dashboard'} />
-          <SheetLinkClose text={'Groups'} href={'#'} />
+          <SheetLinkClose text={'Groups'} href={'/groups'} />
           <SheetLinkClose text={'Friends'} href={'/friends'} />
           <SheetLinkClose text={'Settings'} href={'/settings'} />
           <AccordionUserButton />

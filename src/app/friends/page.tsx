@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 export default async function FriendsPage() {
   return (
     <main className="flex grow flex-col bg-slate-100 p-2">
-      <div className="flex grow flex-col rounded-md bg-white p-4 shadow-md">
+      <div className="flex grow flex-col rounded-md bg-white p-2 shadow-md">
         <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
           <h2 className="text-lg font-bold text-slate-200">Friends</h2>
         </header>
