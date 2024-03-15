@@ -53,4 +53,124 @@ export const friendsRouters = createTRPCRouter({
       },
     });
   }),
+
+  find: publicProcedure
+    .input(
+      z.object({
+        search: z.string().min(3),
+      }),
+    )
+    .query(async ({ ctx, input: { search } }) => {
+      const user = await currentUser();
+      if (!user?.externalId) return [];
+
+      const accepted = await ctx.db.friendRequest.findMany({
+        where: {
+          uniqueId: {
+            contains: user.externalId,
+          },
+          status: FriendRequestStatus.ACCEPTED,
+          OR: [
+            {
+              fromUser: {
+                OR: [
+                  {
+                    AND: [
+                      {
+                        username: { contains: search, mode: 'insensitive' },
+                      },
+                      { id: { not: user.externalId } },
+                    ],
+                  },
+                  {
+                    AND: [
+                      {
+                        firstName: { contains: search, mode: 'insensitive' },
+                      },
+                      { id: { not: user.externalId } },
+                    ],
+                  },
+                  {
+                    AND: [
+                      {
+                        lastName: { contains: search, mode: 'insensitive' },
+                      },
+                      { id: { not: user.externalId } },
+                    ],
+                  },
+                  {
+                    AND: [
+                      {
+                        emailLocalPart: { contains: search, mode: 'insensitive' },
+                      },
+                      { id: { not: user.externalId } },
+                    ],
+                  },
+                ],
+              },
+            },
+            {
+              toUser: {
+                OR: [
+                  {
+                    AND: [
+                      {
+                        username: { contains: search, mode: 'insensitive' },
+                      },
+                      { id: { not: user.externalId } },
+                    ],
+                  },
+                  {
+                    AND: [
+                      {
+                        firstName: { contains: search, mode: 'insensitive' },
+                      },
+                      { id: { not: user.externalId } },
+                    ],
+                  },
+                  {
+                    AND: [
+                      {
+                        lastName: { contains: search, mode: 'insensitive' },
+                      },
+                      { id: { not: user.externalId } },
+                    ],
+                  },
+                  {
+                    AND: [
+                      {
+                        emailLocalPart: { contains: search, mode: 'insensitive' },
+                      },
+                      { id: { not: user.externalId } },
+                    ],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        include: {
+          fromUser: {
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
+              imageUrl: true,
+            },
+          },
+          toUser: {
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
+              imageUrl: true,
+            },
+          },
+        },
+      });
+
+      return accepted.map((e) => (e.fromUser.id === user.externalId ? e.toUser : e.fromUser));
+    }),
 });
