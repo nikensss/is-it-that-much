@@ -15,10 +15,17 @@ import {
   DialogHeader,
   DialogTrigger,
 } from '~/components/ui/dialog';
+import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
 
-export default function UserBannerClient({ user }: { user: Exclude<RouterOutputs['users']['find'], null>[number] }) {
+export default function UserBannerClient({
+  user,
+  className = '',
+}: {
+  className?: string;
+  user: Exclude<RouterOutputs['users']['find'], null>[number];
+}) {
   const router = useRouter();
   const [isSent, setIsSent] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -78,7 +85,12 @@ export default function UserBannerClient({ user }: { user: Exclude<RouterOutputs
   );
 
   return (
-    <div className="my-2 flex items-center rounded-md border border-slate-100 p-4 md:hover:border-slate-900 md:hover:shadow-md">
+    <div
+      className={cn(
+        'ry-2 flex select-none items-center rounded-md border border-slate-100 p-4 md:hover:border-slate-900 md:hover:shadow-md',
+        className,
+      )}
+    >
       <div className="flex items-center justify-center">
         <Avatar className="mr-4">
           <AvatarImage src={user.imageUrl ?? ''} alt={`@${user.username}`} />
@@ -90,7 +102,7 @@ export default function UserBannerClient({ user }: { user: Exclude<RouterOutputs
           <p>
             {user.firstName} {user.lastName}
           </p>
-          <p>{user.username ? `@${user.username}` : ''}</p>
+          <p className={cn(user.username ? '' : 'invisible')}>{`@${user.username}`}</p>
         </div>
       </div>
       <div className="ml-auto flex gap-2">

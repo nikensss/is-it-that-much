@@ -18,7 +18,17 @@ import type { RouterOutputs } from '~/trpc/shared';
 const formSchema = z.object({
   name: z.string().min(3),
   description: z.string().optional(),
-  members: z.array(z.string().cuid()).min(2),
+  members: z
+    .array(
+      z.object({
+        id: z.string().cuid(),
+        username: z.string().nullable(),
+        firstName: z.string().nullable(),
+        lastName: z.string().nullable(),
+        imageUrl: z.string().url().nullable(),
+      }),
+    )
+    .min(1, { message: 'You need to select at least 1 member to create a group' }),
 });
 
 export default function Page() {
@@ -38,10 +48,8 @@ export default function Page() {
 
   const create = api.groups.create.useMutation({
     onMutate: () => setIsLoading(true),
-    onSuccess: () => {
-      router.push('/groups');
-      setIsLoading(false);
-    },
+    onSuccess: () => router.push('/groups'),
+    onSettled: () => setIsLoading(false),
   });
 
   const query = api.friends.find.useQuery(
@@ -55,7 +63,10 @@ export default function Page() {
 
   return (
     <Form {...form}>
-      <form className="flex grow flex-col" onSubmit={form.handleSubmit((d) => create.mutate(d))}>
+      <form
+        className="flex grow flex-col"
+        onSubmit={form.handleSubmit((d) => create.mutateAsync({ ...d, members: d.members.map((m) => m.id) }))}
+      >
         <FormField
           control={form.control}
           name="name"
@@ -83,30 +94,112 @@ export default function Page() {
             </FormItem>
           )}
         />
-        <div className="grid grid-rows-2 gap-2 md:grid-cols-2 md:grid-rows-1">
-          <div className="flex flex-col">
-            <Input
-              id="search"
-              className="text-[16px]"
-              type="text"
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Name, email, username..."
-            />
-            <section
-              className={cn('flex h-full flex-col items-stretch', query.isFetching ? 'overscroll-y-scroll' : '')}
-            >
-              {query.isFetching ? (
-                <UserBannerLoading />
-              ) : (
-                candidates?.map((candidate) => <UserBannerClient key={candidate.id} user={candidate} />)
-              )}
-            </section>
-          </div>
-        </div>
+        <FormField
+          control={form.control}
+          name="members"
+          render={({ field }) => (
+            <FormItem className="mb-2">
+              <h2 className="text-center text-2xl">Members</h2>
+              <FormMessage className="text-center" />
+              <FormControl>
+                <div className="grid grid-rows-2 gap-2 md:grid-cols-2 md:grid-rows-1">
+                  <div className="flex flex-col">
+                    <FormLabel className="text-center text-lg">Find friends</FormLabel>
+                    <Input
+                      id="search"
+                      className="text-[16px]"
+                      type="text"
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Name, email, username..."
+                    />
+                    <section className="mt-2 flex flex-col items-stretch gap-2">
+                      {query.isFetching ? (
+                        <UserBannerLoading />
+                      ) : (
+                        candidates?.map((candidate) => (
+                          <UserCheckbox
+                            isSelected={field.value.some((u) => u.id === candidate.id)}
+                            onClick={(user) => {
+                              console.log('clicked', { selected: field.value });
+                              form.setValue(
+                                'members',
+                                field.value.some((u) => u.id === user.id)
+                                  ? field.value.filter((u) => u.id !== user.id)
+                                  : [...field.value, user],
+                              );
+                            }}
+                            key={candidate.id}
+                            user={candidate}
+                          />
+                        ))
+                      )}
+                    </section>
+                  </div>
+                  <div className="flex flex-col">
+                    <FormLabel className="text-center text-lg">Selected friends</FormLabel>
+                    <Input className="invisible text-[16px]" disabled />
+                    <section className="mt-2 flex flex-col items-stretch gap-2">
+                      {field.value.map((user) => (
+                        <div key={user.id + '_selected'} className="flex items-center">
+                          <input
+                            onClick={() => {
+                              form.setValue(
+                                'members',
+                                field.value.filter((u) => u.id !== user.id),
+                              );
+                            }}
+                            type="checkbox"
+                            className="hidden"
+                            id={user.id}
+                          />
+                          <label className="grow cursor-pointer" htmlFor={user.id}>
+                            <UserBannerClient user={user} className="md:hover:border-red-500 md:hover:bg-red-100" />
+                          </label>
+                        </div>
+                      ))}
+                    </section>
+                  </div>
+                </div>
+              </FormControl>
+            </FormItem>
+          )}
+        />
         <Button className="mt-auto" type="submit" disabled={isLoading}>
           {isLoading ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Create'}
         </Button>
       </form>
     </Form>
+  );
+}
+
+function UserCheckbox({
+  user,
+  isSelected,
+  onClick,
+}: {
+  onClick: (user: RouterOutputs['friends']['find'][number]) => void;
+  isSelected: boolean;
+  user: RouterOutputs['friends']['find'][number];
+}) {
+  const [checked, setChecked] = useState(isSelected);
+
+  function onUserClick() {
+    setChecked(!checked);
+    onClick(user);
+  }
+
+  return (
+    <div className="flex items-center">
+      <input checked={checked} onChange={onUserClick} type="checkbox" className="hidden" id={user.id} />
+      <label className="grow cursor-pointer" htmlFor={user.id}>
+        <UserBannerClient
+          user={user}
+          className={cn(
+            checked ? 'border-green-500 bg-green-100' : '',
+            'md:hover:border-green-500 md:hover:bg-green-100',
+          )}
+        />
+      </label>
+    </div>
   );
 }

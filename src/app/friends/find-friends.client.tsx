@@ -4,7 +4,6 @@ import { useState } from 'react';
 import UserBannerClient from '~/app/friends/user-banner.client';
 import UserBannerLoading from '~/app/friends/user-banner.loading';
 import { Input } from '~/components/ui/input';
-import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
 
@@ -33,7 +32,7 @@ export default function FindFriends() {
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Name, email, username..."
       />
-      <section className={cn('flex h-full flex-col items-stretch', query.isFetching ? 'overscroll-y-scroll' : '')}>
+      <section className="mt-2 flex h-full flex-col items-stretch gap-2">
         {query.isFetching ? (
           <UserBannerLoading />
         ) : (
