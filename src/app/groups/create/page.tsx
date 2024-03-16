@@ -84,7 +84,7 @@ export default function Page() {
           control={form.control}
           name="description"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="mb-2">
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Input {...field} />
@@ -102,7 +102,7 @@ export default function Page() {
               <h2 className="text-center text-2xl">Members</h2>
               <FormMessage className="text-center" />
               <FormControl>
-                <div className="grid grid-rows-2 gap-2 md:grid-cols-2 md:grid-rows-1">
+                <div className="flex flex-col gap-2 md:grid md:grid-cols-2 md:grid-rows-1">
                   <div className="flex flex-col">
                     <FormLabel className="text-center text-lg">Find friends</FormLabel>
                     <Input
@@ -137,7 +137,7 @@ export default function Page() {
                   </div>
                   <div className="flex flex-col">
                     <FormLabel className="text-center text-lg">Selected friends</FormLabel>
-                    <Input className="invisible text-[16px]" disabled />
+                    <Input className="invisible hidden text-[16px] md:block" disabled />
                     <section className="mt-2 flex flex-col items-stretch gap-2">
                       {field.value.map((user) => (
                         <div key={user.id + '_selected'} className="flex items-center">

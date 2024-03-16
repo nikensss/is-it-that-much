@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={cn('bg-background min-h-screen font-sans antialiased', inter.variable)}>
+        <body className={cn('min-h-screen overflow-y-scroll scroll-smooth font-sans antialiased', inter.variable)}>
           <div className="flex min-h-screen flex-col bg-white">
             <NavBar />
             <main className="flex flex-1 justify-center">
