@@ -271,7 +271,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>((props, _ref)
                 onKeyDown={handleKeyDown}
                 onFocus={onFocus}
                 onBlur={onBlur}
-                className="w-full text-[16px]"
+                className="w-full"
               />
             ) : (
               <TagPopover
@@ -302,7 +302,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>((props, _ref)
                   onKeyDown={handleKeyDown}
                   onFocus={onFocus}
                   onBlur={onBlur}
-                  className="w-full text-[16px]"
+                  className="w-full"
                 />
               </TagPopover>
             )}
@@ -322,7 +322,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>((props, _ref)
               onFocus={onFocus}
               onBlur={onBlur}
               {...inputProps}
-              className={`${className} text-[16px]`}
+              className={className}
               autoComplete={enableAutocomplete ? 'on' : 'off'}
               list={enableAutocomplete ? 'autocomplete-options' : undefined}
               disabled={maxTags !== undefined && tags.length >= maxTags}
@@ -358,7 +358,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>((props, _ref)
                 onFocus={onFocus}
                 onBlur={onBlur}
                 {...inputProps}
-                className={`${className} text-[16px]`}
+                className={className}
                 autoComplete={enableAutocomplete ? 'on' : 'off'}
                 list={enableAutocomplete ? 'autocomplete-options' : undefined}
                 disabled={maxTags !== undefined && tags.length >= maxTags}

@@ -107,7 +107,6 @@ export default function Page() {
                     <FormLabel className="text-center text-lg">Find friends</FormLabel>
                     <Input
                       id="search"
-                      className="text-[16px]"
                       type="text"
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="Name, email, username..."
@@ -137,7 +136,7 @@ export default function Page() {
                   </div>
                   <div className="flex flex-col">
                     <FormLabel className="text-center text-lg">Selected friends</FormLabel>
-                    <Input className="invisible hidden text-[16px] md:block" disabled />
+                    <Input className="invisible hidden md:block" disabled />
                     <section className="mt-2 flex flex-col items-stretch gap-2">
                       {field.value.map((user) => (
                         <div key={user.id + '_selected'} className="flex items-center">

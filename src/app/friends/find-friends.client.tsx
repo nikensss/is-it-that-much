@@ -27,7 +27,6 @@ export default function FindFriends() {
     <div>
       <Input
         id="search"
-        className="text-[16px]"
         type="text"
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Name, email, username..."

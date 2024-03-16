@@ -122,7 +122,7 @@ export default function UpdateTransaction({ timezone, weekStartsOn, transaction,
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input onFocus={(e) => e.target.select()} className="col-span-7 text-[16px]" {...field} />
+                    <Input onFocus={(e) => e.target.select()} className="col-span-7" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -142,7 +142,7 @@ export default function UpdateTransaction({ timezone, weekStartsOn, transaction,
                         step={0.01}
                         min={0.01}
                         className={cn(
-                          'col-span-7 text-left text-[16px] font-normal [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+                          'col-span-7 text-left font-normal [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
                           !field.value && 'text-muted-foreground',
                         )}
                         {...field}
@@ -225,7 +225,7 @@ export default function UpdateTransaction({ timezone, weekStartsOn, transaction,
                       {...field}
                       placeholder="Enter a tag"
                       tags={form.getValues('tags')}
-                      className="max-w-[100%] text-[16px]"
+                      className="max-w-[100%]"
                       setTags={(tags) => {
                         form.setValue('tags', tags as Tag[]);
                       }}

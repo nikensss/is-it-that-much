@@ -83,7 +83,7 @@ export default function UpdateTag({ tag }: UpdateTagProps) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input onFocus={(e) => e.target.select()} className="col-span-7 text-[16px]" {...field} />
+                    <Input onFocus={(e) => e.target.select()} className="col-span-7" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

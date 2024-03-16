@@ -114,7 +114,7 @@ export default function RegisterTransaction({
                     <Input
                       onFocus={(e) => e.target.select()}
                       placeholder={getRandomElement(descriptions)}
-                      className="col-span-7 text-[16px]"
+                      className="col-span-7"
                       {...field}
                     />
                   </FormControl>
@@ -136,7 +136,7 @@ export default function RegisterTransaction({
                         step={0.01}
                         min={0.01}
                         className={cn(
-                          'col-span-7 text-left text-[16px] font-normal [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+                          'col-span-7 text-left font-normal [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
                           !field.value && 'text-muted-foreground',
                         )}
                         {...field}
@@ -219,7 +219,7 @@ export default function RegisterTransaction({
                       {...field}
                       placeholder="Enter a tag"
                       tags={form.getValues('tags')}
-                      className="max-w-[100%] text-[16px]"
+                      className="max-w-[100%]"
                       setTags={(tags) => {
                         form.setValue('tags', tags as Tag[]);
                       }}
