@@ -25,8 +25,8 @@ export default async function MyGroups() {
                 </AvatarFallback>
               </Avatar>
               <div className="space-y-2">
-                <p>{group.name}</p>
-                <p className={cn(group.description ? '' : 'invisible')}>{group.description}</p>
+                <p className="text-xl font-bold">{group.name}</p>
+                <p className={cn(group.description ? '' : 'invisible', 'text-gray-600')}>{group.description}</p>
               </div>
             </div>
           </div>
