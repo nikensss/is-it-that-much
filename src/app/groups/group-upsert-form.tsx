@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import ButtonWithDialog from '~/app/_components/button-with-dialog.client';
 import UserBannerClient from '~/app/friends/user-banner.client';
 import UserBannerLoading from '~/app/friends/user-banner.loading';
 import { Button } from '~/components/ui/button';
@@ -53,13 +54,13 @@ export default function GroupUpsertForm({
     },
   });
 
-  const mutate = api.groups.upsert.useMutation({
+  const upsert = api.groups.upsert.useMutation({
     onMutate: () => setIsLoading(true),
     onSuccess: (r) => router.push(`/groups/${r}`),
     onError: () => setIsLoading(false),
   });
 
-  const query = api.friends.find.useQuery(
+  const friend = api.friends.find.useQuery(
     { search },
     {
       enabled: search.length >= 3,
@@ -68,12 +69,18 @@ export default function GroupUpsertForm({
     },
   );
 
+  const del = api.groups.delete.useMutation({
+    onMutate: () => setIsLoading(true),
+    onSuccess: () => router.push('/groups'),
+    onError: () => setIsLoading(false),
+  });
+
   return (
     <Form {...form}>
       <form
         className="flex grow flex-col"
         onSubmit={form.handleSubmit((d) => {
-          return mutate.mutateAsync({
+          return upsert.mutateAsync({
             ...d,
             ...(group?.id ? { id: group.id } : {}),
             members: d.members.map((m) => m.id),
@@ -125,7 +132,7 @@ export default function GroupUpsertForm({
                       placeholder="Name, email, username..."
                     />
                     <section className="mt-2 flex flex-col items-stretch gap-2">
-                      {query.isFetching ? (
+                      {friend.isFetching ? (
                         <UserBannerLoading />
                       ) : (
                         candidates?.map((candidate) => (
@@ -177,9 +184,23 @@ export default function GroupUpsertForm({
             </FormItem>
           )}
         />
-        <Button className="mt-auto" type="submit" disabled={isLoading}>
-          {isLoading ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : group?.id ? 'Update' : 'Create'}
-        </Button>
+        <div className="mt-auto flex gap-2">
+          <Button type="submit" className="grow" disabled={isLoading}>
+            {isLoading ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : group ? 'Update' : 'Create'}
+          </Button>
+          {group ? (
+            <ButtonWithDialog
+              destructive
+              title="Delete group"
+              description="Are you sure you want to delete this group? All the information will be lost and unrecoverable."
+              onConfirm={() => del.mutateAsync({ id: group.id })}
+            >
+              <Button className="grow" variant="destructive" type="button">
+                Delete
+              </Button>
+            </ButtonWithDialog>
+          ) : null}
+        </div>
       </form>
     </Form>
   );

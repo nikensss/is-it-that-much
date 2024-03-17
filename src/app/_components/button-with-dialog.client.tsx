@@ -17,12 +17,14 @@ export default function ButtonWithDialog({
   children,
   title,
   description,
+  destructive = false,
   onConfirm,
 }: {
   children: React.ReactNode;
   title: string;
+  destructive?: boolean;
   description: string;
-  onConfirm?: () => Promise<void>;
+  onConfirm?: () => Promise<unknown>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -38,6 +40,7 @@ export default function ButtonWithDialog({
         <DialogFooter className="flex flex-col gap-2">
           <Button
             type="submit"
+            variant={destructive ? 'destructive' : 'default'}
             onClick={() => {
               if (!onConfirm) {
                 setIsOpen(false);
@@ -54,7 +57,7 @@ export default function ButtonWithDialog({
             {isSending ? <Loader2 className="animate-spin" /> : 'Confirm'}
           </Button>
           <DialogClose asChild>
-            <Button type="submit" variant="destructive" onClick={() => setIsOpen(false)}>
+            <Button type="submit" variant={destructive ? 'default' : 'destructive'} onClick={() => setIsOpen(false)}>
               Cancel
             </Button>
           </DialogClose>

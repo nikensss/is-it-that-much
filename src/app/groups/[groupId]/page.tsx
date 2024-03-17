@@ -16,7 +16,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
         <Button variant="outline">Register expense</Button>
         <Button variant="outline">Register settlement</Button>
       </div>
-      <div className="grid grid-rows-2 gap-2 md:grid-cols-2 md:grid-rows-1">
+      <div className="flex flex-col gap-2 md:grid md:grid-cols-2 md:grid-rows-1">
         <GroupDetails group={group} />
       </div>
     </div>

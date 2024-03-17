@@ -98,4 +98,8 @@ export const groupsRouter = createTRPCRouter({
 
       return group.id;
     }),
+
+  delete: privateProcedure
+    .input(z.object({ id: z.string().cuid() }))
+    .mutation(async ({ ctx: { db }, input: { id } }) => db.group.delete({ where: { id } })),
 });
