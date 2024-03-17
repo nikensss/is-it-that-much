@@ -17,7 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
-import { cn, getRandomElement } from '~/lib/utils';
+import { getRandomElement } from '~/lib/utils';
 import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
 
@@ -80,7 +80,7 @@ export default function RegisterTransaction({
   function onSubmit(data: z.infer<typeof formSchema>) {
     if (timezone) {
       // little hack to make sure the date used is timezoned to the user's preference
-      // the calendar component cannot be timezoned
+      // the calendar component cannot be timezond
       data.date = zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), timezone);
     }
 
@@ -103,7 +103,7 @@ export default function RegisterTransaction({
           <DialogTitle>Register {transactionType.toLowerCase()}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2 py-2">
             <FormField
               control={form.control}
               name="description"
@@ -111,18 +111,13 @@ export default function RegisterTransaction({
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input
-                      onFocus={(e) => e.target.select()}
-                      placeholder={getRandomElement(descriptions)}
-                      className="col-span-7"
-                      {...field}
-                    />
+                    <Input onFocus={(e) => e.target.select()} placeholder={getRandomElement(descriptions)} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="flex w-full flex-col justify-between md:flex-row">
+            <div className="grid grid-cols-2 gap-2">
               <FormField
                 control={form.control}
                 name="amount"
@@ -135,10 +130,7 @@ export default function RegisterTransaction({
                         onFocus={(e) => e.target.select()}
                         step={0.01}
                         min={0.01}
-                        className={cn(
-                          'col-span-7 text-left font-normal [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
-                          !field.value && 'text-muted-foreground',
-                        )}
+                        className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                         {...field}
                         onChange={(e) => form.setValue('amount', parseFloat(e.target.value))}
                         value={field.value ?? ''}
@@ -152,20 +144,12 @@ export default function RegisterTransaction({
                 control={form.control}
                 name="date"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="">
                     <FormLabel>Date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
-                          <Button
-                            variant={'outline'}
-                            ref={calendarTrigger}
-                            className={cn(
-                              'ml-0.5 min-w-[240px] pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground',
-                              'w-full py-0',
-                            )}
-                          >
+                          <Button variant="outline" ref={calendarTrigger} className="w-full text-left font-normal">
                             {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>

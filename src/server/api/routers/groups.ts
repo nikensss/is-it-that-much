@@ -1,4 +1,5 @@
 import { auth } from '@clerk/nextjs';
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
@@ -43,6 +44,21 @@ export const groupsRouter = createTRPCRouter({
         },
       });
     }),
+
+  leave: publicProcedure.input(z.object({ id: z.string().cuid() })).mutation(async ({ ctx, input: { id } }) => {
+    const { userId } = auth();
+    if (!userId) throw new TRPCError({ code: 'FORBIDDEN' });
+
+    const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
+    if (!user) throw new TRPCError({ code: 'FORBIDDEN' });
+
+    return ctx.db.usersGroups.deleteMany({
+      where: {
+        userId: user.id,
+        groupId: id,
+      },
+    });
+  }),
 
   all: publicProcedure.query(async ({ ctx }) => {
     const { userId } = auth();

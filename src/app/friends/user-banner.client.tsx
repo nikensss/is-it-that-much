@@ -4,17 +4,9 @@ import { AvatarIcon } from '@radix-ui/react-icons';
 import { Ban, Loader2, RotateCcw, UserRoundCheck, UserRoundMinus, UserRoundPlus, UserRoundX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
+import ButtonWithDialog from '~/app/_components/button-with-dialog.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTrigger,
-} from '~/components/ui/dialog';
 import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
@@ -187,11 +179,6 @@ export default function UserBannerClient({
 
         {isSelf ? null : (
           <ButtonWithDialog
-            onConfirm={async () => {
-              console.log('blocking ', user.id);
-              await new Promise<void>((res) => setTimeout(res, 1000));
-              console.log('blocked ', user.id);
-            }}
             title="Block user"
             description={`Are you sure you want to block ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
           >
@@ -202,51 +189,5 @@ export default function UserBannerClient({
         )}
       </div>
     </div>
-  );
-}
-
-function ButtonWithDialog({
-  children,
-  title,
-  description,
-  onConfirm,
-}: {
-  children: React.ReactNode;
-  title: string;
-  description: string;
-  onConfirm: () => Promise<void>;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isSending, setIsSending] = useState(false);
-
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild onClick={() => setIsSending(false)}>
-        {children}
-      </DialogTrigger>
-      <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">
-        <DialogHeader>{title}</DialogHeader>
-        <DialogDescription>{description}</DialogDescription>
-        <DialogFooter className="flex flex-col gap-4">
-          <Button
-            type="submit"
-            onClick={() => {
-              setIsSending(true);
-              onConfirm()
-                .catch(console.error)
-                .finally(() => setIsOpen(false));
-            }}
-            disabled={isSending}
-          >
-            {isSending ? <Loader2 className="animate-spin" /> : 'Confirm'}
-          </Button>
-          <DialogClose asChild>
-            <Button type="submit" variant="destructive" onClick={() => setIsOpen(false)}>
-              Cancel
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import GroupUpsertForm from '~/app/groups/group-upsert-form.component';
+import GroupUpsertForm from '~/app/groups/group-upsert-form';
 import { api } from '~/trpc/server';
 
 export default async function GroupUpdate({ params }: { params: { groupId: string } }) {

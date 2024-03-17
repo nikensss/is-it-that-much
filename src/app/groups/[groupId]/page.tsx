@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import GroupDetails from '~/app/groups/[groupId]/group-details.component';
+import GroupDetails from '~/app/groups/[groupId]/group-details';
 import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/server';
 
