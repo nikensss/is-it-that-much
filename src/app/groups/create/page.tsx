@@ -49,7 +49,7 @@ export default function Page() {
   const create = api.groups.create.useMutation({
     onMutate: () => setIsLoading(true),
     onSuccess: () => router.push('/groups'),
-    onSettled: () => setIsLoading(false),
+    onError: () => setIsLoading(false),
   });
 
   const query = api.friends.find.useQuery(
