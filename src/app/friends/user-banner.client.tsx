@@ -22,9 +22,11 @@ import type { RouterOutputs } from '~/trpc/shared';
 export default function UserBannerClient({
   user,
   className = '',
+  isSelf = false,
 }: {
   className?: string;
   user: Exclude<RouterOutputs['users']['find'], null>[number];
+  isSelf?: boolean;
 }) {
   const router = useRouter();
   const [isSent, setIsSent] = useState(false);
@@ -112,7 +114,7 @@ export default function UserBannerClient({
           </Button>
         ) : null}
 
-        {!isFetching && !isPending && !isFriend ? (
+        {!isSelf && !isFetching && !isPending && !isFriend ? (
           isSent ? (
             <ButtonWithDialog
               onConfirm={async () => {
@@ -140,7 +142,7 @@ export default function UserBannerClient({
           )
         ) : null}
 
-        {!isFetching && isPending && !isFriend ? (
+        {!isSelf && !isFetching && isPending && !isFriend ? (
           <>
             <ButtonWithDialog
               onConfirm={async () => {
@@ -168,7 +170,7 @@ export default function UserBannerClient({
           </>
         ) : null}
 
-        {!isFetching && isFriend ? (
+        {!isSelf && !isFetching && isFriend ? (
           <ButtonWithDialog
             onConfirm={async () => {
               await removeFriend.mutateAsync({ id: user.id });
@@ -182,19 +184,21 @@ export default function UserBannerClient({
           </ButtonWithDialog>
         ) : null}
 
-        <ButtonWithDialog
-          onConfirm={async () => {
-            console.log('blocking ', user.id);
-            await new Promise<void>((res) => setTimeout(res, 1000));
-            console.log('blocked ', user.id);
-          }}
-          title="Block user"
-          description={`Are you sure you want to block ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
-        >
-          <Button disabled className="bg-red-100 text-slate-900 hover:bg-red-600 hover:text-slate-100">
-            <Ban />
-          </Button>
-        </ButtonWithDialog>
+        {isSelf ? null : (
+          <ButtonWithDialog
+            onConfirm={async () => {
+              console.log('blocking ', user.id);
+              await new Promise<void>((res) => setTimeout(res, 1000));
+              console.log('blocked ', user.id);
+            }}
+            title="Block user"
+            description={`Are you sure you want to block ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
+          >
+            <Button disabled className="bg-red-100 text-slate-900 hover:bg-red-600 hover:text-slate-100">
+              <Ban />
+            </Button>
+          </ButtonWithDialog>
+        )}
       </div>
     </div>
   );
