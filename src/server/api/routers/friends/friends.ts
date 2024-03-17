@@ -1,21 +1,15 @@
-import { currentUser } from '@clerk/nextjs';
 import { FriendRequestStatus } from '@prisma/client';
 import { z } from 'zod';
 import { friendRequestsRouters } from '~/server/api/routers/friends/requests';
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
 
 export const friendsRouters = createTRPCRouter({
   requests: friendRequestsRouters,
 
-  all: publicProcedure.query(async ({ ctx }) => {
-    const user = await currentUser();
-    if (!user?.externalId) return [];
-
-    const accepted = await ctx.db.friendRequest.findMany({
+  all: privateProcedure.query(async ({ ctx: { user, db } }) => {
+    const accepted = await db.friendRequest.findMany({
       where: {
-        uniqueId: {
-          contains: user.externalId,
-        },
+        uniqueId: { contains: user.id },
         status: FriendRequestStatus.ACCEPTED,
       },
       include: {
@@ -40,35 +34,29 @@ export const friendsRouters = createTRPCRouter({
       },
     });
 
-    return accepted.map((e) => (e.fromUser.id === user.externalId ? e.toUser : e.fromUser));
+    return accepted.map((e) => (e.fromUser.id === user.id ? e.toUser : e.fromUser));
   }),
 
-  delete: publicProcedure.input(z.object({ id: z.string().cuid() })).mutation(async ({ ctx, input: { id } }) => {
-    const user = await currentUser();
-    if (!user?.externalId) return;
+  delete: privateProcedure
+    .input(z.object({ id: z.string().cuid() }))
+    .mutation(async ({ ctx: { db, user }, input: { id } }) => {
+      await db.friendRequest.deleteMany({
+        where: {
+          uniqueId: [user.id, id].sort().join('_'),
+        },
+      });
+    }),
 
-    await ctx.db.friendRequest.deleteMany({
-      where: {
-        uniqueId: [user.externalId, id].sort().join('_'),
-      },
-    });
-  }),
-
-  find: publicProcedure
+  find: privateProcedure
     .input(
       z.object({
         search: z.string().min(3),
       }),
     )
-    .query(async ({ ctx, input: { search } }) => {
-      const user = await currentUser();
-      if (!user?.externalId) return [];
-
-      const accepted = await ctx.db.friendRequest.findMany({
+    .query(async ({ ctx: { db, user }, input: { search } }) => {
+      const accepted = await db.friendRequest.findMany({
         where: {
-          uniqueId: {
-            contains: user.externalId,
-          },
+          uniqueId: { contains: user.id },
           status: FriendRequestStatus.ACCEPTED,
           OR: [
             {
@@ -79,7 +67,7 @@ export const friendsRouters = createTRPCRouter({
                       {
                         username: { contains: search, mode: 'insensitive' },
                       },
-                      { id: { not: user.externalId } },
+                      { id: { not: user.id } },
                     ],
                   },
                   {
@@ -87,7 +75,7 @@ export const friendsRouters = createTRPCRouter({
                       {
                         firstName: { contains: search, mode: 'insensitive' },
                       },
-                      { id: { not: user.externalId } },
+                      { id: { not: user.id } },
                     ],
                   },
                   {
@@ -95,7 +83,7 @@ export const friendsRouters = createTRPCRouter({
                       {
                         lastName: { contains: search, mode: 'insensitive' },
                       },
-                      { id: { not: user.externalId } },
+                      { id: { not: user.id } },
                     ],
                   },
                   {
@@ -103,7 +91,7 @@ export const friendsRouters = createTRPCRouter({
                       {
                         emailLocalPart: { contains: search, mode: 'insensitive' },
                       },
-                      { id: { not: user.externalId } },
+                      { id: { not: user.id } },
                     ],
                   },
                 ],
@@ -117,7 +105,7 @@ export const friendsRouters = createTRPCRouter({
                       {
                         username: { contains: search, mode: 'insensitive' },
                       },
-                      { id: { not: user.externalId } },
+                      { id: { not: user.id } },
                     ],
                   },
                   {
@@ -125,7 +113,7 @@ export const friendsRouters = createTRPCRouter({
                       {
                         firstName: { contains: search, mode: 'insensitive' },
                       },
-                      { id: { not: user.externalId } },
+                      { id: { not: user.id } },
                     ],
                   },
                   {
@@ -133,7 +121,7 @@ export const friendsRouters = createTRPCRouter({
                       {
                         lastName: { contains: search, mode: 'insensitive' },
                       },
-                      { id: { not: user.externalId } },
+                      { id: { not: user.id } },
                     ],
                   },
                   {
@@ -141,7 +129,7 @@ export const friendsRouters = createTRPCRouter({
                       {
                         emailLocalPart: { contains: search, mode: 'insensitive' },
                       },
-                      { id: { not: user.externalId } },
+                      { id: { not: user.id } },
                     ],
                   },
                 ],
@@ -171,6 +159,6 @@ export const friendsRouters = createTRPCRouter({
         },
       });
 
-      return accepted.map((e) => (e.fromUser.id === user.externalId ? e.toUser : e.fromUser));
+      return accepted.map((e) => (e.fromUser.id === user.id ? e.toUser : e.fromUser));
     }),
 });

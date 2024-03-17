@@ -1,29 +1,21 @@
-import { auth } from '@clerk/nextjs';
-import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
 
 export const groupsRouter = createTRPCRouter({
-  get: publicProcedure
+  get: privateProcedure
     .input(
       z.object({
         id: z.string().cuid(),
       }),
     )
-    .query(async ({ ctx, input: { id } }) => {
-      const { userId } = auth();
-      if (!userId) return null;
-
-      const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
-      if (!user) return null;
-
-      return ctx.db.group.findUnique({
+    .query(async ({ ctx: { db, user }, input: { id } }) => {
+      return db.group.findUnique({
         where: {
           id,
           UserGroup: {
             some: {
-              userId: user.id,
+              user,
             },
           },
         },
@@ -45,33 +37,23 @@ export const groupsRouter = createTRPCRouter({
       });
     }),
 
-  leave: publicProcedure.input(z.object({ id: z.string().cuid() })).mutation(async ({ ctx, input: { id } }) => {
-    const { userId } = auth();
-    if (!userId) throw new TRPCError({ code: 'FORBIDDEN' });
+  leave: privateProcedure
+    .input(z.object({ id: z.string().cuid() }))
+    .mutation(async ({ ctx: { db, user }, input: { id } }) => {
+      return db.usersGroups.deleteMany({
+        where: {
+          user,
+          groupId: id,
+        },
+      });
+    }),
 
-    const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
-    if (!user) throw new TRPCError({ code: 'FORBIDDEN' });
-
-    return ctx.db.usersGroups.deleteMany({
-      where: {
-        userId: user.id,
-        groupId: id,
-      },
-    });
-  }),
-
-  all: publicProcedure.query(async ({ ctx }) => {
-    const { userId } = auth();
-    if (!userId) return [];
-
-    const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
-    if (!user) return [];
-
-    return ctx.db.group.findMany({
+  all: privateProcedure.query(async ({ ctx: { db, user } }) => {
+    return db.group.findMany({
       where: {
         UserGroup: {
           some: {
-            userId: user.id,
+            user,
           },
         },
       },
@@ -83,7 +65,7 @@ export const groupsRouter = createTRPCRouter({
     });
   }),
 
-  upsert: publicProcedure
+  upsert: privateProcedure
     .input(
       z.object({
         id: z.string().cuid().optional(),
@@ -94,25 +76,19 @@ export const groupsRouter = createTRPCRouter({
           .min(1, { message: 'You need to select at least 1 member to create a group' }),
       }),
     )
-    .mutation(async ({ ctx, input: { id, name, description, members } }) => {
-      const { userId } = auth();
-      if (!userId) throw new Error('Not authenticated');
-
-      const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
-      if (!user) throw new Error('User not found');
-
-      const group = await ctx.db.group.upsert({
+    .mutation(async ({ ctx: { db, user }, input: { id, name, description, members } }) => {
+      const group = await db.group.upsert({
         where: { id: id ?? '' },
         create: { name, description, createdById: user.id },
         update: { name, description },
       });
 
-      await ctx.db.usersGroups.createMany({
+      await db.usersGroups.createMany({
         data: [user.id, ...members].map((userId) => ({ userId, groupId: group.id })),
         skipDuplicates: true,
       });
 
-      await ctx.db.usersGroups.deleteMany({
+      await db.usersGroups.deleteMany({
         where: {
           userId: {
             notIn: [user.id, ...members],

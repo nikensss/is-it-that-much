@@ -1,47 +1,41 @@
-import { auth } from '@clerk/nextjs';
-import { currentUser } from '@clerk/nextjs/server';
 import { TransactionType } from '@prisma/client';
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { getTimezoneOffset, utcToZonedTime } from 'date-fns-tz';
 import { log } from 'next-axiom';
 import { z } from 'zod';
-
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
 
 export const personalTransactionsRouter = createTRPCRouter({
-  all: publicProcedure.input(z.object({ type: z.nativeEnum(TransactionType) })).query(({ ctx, input: { type } }) => {
-    const { userId } = auth();
-    if (!userId) throw new Error('Not authenticated');
-
-    return ctx.db.personalTransaction.findMany({
-      where: {
-        user: {
-          externalId: userId,
+  all: privateProcedure
+    .input(z.object({ type: z.nativeEnum(TransactionType) }))
+    .query(({ ctx: { db, user }, input: { type } }) => {
+      return db.personalTransaction.findMany({
+        where: {
+          userId: user.id,
+          transaction: {
+            type,
+          },
         },
-        transaction: {
-          type,
+        orderBy: {
+          transaction: {
+            date: 'desc',
+          },
         },
-      },
-      orderBy: {
-        transaction: {
-          date: 'desc',
-        },
-      },
-      include: {
-        transaction: {
-          include: {
-            TransactionsTags: {
-              include: {
-                tag: true,
+        include: {
+          transaction: {
+            include: {
+              TransactionsTags: {
+                include: {
+                  tag: true,
+                },
               },
             },
           },
         },
-      },
-    });
-  }),
+      });
+    }),
 
-  period: publicProcedure
+  period: privateProcedure
     .input(
       z.object({
         type: z.nativeEnum(TransactionType),
@@ -49,27 +43,15 @@ export const personalTransactionsRouter = createTRPCRouter({
         to: z.date().nullish(),
       }),
     )
-    .query(async ({ ctx, input }) => {
-      const { userId } = auth();
-      if (!userId) throw new Error('Not authenticated');
-
-      const user = await ctx.db.user.findUnique({
-        where: {
-          externalId: userId,
-        },
-        select: {
-          timezone: true,
-        },
-      });
-
-      const timezone = user?.timezone ?? 'Europe/Amsterdam';
+    .query(async ({ ctx: { db, user }, input }) => {
+      const timezone = user.timezone ?? 'Europe/Amsterdam';
       const now = utcToZonedTime(Date.now(), timezone);
       const preferredTimezoneOffset = getTimezoneOffset(timezone);
       const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
       const from = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
       const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
 
-      return ctx.db.transaction.findMany({
+      return db.transaction.findMany({
         where: {
           date: {
             gte: input?.from ?? from,
@@ -77,9 +59,7 @@ export const personalTransactionsRouter = createTRPCRouter({
           },
           type: input.type,
           PersonalTransaction: {
-            user: {
-              externalId: userId,
-            },
+            userId: user.id,
           },
         },
         orderBy: {
@@ -95,26 +75,14 @@ export const personalTransactionsRouter = createTRPCRouter({
       });
     }),
 
-  totalAmountInMonth: publicProcedure
+  totalAmountInMonth: privateProcedure
     .input(
       z.object({
         type: z.nativeEnum(TransactionType),
         date: z.date().optional(),
       }),
     )
-    .query(async ({ ctx, input }) => {
-      const { userId } = auth();
-      if (!userId) throw new Error('Not authenticated');
-
-      const user = await ctx.db.user.findUnique({
-        where: {
-          externalId: userId,
-        },
-        select: {
-          timezone: true,
-        },
-      });
-
+    .query(async ({ ctx: { db, user }, input }) => {
       const timezone = user?.timezone ?? 'Europe/Amsterdam';
       const now = utcToZonedTime(input.date ?? Date.now(), timezone);
       const preferredTimezoneOffset = getTimezoneOffset(timezone);
@@ -122,7 +90,7 @@ export const personalTransactionsRouter = createTRPCRouter({
       const from = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
       const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
 
-      return ctx.db.transaction.aggregate({
+      return db.transaction.aggregate({
         where: {
           date: {
             gte: from,
@@ -130,9 +98,7 @@ export const personalTransactionsRouter = createTRPCRouter({
           },
           type: input.type,
           PersonalTransaction: {
-            user: {
-              externalId: userId,
-            },
+            userId: user.id,
           },
         },
         _sum: {
@@ -141,7 +107,7 @@ export const personalTransactionsRouter = createTRPCRouter({
       });
     }),
 
-  create: publicProcedure
+  create: privateProcedure
     .input(
       z.object({
         type: z.nativeEnum(TransactionType),
@@ -151,29 +117,23 @@ export const personalTransactionsRouter = createTRPCRouter({
         tags: z.array(z.string().min(3).max(50)),
       }),
     )
-    .mutation(async ({ ctx, input: { amount, date, description, type, tags } }) => {
+    .mutation(async ({ ctx: { db, user }, input: { amount, date, description, type, tags } }) => {
       try {
-        const user = await currentUser();
-        if (!user) throw new Error('Not authenticated');
-
-        const createdById = user.externalId;
-        if (!createdById) throw new Error('User has no externalId');
-
-        await ctx.db.tag.createMany({
-          data: tags.map((name) => ({ name, createdById })),
+        await db.tag.createMany({
+          data: tags.map((name) => ({ name, createdById: user.id })),
           skipDuplicates: true,
         });
 
-        const dbTags = await ctx.db.tag.findMany({
+        const dbTags = await db.tag.findMany({
           where: {
-            createdById,
+            createdById: user.id,
             name: { in: tags },
           },
         });
 
-        return ctx.db.personalTransaction.create({
+        return db.personalTransaction.create({
           data: {
-            user: { connect: { externalId: user.id } },
+            user: { connect: { id: user.id } },
             transaction: {
               create: {
                 amount: parseInt(amount.toFixed(2)) * 100,
@@ -194,14 +154,14 @@ export const personalTransactionsRouter = createTRPCRouter({
           amount,
           description,
           error,
-          externalUserId: auth().userId,
+          userId: user.id,
           tags,
         });
         return null;
       }
     }),
 
-  update: publicProcedure
+  update: privateProcedure
     .input(
       z.object({
         id: z.string(),
@@ -211,35 +171,29 @@ export const personalTransactionsRouter = createTRPCRouter({
         tags: z.array(z.string().min(3).max(50)),
       }),
     )
-    .mutation(async ({ ctx, input: { id, amount, date, description, tags } }) => {
+    .mutation(async ({ ctx: { db, user }, input: { id, amount, date, description, tags } }) => {
       try {
-        const user = await currentUser();
-        if (!user) throw new Error('Not authenticated');
-
-        const createdById = user.externalId;
-        if (!createdById) throw new Error('User has no externalId');
-
         // delete all the tags the transaction has
-        await ctx.db.transactionsTags.deleteMany({ where: { transactionId: id } });
+        await db.transactionsTags.deleteMany({ where: { transactionId: id } });
 
         // ensure all the tags for this transaction exist
-        await ctx.db.tag.createMany({
-          data: tags.map((name) => ({ name, createdById })),
+        await db.tag.createMany({
+          data: tags.map((name) => ({ name, createdById: user.id })),
           skipDuplicates: true,
         });
 
-        const dbTags = await ctx.db.tag.findMany({
+        const dbTags = await db.tag.findMany({
           where: {
-            createdById,
+            createdById: user.id,
             name: { in: tags },
           },
         });
 
-        await ctx.db.transactionsTags.createMany({
+        await db.transactionsTags.createMany({
           data: dbTags.map((tag) => ({ tagId: tag.id, transactionId: id })),
         });
 
-        return ctx.db.personalTransaction.update({
+        return db.personalTransaction.update({
           where: { transactionId: id },
           data: {
             transaction: {
@@ -257,29 +211,23 @@ export const personalTransactionsRouter = createTRPCRouter({
           amount,
           description,
           error,
-          externalUserId: auth().userId,
+          userId: user.id,
           tags,
         });
         return null;
       }
     }),
 
-  recent: publicProcedure
+  recent: privateProcedure
     .input(
       z.object({
         type: z.nativeEnum(TransactionType),
       }),
     )
-    .query(async ({ ctx, input: { type } }) => {
-      const user = auth();
-
-      if (!user?.userId) return [];
-
-      return ctx.db.personalTransaction.findMany({
+    .query(async ({ ctx: { db, user }, input: { type } }) => {
+      return db.personalTransaction.findMany({
         where: {
-          user: {
-            externalId: user.userId,
-          },
+          user,
           transaction: {
             type,
           },
@@ -304,29 +252,21 @@ export const personalTransactionsRouter = createTRPCRouter({
       });
     }),
 
-  delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input: { id } }) => {
-    const user = await currentUser();
-    try {
-      if (!user) throw new Error('Not authenticated');
-
-      return ctx.db.transaction.delete({
-        where: {
-          id,
-          PersonalTransaction: {
-            user: {
-              externalId: user.id,
+  delete: privateProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx: { db, user }, input: { id } }) => {
+      try {
+        return db.transaction.delete({
+          where: {
+            id,
+            PersonalTransaction: {
+              user,
             },
           },
-        },
-      });
-    } catch (error) {
-      log.error('could not delete personal transaction', {
-        id,
-        error,
-        externalUserId: user?.id,
-        userId: user?.externalId,
-      });
-      return null;
-    }
-  }),
+        });
+      } catch (error) {
+        log.error('could not delete personal transaction', { id, error, userId: user.id });
+        return null;
+      }
+    }),
 });

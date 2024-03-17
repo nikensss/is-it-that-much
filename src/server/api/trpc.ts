@@ -6,7 +6,8 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from '@trpc/server';
+import { auth } from '@clerk/nextjs';
+import { TRPCError, initTRPC } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
 
@@ -73,3 +74,13 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+
+export const privateProcedure = t.procedure.use(async ({ ctx, next }) => {
+  const { userId } = auth();
+  if (!userId) throw new TRPCError({ code: 'FORBIDDEN' });
+
+  const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
+  if (!user) throw new TRPCError({ code: 'FORBIDDEN' });
+
+  return next({ ctx: { user } });
+});

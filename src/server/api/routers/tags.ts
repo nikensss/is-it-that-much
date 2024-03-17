@@ -1,53 +1,45 @@
-import { auth } from '@clerk/nextjs';
 import { TransactionType } from '@prisma/client';
 import { z } from 'zod';
 
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
 
 export const tagsRouter = createTRPCRouter({
-  all: publicProcedure.input(z.object({ type: z.nativeEnum(TransactionType) })).query(({ ctx, input: { type } }) => {
-    const { userId } = auth();
-    if (!userId) throw new Error('Not authenticated');
-
-    return ctx.db.tag.findMany({
-      where: {
-        createdBy: {
-          externalId: userId,
-        },
-        TransactionsTags: {
-          some: {
-            transaction: {
-              type,
+  all: privateProcedure
+    .input(z.object({ type: z.nativeEnum(TransactionType) }))
+    .query(({ ctx: { db, user }, input: { type } }) => {
+      return db.tag.findMany({
+        where: {
+          createdBy: user,
+          TransactionsTags: {
+            some: {
+              transaction: {
+                type,
+              },
             },
           },
         },
-      },
-    });
-  }),
+      });
+    }),
 
-  update: publicProcedure.input(z.object({ id: z.string(), name: z.string() })).mutation(({ ctx, input }) => {
-    const { userId } = auth();
-    if (!userId) throw new Error('Not authenticated');
+  update: privateProcedure
+    .input(z.object({ id: z.string(), name: z.string() }))
+    .mutation(({ ctx: { db, user }, input: { id, name } }) => {
+      return db.tag.update({
+        where: {
+          createdBy: user,
+          id,
+        },
+        data: {
+          name,
+        },
+      });
+    }),
 
-    return ctx.db.tag.update({
+  delete: privateProcedure.input(z.object({ id: z.string() })).mutation(({ ctx: { db, user }, input: { id } }) => {
+    return db.tag.delete({
       where: {
-        createdBy: { externalId: userId },
-        id: input.id,
-      },
-      data: {
-        name: input.name,
-      },
-    });
-  }),
-
-  delete: publicProcedure.input(z.object({ id: z.string() })).mutation(({ ctx, input }) => {
-    const { userId } = auth();
-    if (!userId) throw new Error('Not authenticated');
-
-    return ctx.db.tag.delete({
-      where: {
-        createdBy: { externalId: userId },
-        id: input.id,
+        createdBy: user,
+        id,
       },
       include: {
         TransactionsTags: true,

@@ -1,18 +1,10 @@
-import { auth, clerkClient as clerk, currentUser } from '@clerk/nextjs';
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
+import { clerkClient as clerk, currentUser } from '@clerk/nextjs';
+import { createTRPCRouter, privateProcedure, publicProcedure } from '~/server/api/trpc';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 import { subMinutes } from 'date-fns';
 
 export const usersRouter = createTRPCRouter({
-  exists: publicProcedure.query(async ({ ctx }) => {
-    const { userId } = auth();
-    if (!userId) return false;
-
-    const count = await ctx.db.user.count({ where: { externalId: userId } });
-    return count > 0;
-  }),
-
   create: publicProcedure.mutation(async ({ ctx }) => {
     try {
       const clerkUser = await currentUser();
@@ -46,12 +38,7 @@ export const usersRouter = createTRPCRouter({
     }
   }),
 
-  get: publicProcedure.query(({ ctx }) => {
-    const { userId } = auth();
-    if (!userId) return null;
-
-    return ctx.db.user.findUnique({ where: { externalId: userId } });
-  }),
+  get: privateProcedure.query(({ ctx: { user } }) => user),
 
   sync: publicProcedure.mutation(async ({ ctx }) => {
     const clerkUser = await currentUser();
@@ -78,7 +65,7 @@ export const usersRouter = createTRPCRouter({
     }
   }),
 
-  update: publicProcedure
+  update: privateProcedure
     .input(
       z.object({
         username: z.string().min(1).max(120).optional(),
@@ -87,13 +74,7 @@ export const usersRouter = createTRPCRouter({
         weekStartsOn: z.number().min(0).max(6).optional(),
       }),
     )
-    .mutation(async ({ ctx, input }) => {
-      const { userId } = auth();
-      if (!userId) return null;
-
-      const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
-      if (!user) return null;
-
+    .mutation(async ({ ctx: { db, user }, input }) => {
       const timezone =
         input.timezone
           ?.match(/^(?<timezone>[^\(]+)\(.*$/)
@@ -105,13 +86,13 @@ export const usersRouter = createTRPCRouter({
       if (input.username !== user.username) {
         await Promise.all([
           clerk.users.updateUser(user.externalId, { username: input.username }),
-          ctx.db.usernameLocks.deleteMany({
+          db.usernameLocks.deleteMany({
             where: { OR: [{ userId: user.id }, user.username ? { username: user.username } : {}] },
           }),
         ]);
       }
 
-      return ctx.db.user.update({
+      return db.user.update({
         where: { id: user.id },
         data: {
           username: input.username,
@@ -122,20 +103,14 @@ export const usersRouter = createTRPCRouter({
       });
     }),
 
-  find: publicProcedure
+  find: privateProcedure
     .input(
       z.object({
         search: z.string().min(3),
       }),
     )
-    .query(async ({ ctx, input: { search } }) => {
-      const { userId } = auth();
-      if (!userId) return null;
-
-      const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
-      if (!user) return null;
-
-      return ctx.db.user.findMany({
+    .query(async ({ ctx: { db, user }, input: { search } }) => {
+      return db.user.findMany({
         where: {
           OR: [
             {
@@ -178,58 +153,53 @@ export const usersRouter = createTRPCRouter({
     }),
 
   usernames: createTRPCRouter({
-    lock: publicProcedure.input(z.object({ username: z.string() })).query(async ({ ctx, input: { username } }) => {
-      if (username.length < 3 || username.length > 120) return false;
+    lock: privateProcedure
+      .input(z.object({ username: z.string() }))
+      .query(async ({ ctx: { db, user }, input: { username } }) => {
+        if (username.length < 3 || username.length > 120) return false;
 
-      const { userId } = auth();
-      if (!userId) return false;
+        if (username === user.username) return true;
 
-      const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
-      if (!user) return false;
+        const isAlreadyInUse = (await db.user.count({ where: { username } })) > 0;
+        if (isAlreadyInUse) return false;
 
-      if (username === user.username) return true;
-
-      const isAlreadyInUse = (await ctx.db.user.count({ where: { username } })) > 0;
-      if (isAlreadyInUse) return false;
-
-      await ctx.db.usernameLocks.deleteMany({
-        where: {
-          updatedAt: {
-            lt: subMinutes(new Date(), 2),
+        await db.usernameLocks.deleteMany({
+          where: {
+            updatedAt: {
+              lt: subMinutes(new Date(), 2),
+            },
           },
-        },
-      });
+        });
 
-      const isLockedBySomebodyElse =
-        (await ctx.db.usernameLocks.count({
+        const locks = await db.usernameLocks.count({
           where: {
             username,
             userId: {
               not: user.id,
             },
           },
-        })) > 0;
-      if (isLockedBySomebodyElse) return false;
-
-      try {
-        await ctx.db.usernameLocks.upsert({
-          where: {
-            username,
-          },
-          create: {
-            username,
-            userId: user.id,
-          },
-          update: {
-            username,
-          },
         });
+        if (locks > 0) return false;
 
-        return true;
-      } catch (e) {
-        console.log('error locking username', e, user);
-        return false;
-      }
-    }),
+        try {
+          await db.usernameLocks.upsert({
+            where: {
+              username,
+            },
+            create: {
+              username,
+              userId: user.id,
+            },
+            update: {
+              username,
+            },
+          });
+
+          return true;
+        } catch (e) {
+          console.log('error locking username', e, user);
+          return false;
+        }
+      }),
   }),
 });
