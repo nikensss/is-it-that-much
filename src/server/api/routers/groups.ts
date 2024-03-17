@@ -95,5 +95,7 @@ export const groupsRouter = createTRPCRouter({
           },
         },
       });
+
+      return group.id;
     }),
 });

@@ -55,7 +55,7 @@ export default function GroupUpsertForm({
 
   const mutate = api.groups.upsert.useMutation({
     onMutate: () => setIsLoading(true),
-    onSuccess: () => router.push('/groups'),
+    onSuccess: (r) => router.push(`/groups/${r}`),
     onError: () => setIsLoading(false),
   });
 
