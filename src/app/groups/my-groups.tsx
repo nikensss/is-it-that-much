@@ -1,4 +1,5 @@
 import { UsersRound } from 'lucide-react';
+import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { cn } from '~/lib/utils';
 import { api } from '~/trpc/server';
@@ -13,7 +14,8 @@ export default async function MyGroups() {
       </header>
       <main className="flex flex-col gap-2">
         {groups.map((group) => (
-          <div
+          <Link
+            href={`/groups/${group.id}`}
             key={group.id}
             className="ry-2 flex select-none items-center rounded-md border border-slate-100 p-4 md:hover:cursor-pointer md:hover:border-slate-900 md:hover:shadow-md"
           >
@@ -29,7 +31,7 @@ export default async function MyGroups() {
                 <p className={cn(group.description ? '' : 'invisible', 'text-gray-600')}>{group.description}</p>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </main>
     </section>

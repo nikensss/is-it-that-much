@@ -7,10 +7,8 @@ export default async function GroupsPage() {
   return (
     <>
       <div className="mb-2 grid">
-        <Button variant="outline">
-          <Link className="my-4" href="/groups/create">
-            Create new group
-          </Link>
+        <Button variant="outline" asChild>
+          <Link href="/groups/create">Create new group</Link>
         </Button>
       </div>
       <div className="mt-2 grid grow gap-2 md:grid-cols-2">

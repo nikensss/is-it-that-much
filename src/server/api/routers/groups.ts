@@ -4,6 +4,35 @@ import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 
 export const groupsRouter = createTRPCRouter({
+  get: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.db.group.findUnique({
+        where: {
+          id: input.id,
+        },
+        include: {
+          UserGroup: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  firstName: true,
+                  lastName: true,
+                  imageUrl: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
+
   all: publicProcedure.query(async ({ ctx }) => {
     const { userId } = auth();
     if (!userId) return [];

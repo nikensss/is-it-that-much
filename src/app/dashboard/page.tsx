@@ -7,12 +7,14 @@ import DashboardRegisterPersonalIncome from '~/app/dashboard/register-transactio
 import DashboardTotals from '~/app/dashboard/totals';
 import { Button } from '~/components/ui/button';
 
-export default function Dashboard({ searchParams }: { searchParams: Record<string, string | undefined> }) {
+export default async function Dashboard({ searchParams }: { searchParams: Record<string, string | undefined> }) {
   const month = searchParams?.month ?? format(new Date(), 'LLLL');
   const year = searchParams?.year ?? format(new Date(), 'yyyy');
 
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   return (
-    <>
+    <main className="flex-1 bg-white">
       <section className="mb-2 grid grid-cols-2 gap-2">
         <DashboardRegisterPersonalExpense />
         <DashboardRegisterPersonalIncome />
@@ -40,7 +42,7 @@ export default function Dashboard({ searchParams }: { searchParams: Record<strin
       <section>
         <DashboardRecentTrasnsactions />
       </section>
-    </>
+    </main>
   );
 }
 

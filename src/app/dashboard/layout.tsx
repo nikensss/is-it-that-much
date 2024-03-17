@@ -12,7 +12,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <h2 className="text-lg font-bold text-slate-200">Dashboard</h2>
           </Link>
         </header>
-        <main className="flex-1 bg-white">{children}</main>
+        {children}
       </div>
     </div>
   );
