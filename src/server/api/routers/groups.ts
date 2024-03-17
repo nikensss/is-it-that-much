@@ -10,10 +10,21 @@ export const groupsRouter = createTRPCRouter({
         id: z.string().cuid(),
       }),
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ ctx, input: { id } }) => {
+      const { userId } = auth();
+      if (!userId) return null;
+
+      const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
+      if (!user) return null;
+
       return ctx.db.group.findUnique({
         where: {
-          id: input.id,
+          id,
+          UserGroup: {
+            some: {
+              userId: user.id,
+            },
+          },
         },
         include: {
           UserGroup: {
@@ -56,9 +67,10 @@ export const groupsRouter = createTRPCRouter({
     });
   }),
 
-  create: publicProcedure
+  upsert: publicProcedure
     .input(
       z.object({
+        id: z.string().cuid().optional(),
         name: z.string().min(3),
         description: z.string().optional(),
         members: z
@@ -66,17 +78,30 @@ export const groupsRouter = createTRPCRouter({
           .min(1, { message: 'You need to select at least 1 member to create a group' }),
       }),
     )
-    .mutation(async ({ ctx, input: { name, description, members } }) => {
+    .mutation(async ({ ctx, input: { id, name, description, members } }) => {
       const { userId } = auth();
       if (!userId) throw new Error('Not authenticated');
 
       const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
       if (!user) throw new Error('User not found');
 
-      const group = await ctx.db.group.create({ data: { name, description, createdById: user.id } });
+      const group = await ctx.db.group.upsert({
+        where: { id: id ?? '' },
+        create: { name, description, createdById: user.id },
+        update: { name, description },
+      });
 
       await ctx.db.usersGroups.createMany({
         data: [user.id, ...members].map((userId) => ({ userId, groupId: group.id })),
+        skipDuplicates: true,
+      });
+
+      await ctx.db.usersGroups.deleteMany({
+        where: {
+          userId: {
+            notIn: [user.id, ...members],
+          },
+        },
       });
     }),
 });

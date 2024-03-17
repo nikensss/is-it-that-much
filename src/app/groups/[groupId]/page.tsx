@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation';
-import GroupDetails from '~/app/groups/[id]/group-details.component';
+import GroupDetails from '~/app/groups/[groupId]/group-details.component';
 import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/server';
 
-export default async function GroupPage({ params }: { params: { id: string } }) {
-  const group = await api.groups.get.query({ id: params.id }).catch(() => null);
+export default async function GroupPage({ params }: { params: { groupId: string } }) {
+  const group = await api.groups.get.query({ id: params.groupId }).catch(() => null);
   if (!group) return notFound();
 
   return (
@@ -22,3 +22,5 @@ export default async function GroupPage({ params }: { params: { id: string } }) 
     </div>
   );
 }
+
+export const dynamic = 'force-dynamic';

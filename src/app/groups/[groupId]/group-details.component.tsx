@@ -21,8 +21,8 @@ export default async function GroupDetails({ group }: { group: Exclude<RouterOut
             <UserBannerClient key={user.id} user={user} isSelf={user.id === currentUser?.id} />
           ))}
         </div>
-        <Button variant="outline" className="w-full">
-          <Link href={`/groups/${group.id}/update`}>Edit</Link>
+        <Button asChild variant="outline" className="w-full">
+          <Link href={`/groups/${group.id}/edit`}>Edit</Link>
         </Button>
       </main>
     </div>

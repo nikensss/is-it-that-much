@@ -90,6 +90,7 @@ export default function UserBannerClient({
     <div
       className={cn(
         'ry-2 flex select-none items-center rounded-md border border-slate-100 p-4 md:hover:border-slate-900 md:hover:shadow-md',
+        isSelf ? 'pointer-events-none bg-slate-200' : '',
         className,
       )}
     >
@@ -108,7 +109,7 @@ export default function UserBannerClient({
         </div>
       </div>
       <div className="ml-auto flex gap-2">
-        {isFetching ? (
+        {!isSelf && isFetching ? (
           <Button disabled>
             <Loader2 className="animate-spin" />
           </Button>
