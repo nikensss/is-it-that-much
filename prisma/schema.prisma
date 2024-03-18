@@ -128,7 +128,7 @@ model SharedTransaction {
 model Transaction {
   id          String          @id @default(cuid())
   description String
-  amount      Int // amount in cents
+  amount      Int
   date        DateTime
   type        TransactionType
 
@@ -148,9 +148,10 @@ model Transaction {
 }
 
 model TransactionSplit {
-  id        String   @id @default(cuid())
-  amount    Int // amount in cents
-  date      DateTime
+  id   String @id @default(cuid())
+  paid Int // the amount that was paid
+  owed Int // the amount that should've been paid
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -163,7 +164,6 @@ model TransactionSplit {
   @@unique([sharedTransactionId, userId])
   @@index([sharedTransactionId])
   @@index([userId])
-  @@index([date])
   @@map("transaction_splits")
 }
 

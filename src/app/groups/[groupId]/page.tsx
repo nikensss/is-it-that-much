@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import GroupDetails from '~/app/groups/[groupId]/group-details';
 import { Button } from '~/components/ui/button';
@@ -13,7 +14,9 @@ export default async function GroupPage({ params }: { params: { groupId: string 
         <h2 className="text-lg font-bold capitalize text-slate-200">{group.name}</h2>
       </header>
       <div className="mb-2 grid grid-cols-2 grid-rows-1 gap-2">
-        <Button variant="outline">Register expense</Button>
+        <Button variant="outline" asChild>
+          <Link href={`${params.groupId}/expense`}>Register expense</Link>
+        </Button>
         <Button variant="outline">Register settlement</Button>
       </div>
       <div className="flex flex-col gap-2 md:grid md:grid-cols-2 md:grid-rows-1">
