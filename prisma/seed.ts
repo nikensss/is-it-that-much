@@ -145,10 +145,10 @@ async function main() {
 
       await db.transactionSplit.create({
         data: {
-          date: new Date(),
           sharedTransactionId: sharedTransaction.id,
           userId: user.id,
-          amount: split,
+          paid: i === splits.length - 1 ? amount : 0,
+          owed: split,
         },
       });
     }
