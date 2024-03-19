@@ -47,9 +47,9 @@ function SharedTransactionView({
 
   return (
     <div className="flex items-center gap-2 border-b border-slate-200 p-2 last:border-none">
-      <div className="flex items-center -space-x-6">
-        {payers.map((p) => (
-          <Avatar key={p.id}>
+      <div className="flex flex-col-reverse items-center lg:flex-row-reverse">
+        {payers.reverse().map((p) => (
+          <Avatar key={p.id} className="-mb-6 first:mb-0 hover:z-10 lg:-mr-6 lg:mb-0 lg:first:mr-0">
             <AvatarImage src={p.imageUrl ?? ''} alt={`@${p.username}`} />
             <AvatarFallback>
               <AvatarIcon />

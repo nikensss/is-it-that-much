@@ -2,7 +2,6 @@ import Link from 'next/link';
 import UserBannerClient from '~/app/friends/user-banner.client';
 import LeaveGroupButton from '~/app/groups/[groupId]/leave-group-button';
 import { Button } from '~/components/ui/button';
-import { api } from '~/trpc/server';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export default async function GroupDetails({

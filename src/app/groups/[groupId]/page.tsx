@@ -23,7 +23,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
         </Button>
         <Button variant="outline">Register settlement</Button>
       </div>
-      <div className="flex flex-col gap-2 md:grid md:grid-cols-2 md:grid-rows-1">
+      <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
         <GroupDetails {...{ group, user }} />
       </div>
       <GroupExpenses {...{ group, user }} />
