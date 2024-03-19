@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import GroupBalance from '~/app/groups/[groupId]/group-balance';
 import GroupDetails from '~/app/groups/[groupId]/group-details';
 import GroupExpenses from '~/app/groups/[groupId]/group-expenses';
 import { Button } from '~/components/ui/button';
@@ -11,6 +12,9 @@ export default async function GroupPage({ params }: { params: { groupId: string 
 
   const user = await api.users.get.query().catch(() => null);
   if (!user) return notFound();
+
+  const balance = await api.groups.balance.query({ groupId: params.groupId });
+  const transactions = await api.groups.expenses.recent.query({ groupId: group.id });
 
   return (
     <div className="flex grow flex-col gap-2">
@@ -26,7 +30,10 @@ export default async function GroupPage({ params }: { params: { groupId: string 
       <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
         <GroupDetails {...{ group, user }} />
       </div>
-      <GroupExpenses {...{ group, user }} />
+      <div className="flex grow flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
+        <GroupExpenses {...{ transactions, user }} />
+        <GroupBalance {...{ balance, user }} />
+      </div>
     </div>
   );
 }

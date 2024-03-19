@@ -1,18 +1,9 @@
 import { TransactionType } from '@prisma/client';
-import { TRPCError } from '@trpc/server';
-import { log } from 'next-axiom';
 import { z } from 'zod';
+import { assertUserInGroup } from '~/server/api/routers/groups/groups';
 import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
-import { db } from '~/server/db';
 import { groupExpenseFormSchema } from '~/shared/groups-expenses-form-schema';
 
-async function assertUserInGroup({ groupId, userId }: { groupId: string; userId: string }) {
-  const isUserInGroup = await db.usersGroups.findFirst({ where: { groupId, userId } });
-  if (!isUserInGroup) {
-    log.warn('User is not in group', { groupId, userId });
-    throw new TRPCError({ code: 'FORBIDDEN' });
-  }
-}
 export const groupExpensesRouter = createTRPCRouter({
   create: privateProcedure.input(groupExpenseFormSchema).mutation(async ({ ctx: { db }, input }) => {
     await assertUserInGroup({ groupId: input.groupId, userId: input.createdById });
@@ -46,12 +37,12 @@ export const groupExpensesRouter = createTRPCRouter({
 
   recent: privateProcedure
     .input(z.object({ groupId: z.string().cuid() }))
-    .query(async ({ ctx: { db, user }, input }) => {
-      await assertUserInGroup({ groupId: input.groupId, userId: user.id });
+    .query(async ({ ctx: { db, user }, input: { groupId } }) => {
+      await assertUserInGroup({ groupId, userId: user.id });
 
       return db.sharedTransaction.findMany({
         where: {
-          groupId: input.groupId,
+          groupId,
         },
         include: {
           transaction: true,
@@ -74,7 +65,7 @@ export const groupExpensesRouter = createTRPCRouter({
             date: 'desc',
           },
         },
-        take: 10,
+        take: 5,
       });
     }),
 });
