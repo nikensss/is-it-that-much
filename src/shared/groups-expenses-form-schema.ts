@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const groupExpenseFormSchema = z.object({
-  description: z.string(),
-  amount: z.number().positive(),
+  description: z.string().min(3, 'Description must be at least 3 characters'),
+  amount: z.number().positive('Amount must be greater than 0'),
   date: z.date(),
   groupId: z.string().cuid(),
   createdById: z.string().cuid(),

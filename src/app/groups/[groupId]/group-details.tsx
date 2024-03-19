@@ -5,9 +5,14 @@ import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/server';
 import type { RouterOutputs } from '~/trpc/shared';
 
-export default async function GroupDetails({ group }: { group: Exclude<RouterOutputs['groups']['get'], null> }) {
+export default async function GroupDetails({
+  group,
+  user,
+}: {
+  user: RouterOutputs['users']['get'];
+  group: Exclude<RouterOutputs['groups']['get'], null>;
+}) {
   const users = group.UserGroup.map((e) => e.user);
-  const currentUser = await api.users.get.query();
 
   return (
     <div className="flex flex-col rounded-md border border-slate-200 p-2">
@@ -18,8 +23,8 @@ export default async function GroupDetails({ group }: { group: Exclude<RouterOut
         <p className="text-center text-lg font-bold first-letter:uppercase">{group.description}</p>
         <p className="text-center text-lg">Members</p>
         <div className="mb-2 flex flex-col gap-2">
-          {users.map((user) => {
-            return <UserBannerClient key={user.id} user={user} isSelf={user.id === currentUser?.id} />;
+          {users.map((u) => {
+            return <UserBannerClient key={u.id} user={u} isSelf={u.id === user?.id} />;
           })}
         </div>
         <div className="flex items-center justify-center gap-2">
