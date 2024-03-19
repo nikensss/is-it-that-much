@@ -106,10 +106,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex h-full w-full grow flex-col items-start justify-start pt-4"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex grow flex-col items-start justify-start pt-2">
         <FormField
           control={form.control}
           name="username"
@@ -331,7 +328,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
         <Button
           disabled={isMutating || !isLockOwned || usernameLockQuery.isFetching}
           type="submit"
-          className="mt-auto w-full"
+          className="mt-auto self-stretch"
         >
           {isMutating ? (
             <Loader2 className="m-4 h-4 w-4 animate-spin" />

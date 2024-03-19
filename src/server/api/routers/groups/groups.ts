@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { groupExpensesRouter } from '~/server/api/routers/groups/expenses';
 
 import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
 
@@ -102,4 +103,6 @@ export const groupsRouter = createTRPCRouter({
   delete: privateProcedure
     .input(z.object({ id: z.string().cuid() }))
     .mutation(async ({ ctx: { db }, input: { id } }) => db.group.delete({ where: { id } })),
+
+  expenses: groupExpensesRouter,
 });

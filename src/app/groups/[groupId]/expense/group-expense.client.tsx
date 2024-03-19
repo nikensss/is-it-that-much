@@ -4,10 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { format } from 'date-fns';
-import { CalendarIcon, ChevronRight } from 'lucide-react';
+import { CalendarIcon, ChevronRight, Loader2, Save } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import type { z } from 'zod';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { Calendar } from '~/components/ui/calendar';
@@ -16,6 +17,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { cn } from '~/lib/utils';
+import { groupExpenseFormSchema } from '~/shared/groups-expenses-form-schema';
+import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type GroupExpenseFormProps = {
@@ -23,41 +26,79 @@ export type GroupExpenseFormProps = {
   user: RouterOutputs['users']['get'];
 };
 
-const formSchema = z.object({
-  description: z.string(),
-  amount: z.number(),
-  date: z.date(),
-  splits: z.array(
-    z.object({
-      id: z.string().cuid(),
-      paid: z.number(),
-      owed: z.number(),
-    }),
-  ),
-});
-
 export default function GroupExpenseForm({ group, user }: GroupExpenseFormProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isPaidOpen, setIsPaidOpen] = useState(true);
   const [isOwedOpen, setIsOwedOpen] = useState(true);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof groupExpenseFormSchema>>({
+    resolver: zodResolver(groupExpenseFormSchema),
     defaultValues: {
       description: '',
       amount: 0,
+      groupId: group.id,
+      createdById: user.id,
       date: new Date(),
       splits: group.UserGroup.map(({ user }) => ({
-        id: user.id,
+        userId: user.id,
         paid: 0,
         owed: 0,
       })),
     },
   });
 
+  const create = api.groups.expenses.create.useMutation({
+    onMutate: () => setIsLoading(true),
+    onError: (err) => {
+      console.error(err);
+      setIsLoading(false);
+    },
+    onSuccess: () => router.push(`/groups/${group.id}`),
+  });
+
+  function onSubmit(data: z.infer<typeof groupExpenseFormSchema>) {
+    const { totalPaid, totalOwed } = data.splits.reduce(
+      (acc, { paid, owed }) => {
+        acc.totalPaid += paid;
+        acc.totalOwed += owed;
+
+        return acc;
+      },
+      { totalPaid: 0, totalOwed: 0 },
+    );
+
+    if (totalPaid !== data.amount) {
+      form.setError('amount', {
+        type: 'validate',
+        message: 'The paid amount does not match the total amount',
+      });
+
+      return form.setError('splits', {
+        type: 'validate',
+        message: 'The paid amount does not match the total amount',
+      });
+    }
+
+    if (totalOwed !== data.amount) {
+      form.setError('amount', {
+        type: 'validate',
+        message: 'The owed amount does not match the total amount',
+      });
+
+      return form.setError('splits', {
+        type: 'validate',
+        message: 'The owed amount does not match the total amount',
+      });
+    }
+
+    create.mutate(data);
+  }
+
   return (
     <Form {...form}>
-      <form className="space-y-2">
+      <form className="flex grow flex-col gap-2" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="description"
@@ -84,6 +125,8 @@ export default function GroupExpenseForm({ group, user }: GroupExpenseFormProps)
                     <Input
                       className="peer rounded-r-none pr-1 text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       {...field}
+                      min={0.01}
+                      onChange={(e) => form.setValue('amount', parseFloat(e.target.value) || 0)}
                     />
                     <div className="flex items-center justify-center self-stretch rounded-r-md border border-slate-200 bg-slate-200 px-2 peer-focus-visible:ring-1 peer-focus-visible:ring-slate-950 ">
                       <p>{currencySymbolMap[user.currency ?? 'EUR']}</p>
@@ -140,9 +183,15 @@ export default function GroupExpenseForm({ group, user }: GroupExpenseFormProps)
             group={group}
             user={user}
             title="How much did each member pay?"
-            onInputChange={(e, u) => {
+            onInputChange={(amount, user) => {
               const splits = form.getValues('splits');
-              splits.find((e) => e.id === u.id)!.paid = parseFloat(e.target.value);
+              const split = splits.find(({ userId }) => userId === user.id);
+              if (!split) {
+                console.error(`Split for user ${user.id} not found`);
+                return;
+              }
+
+              split.paid = amount;
               form.setValue('splits', splits);
             }}
           />
@@ -153,27 +202,46 @@ export default function GroupExpenseForm({ group, user }: GroupExpenseFormProps)
             group={group}
             user={user}
             title="How much should have each member paid?"
-            onInputChange={(e, u) => {
+            onInputChange={(amount, user) => {
               const splits = form.getValues('splits');
-              splits.find((e) => e.id === u.id)!.owed = parseFloat(e.target.value);
+              const split = splits.find(({ userId }) => userId === user.id);
+              if (!split) {
+                console.error(`Split for user ${user.id} not found`);
+                return;
+              }
+
+              split.owed = amount;
               form.setValue('splits', splits);
             }}
           />
         </div>
+        <Button className="mt-auto" type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="mr-2" />
+              Save
+            </>
+          )}
+        </Button>
       </form>
     </Form>
   );
 }
 
 type SplitInputProps = {
-  form: ReturnType<typeof useForm<z.infer<typeof formSchema>>>;
+  form: ReturnType<typeof useForm<z.infer<typeof groupExpenseFormSchema>>>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
   group: Exclude<RouterOutputs['groups']['get'], null>;
   user: RouterOutputs['users']['get'];
   onInputChange: (
-    e: React.ChangeEvent<HTMLInputElement>,
+    value: number,
     user: Exclude<RouterOutputs['groups']['get'], null>['UserGroup'][number]['user'],
   ) => void;
 };
@@ -197,6 +265,7 @@ function SplitInput({ form, open, onOpenChange, title, group, user, onInputChang
               <FormLabel>{title}</FormLabel>
             </div>
           </CollapsibleTrigger>
+          <FormMessage />
           <CollapsibleContent className="">
             {group.UserGroup.sort((a, b) => a.user.id.localeCompare(b.user.id)).map(({ user: u }) => (
               <div
@@ -210,7 +279,7 @@ function SplitInput({ form, open, onOpenChange, title, group, user, onInputChang
                       <AvatarIcon />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="space-y-2">
+                  <div className="flex flex-col gap-2">
                     <p className="overflow-hidden overflow-ellipsis whitespace-nowrap max-md:max-w-[20ch]">
                       {u.firstName} {u.lastName}
                     </p>
@@ -231,14 +300,13 @@ function SplitInput({ form, open, onOpenChange, title, group, user, onInputChang
                         defaultValue={0}
                         step={0.01}
                         min={0}
-                        onChange={(e) => onInputChange(e, u)}
+                        onChange={(e) => onInputChange(parseFloat(e.target.value), u)}
                       />
                       <div className="flex items-center justify-center self-stretch rounded-r-md border border-slate-200 bg-slate-200 px-2 peer-focus-visible:ring-1 peer-focus-visible:ring-slate-950 ">
                         <p>{currencySymbolMap[user.currency ?? 'EUR']}</p>
                       </div>
                     </div>
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               </div>
             ))}

@@ -1,5 +1,5 @@
 import { friendsRouters } from '~/server/api/routers/friends/friends';
-import { groupsRouter } from '~/server/api/routers/groups';
+import { groupsRouter } from '~/server/api/routers/groups/groups';
 import { tagsRouter } from '~/server/api/routers/tags';
 import { transactionsRouter } from '~/server/api/routers/transactions/transactions';
 import { usersRouter } from '~/server/api/routers/users';
