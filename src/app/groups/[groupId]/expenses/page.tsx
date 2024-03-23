@@ -1,11 +1,9 @@
 import currencySymbolMap from 'currency-symbol-map/map';
-import { formatInTimeZone } from 'date-fns-tz';
 import { notFound } from 'next/navigation';
 import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker';
-import AvatarStack from '~/app/groups/[groupId]/expenses/avatar-stack.client';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import GroupExpenseTableRow from '~/app/groups/[groupId]/expenses/group-expense-table-row.client';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { api } from '~/trpc/server';
-import type { RouterOutputs } from '~/trpc/shared';
 
 export default async function GroupExpensesList({
   searchParams,
@@ -55,29 +53,5 @@ export default async function GroupExpensesList({
         </Table>
       </section>
     </div>
-  );
-}
-
-function GroupExpenseTableRow({
-  expense,
-  user,
-}: {
-  user: RouterOutputs['users']['get'];
-  expense: RouterOutputs['groups']['expenses']['period'][number];
-}) {
-  return (
-    <TableRow>
-      <TableCell>
-        {formatInTimeZone(expense.transaction.date, user.timezone ?? 'Europe/Amsterdam', 'LLLL d, yyyy')}
-      </TableCell>
-      <TableCell>{expense.transaction.description}</TableCell>
-      <TableCell>{expense.transaction.amount / 100}</TableCell>
-      <TableCell>
-        <AvatarStack users={expense.TransactionSplit.filter((e) => e.paid > 0).map((e) => e.user)} />
-      </TableCell>
-      <TableCell>
-        <AvatarStack users={expense.TransactionSplit.filter((e) => e.owed > 0).map((e) => e.user)} />
-      </TableCell>
-    </TableRow>
   );
 }
