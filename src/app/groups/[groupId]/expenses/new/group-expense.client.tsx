@@ -23,9 +23,10 @@ import { groupExpenseFormSchema, type RouterOutputs } from '~/trpc/shared';
 export type GroupExpenseFormProps = {
   group: Exclude<RouterOutputs['groups']['get'], null>;
   user: RouterOutputs['users']['get'];
+  expense?: RouterOutputs['groups']['expenses']['get'];
 };
 
-export default function GroupExpenseForm({ group, user }: GroupExpenseFormProps) {
+export default function GroupExpenseForm({ group, user, expense }: GroupExpenseFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -35,20 +36,21 @@ export default function GroupExpenseForm({ group, user }: GroupExpenseFormProps)
   const form = useForm<z.infer<typeof groupExpenseFormSchema>>({
     resolver: zodResolver(groupExpenseFormSchema),
     defaultValues: {
-      description: '',
-      amount: 0,
+      expenseId: expense?.id ?? null,
+      description: expense?.transaction.description ?? '',
+      amount: (expense?.transaction.amount ?? 0) / 100,
       groupId: group.id,
-      createdById: user.id,
-      date: new Date(),
+      createdById: expense?.createdById ?? user.id,
+      date: expense?.transaction.date ?? new Date(),
       splits: group.UserGroup.map(({ user }) => ({
         userId: user.id,
-        paid: 0,
-        owed: 0,
+        paid: (expense?.TransactionSplit.find((s) => s.user.id === user.id)?.paid ?? 0) / 100,
+        owed: (expense?.TransactionSplit.find((s) => s.user.id === user.id)?.owed ?? 0) / 100,
       })),
     },
   });
 
-  const create = api.groups.expenses.create.useMutation({
+  const upsert = api.groups.expenses.upsert.useMutation({
     onMutate: () => setIsLoading(true),
     onError: (err) => {
       console.error(err);
@@ -92,7 +94,7 @@ export default function GroupExpenseForm({ group, user }: GroupExpenseFormProps)
       });
     }
 
-    create.mutate(data);
+    upsert.mutate(data);
   }
 
   return (
@@ -181,6 +183,7 @@ export default function GroupExpenseForm({ group, user }: GroupExpenseFormProps)
             onOpenChange={setIsPaidOpen}
             group={group}
             user={user}
+            value={form.watch('splits').map((e) => ({ userId: e.userId, value: e.paid }))}
             title="How much did each member pay?"
             onInputChange={(amount, user) => {
               const splits = form.getValues('splits');
@@ -199,6 +202,7 @@ export default function GroupExpenseForm({ group, user }: GroupExpenseFormProps)
             open={isOwedOpen}
             onOpenChange={setIsOwedOpen}
             group={group}
+            value={form.watch('splits').map((e) => ({ userId: e.userId, value: e.owed }))}
             user={user}
             title="How much should have each member paid?"
             onInputChange={(amount, user) => {
@@ -239,13 +243,14 @@ type SplitInputProps = {
   title: string;
   group: Exclude<RouterOutputs['groups']['get'], null>;
   user: RouterOutputs['users']['get'];
+  value: { userId: string; value: number }[];
   onInputChange: (
     value: number,
     user: Exclude<RouterOutputs['groups']['get'], null>['UserGroup'][number]['user'],
   ) => void;
 };
 
-function SplitInput({ form, open, onOpenChange, title, group, user, onInputChange }: SplitInputProps) {
+function SplitInput({ value, form, open, onOpenChange, title, group, user, onInputChange }: SplitInputProps) {
   return (
     <FormField
       control={form.control}
@@ -296,7 +301,7 @@ function SplitInput({ form, open, onOpenChange, title, group, user, onInputChang
                       <Input
                         className="peer rounded-r-none pr-1 text-right [appearance:textfield] max-md:max-w-24 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                         type="number"
-                        defaultValue={0}
+                        value={value.find((s) => s.userId === u.id)?.value ?? 0}
                         step={0.01}
                         min={0}
                         onChange={(e) => onInputChange(parseFloat(e.target.value), u)}

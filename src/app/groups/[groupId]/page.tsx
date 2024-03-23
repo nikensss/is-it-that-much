@@ -18,10 +18,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
   const transactions = await api.groups.expenses.recent.query({ groupId: group.id });
 
   return (
-    <div className="flex grow flex-col gap-2">
-      <header className="flex h-12 flex-col items-center justify-center rounded-md bg-slate-900">
-        <h2 className="text-lg font-bold capitalize text-slate-200">{group.name}</h2>
-      </header>
+    <>
       <div className="grid grid-cols-2 grid-rows-1 gap-2">
         <Button variant="outline" asChild>
           <Link href={`${params.groupId}/expenses/new`}>Register expense</Link>
@@ -35,7 +32,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
         <GroupExpenses {...{ transactions, user, groupId: params.groupId }} />
         <GroupBalance {...{ balance, user }} />
       </div>
-    </div>
+    </>
   );
 }
 

@@ -48,6 +48,7 @@ export const groupSettlementFormSchema = z
   });
 
 export const groupExpenseFormSchema = z.object({
+  expenseId: z.string().cuid().nullable(),
   description: z.string().min(3, 'Description must be at least 3 characters'),
   amount: z.number().positive('Amount must be greater than 0'),
   date: z.date(),

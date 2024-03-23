@@ -7,11 +7,49 @@ import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
 import { groupExpenseFormSchema } from '~/trpc/shared';
 
 export const groupExpensesRouter = createTRPCRouter({
-  create: privateProcedure.input(groupExpenseFormSchema).mutation(async ({ ctx: { db }, input }) => {
+  get: privateProcedure
+    .input(z.object({ groupId: z.string().cuid(), expenseId: z.string().cuid() }))
+    .query(async ({ ctx: { db, user }, input }) => {
+      await assertUserInGroup({ groupId: input.groupId, userId: user.id });
+
+      return db.sharedTransaction.findUnique({
+        where: {
+          id: input.expenseId,
+          groupId: input.groupId,
+        },
+        include: {
+          transaction: true,
+          TransactionSplit: {
+            include: {
+              user: {
+                select: {
+                  firstName: true,
+                  id: true,
+                  imageUrl: true,
+                  lastName: true,
+                  username: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
+
+  upsert: privateProcedure.input(groupExpenseFormSchema).mutation(async ({ ctx: { db }, input }) => {
     await assertUserInGroup({ groupId: input.groupId, userId: input.createdById });
 
-    const transaction = await db.transaction.create({
-      data: {
+    const expense = input.expenseId ? await db.sharedTransaction.findUnique({ where: { id: input.expenseId } }) : null;
+
+    const transaction = await db.transaction.upsert({
+      where: { id: expense?.transactionId ?? '' },
+      create: {
+        amount: parseInt(`${input.amount * 100}`),
+        date: input.date,
+        description: input.description,
+        type: TransactionType.EXPENSE,
+      },
+      update: {
         amount: parseInt(`${input.amount * 100}`),
         date: input.date,
         description: input.description,
@@ -19,22 +57,35 @@ export const groupExpensesRouter = createTRPCRouter({
       },
     });
 
-    const sharedTransaction = await db.sharedTransaction.create({
-      data: {
+    const sharedTransaction = await db.sharedTransaction.upsert({
+      where: { id: expense?.id ?? '' },
+      create: {
         createdById: input.createdById,
         groupId: input.groupId,
         transactionId: transaction.id,
       },
+      update: {
+        createdById: input.createdById,
+      },
     });
 
-    await db.transactionSplit.createMany({
-      data: input.splits.map((s) => ({
-        owed: parseInt(`${s.owed * 100}`),
-        paid: parseInt(`${s.paid * 100}`),
-        sharedTransactionId: sharedTransaction.id,
-        userId: s.userId,
-      })),
-    });
+    for (const split of input.splits) {
+      await db.transactionSplit.upsert({
+        where: {
+          sharedTransactionId_userId: { sharedTransactionId: sharedTransaction.id ?? '', userId: split.userId ?? '' },
+        },
+        create: {
+          owed: parseInt(`${split.owed * 100}`),
+          paid: parseInt(`${split.paid * 100}`),
+          sharedTransactionId: sharedTransaction.id,
+          userId: split.userId,
+        },
+        update: {
+          owed: parseInt(`${split.owed * 100}`),
+          paid: parseInt(`${split.paid * 100}`),
+        },
+      });
+    }
   }),
 
   period: privateProcedure
