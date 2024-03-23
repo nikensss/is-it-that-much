@@ -2,26 +2,27 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import GroupBalance from '~/app/groups/[groupId]/group-balance';
 import GroupDetails from '~/app/groups/[groupId]/group-details';
-import RecentGroupExpenses from '~/app/groups/[groupId]/group-expenses';
+import RecentGroupActivity from '~/app/groups/[groupId]/group-activity';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/server';
 
-export default async function GroupPage({ params }: { params: { groupId: string } }) {
-  const group = await api.groups.get.query({ id: params.groupId }).catch(() => null);
+export default async function GroupPage({ params: { groupId } }: { params: { groupId: string } }) {
+  const group = await api.groups.get.query({ id: groupId }).catch(() => null);
   if (!group) return notFound();
 
   const user = await api.users.get.query().catch(() => null);
   if (!user) return notFound();
 
-  const balance = await api.groups.balance.query({ groupId: params.groupId });
-  const transactions = await api.groups.expenses.recent.query({ groupId: group.id });
+  const balance = await api.groups.balance.query({ groupId });
+  const expenses = await api.groups.expenses.recent.query({ groupId });
+  const settlements = await api.groups.settlements.recent.query({ groupId });
 
   return (
     <>
       <div className="grid grid-cols-2 grid-rows-1 gap-2">
         <Button variant="outline" asChild>
-          <Link href={`${params.groupId}/expenses/new`}>Register expense</Link>
+          <Link href={`${groupId}/expenses/new`}>Register expense</Link>
         </Button>
         <RegisterSettlement {...{ group, user }} />
       </div>
@@ -29,7 +30,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
         <GroupDetails {...{ group, user }} />
       </div>
       <div className="flex grow flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
-        <RecentGroupExpenses {...{ transactions, user, groupId: params.groupId }} />
+        <RecentGroupActivity {...{ expenses, settlements, user, groupId }} />
         <GroupBalance {...{ balance, user }} />
       </div>
     </>

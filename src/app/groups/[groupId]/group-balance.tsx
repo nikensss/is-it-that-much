@@ -23,7 +23,7 @@ export default async function GroupBalance({ balance, user }: GroupBalanceProps)
       <GroupListBody>
         {balance.map((settlement) => (
           <GroupListItem key={`${settlement.from.id}-${settlement.to.id}`}>
-            <Settlement key={`${settlement.from.id}-${settlement.to.id}`} {...{ settlement, user }} />
+            <SuggestedSettlement key={`${settlement.from.id}-${settlement.to.id}`} {...{ settlement, user }} />
           </GroupListItem>
         ))}
       </GroupListBody>
@@ -31,12 +31,12 @@ export default async function GroupBalance({ balance, user }: GroupBalanceProps)
   );
 }
 
-type SettlementProps = {
+type SuggestedSettlementProps = {
   settlement: RouterOutputs['groups']['balance'][number];
   user: RouterOutputs['users']['get'];
 };
 
-function Settlement({ settlement, user }: SettlementProps) {
+function SuggestedSettlement({ settlement, user }: SuggestedSettlementProps) {
   const parts: string[] = [];
   if (settlement.from.id === user.id) {
     parts.push(`You owe ${settlement.to.firstName} ${settlement.to.lastName}`);
@@ -61,7 +61,7 @@ function Settlement({ settlement, user }: SettlementProps) {
           </AvatarFallback>
         </Avatar>
         <div className="flex flex-col items-center">
-          <p className="text-sm">
+          <p className="whitespace-nowrap text-nowrap text-sm">
             {settlement.amount / 100} {currencySymbolMap[user.currency ?? 'EUR']}
           </p>
           <MoveRight className="-mt-2 text-slate-900" />
