@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import GroupExpenseForm from '~/app/groups/[groupId]/expense/group-expense.client';
+import GroupExpenseForm from '~/app/groups/[groupId]/expenses/new/group-expense.client';
 import { api } from '~/trpc/server';
 
 export default async function GroupExpense({ params }: { params: { groupId: string } }) {

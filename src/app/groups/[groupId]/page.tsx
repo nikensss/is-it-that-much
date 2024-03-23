@@ -24,7 +24,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
       </header>
       <div className="grid grid-cols-2 grid-rows-1 gap-2">
         <Button variant="outline" asChild>
-          <Link href={`${params.groupId}/expense`}>Register expense</Link>
+          <Link href={`${params.groupId}/expenses/new`}>Register expense</Link>
         </Button>
         <RegisterSettlement {...{ group, user }} />
       </div>
@@ -32,7 +32,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
         <GroupDetails {...{ group, user }} />
       </div>
       <div className="flex grow flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
-        <GroupExpenses {...{ transactions, user }} />
+        <GroupExpenses {...{ transactions, user, groupId: params.groupId }} />
         <GroupBalance {...{ balance, user }} />
       </div>
     </div>

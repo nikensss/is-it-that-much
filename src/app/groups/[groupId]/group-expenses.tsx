@@ -1,21 +1,26 @@
 import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { format } from 'date-fns';
+import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export default async function GroupPage({
   transactions,
   user,
+  groupId,
 }: {
   user: RouterOutputs['users']['get'];
   transactions: RouterOutputs['groups']['expenses']['recent'];
+  groupId: string;
 }) {
   return (
     <div className="flex grow flex-col rounded-md border border-slate-200 p-2">
-      <header className="my-0.5 mb-1.5 flex h-12 flex-col items-center justify-center rounded-md bg-slate-900">
-        <h2 className="text-lg font-bold capitalize text-slate-200">Recent expenses</h2>
-      </header>
+      <Link href={`${groupId}/expenses`}>
+        <header className="my-0.5 mb-1.5 flex h-12 flex-col items-center justify-center rounded-md bg-slate-900">
+          <h2 className="text-lg font-bold capitalize text-slate-200">Recent expenses</h2>
+        </header>
+      </Link>
       <div className="flex grow flex-col gap-2">
         {transactions.map((t) => (
           <SharedTransactionView key={t.id} {...{ sharedTransaction: t, user }} />
