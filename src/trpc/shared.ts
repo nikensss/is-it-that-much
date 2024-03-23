@@ -30,13 +30,22 @@ export type RouterInputs = inferRouterInputs<AppRouter>;
  */
 export type RouterOutputs = inferRouterOutputs<AppRouter>;
 
-export const groupSettlementFormSchema = z.object({
-  amount: z.number().min(0.01),
-  date: z.date(),
-  groupId: z.string().cuid(),
-  fromId: z.string().cuid(),
-  toId: z.string().cuid(),
-});
+export const groupSettlementFormSchema = z
+  .object({
+    amount: z.number().min(0.01),
+    date: z.date(),
+    groupId: z.string().cuid(),
+    fromId: z.string().cuid(),
+    toId: z.string().cuid(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.fromId === data.toId) {
+      return ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Sender and receiver must be different',
+      });
+    }
+  });
 
 export const groupExpenseFormSchema = z.object({
   description: z.string().min(3, 'Description must be at least 3 characters'),
