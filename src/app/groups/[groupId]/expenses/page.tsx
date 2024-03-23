@@ -1,11 +1,8 @@
-import { AvatarImage } from '@radix-ui/react-avatar';
-import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { formatInTimeZone } from 'date-fns-tz';
 import { notFound } from 'next/navigation';
 import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker';
 import AvatarStack from '~/app/groups/[groupId]/expenses/avatar-stack.client';
-import { Avatar, AvatarFallback } from '~/components/ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { api } from '~/trpc/server';
 import type { RouterOutputs } from '~/trpc/shared';
