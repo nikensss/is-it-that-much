@@ -18,7 +18,7 @@ export function GroupListTitle({ href, children }: { href?: string; children: Re
 }
 
 export function GroupListBody({ children }: { children: React.ReactNode }) {
-  return <div className="flex grow flex-col gap-2">{children}</div>;
+  return <div className="flex grow flex-col gap-0.5">{children}</div>;
 }
 
 export function GroupListItem({ children }: { children: React.ReactNode }) {
@@ -32,7 +32,7 @@ export function GroupListItem({ children }: { children: React.ReactNode }) {
 
 export function GroupListItemLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link className="mx-2 flex items-center gap-2 rounded-md p-1 lg:hover:bg-slate-900/20" href={href}>
+    <Link className="flex items-center gap-2 rounded-md p-2 lg:hover:bg-slate-900/20" href={href}>
       {children}
     </Link>
   );
