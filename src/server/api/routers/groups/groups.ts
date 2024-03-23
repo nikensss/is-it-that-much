@@ -121,7 +121,17 @@ export const groupsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx: { db, user }, input: { groupId } }) => {
+      const group = await db.group.findUnique({
+        where: { id: groupId },
+        include: { UserGroup: { include: { user: true } } },
+      });
+      if (!group) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Group not found' });
       await assertUserInGroup({ groupId, userId: user.id });
+
+      const users = group.UserGroup.reduce((acc, { user }) => {
+        acc.set(user.id, user);
+        return acc;
+      }, new Map<string, (typeof group)['UserGroup'][number]['user']>());
 
       const expenses = await db.sharedTransaction.findMany({
         where: { groupId },
@@ -136,13 +146,6 @@ export const groupsRouter = createTRPCRouter({
           },
         },
       });
-
-      const users = expenses.reduce((acc, expense) => {
-        for (const split of expense.TransactionSplit) {
-          acc.set(split.user.id, split.user);
-        }
-        return acc;
-      }, new Map<string, (typeof expenses)[number]['TransactionSplit'][number]['user']>());
 
       const { payments, debts } = expenses.reduce(
         (acc, expense) => {
@@ -160,14 +163,14 @@ export const groupsRouter = createTRPCRouter({
 
       for (const { amount, from, to } of settlements) {
         const paymentsByTo = payments.get(to.id);
-        if (!paymentsByTo) {
+        if (typeof paymentsByTo !== 'number') {
           log.error('"to" user not found in payments', { userId: to.id });
           throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
         }
         payments.set(to.id, paymentsByTo - amount);
 
         const paymentsByFrom = payments.get(from.id);
-        if (!paymentsByFrom) {
+        if (typeof paymentsByFrom !== 'number') {
           log.error('"from" user not found in payments', { userId: from.id });
           throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
         }
