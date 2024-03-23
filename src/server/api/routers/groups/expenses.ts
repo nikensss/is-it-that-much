@@ -2,7 +2,7 @@ import { TransactionType } from '@prisma/client';
 import { z } from 'zod';
 import { assertUserInGroup } from '~/server/api/routers/groups/groups';
 import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
-import { groupExpenseFormSchema } from '~/shared/groups-expenses-form-schema';
+import { groupExpenseFormSchema } from '~/trpc/shared';
 
 export const groupExpensesRouter = createTRPCRouter({
   create: privateProcedure.input(groupExpenseFormSchema).mutation(async ({ ctx: { db }, input }) => {

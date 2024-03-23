@@ -17,9 +17,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { cn } from '~/lib/utils';
-import { groupExpenseFormSchema } from '~/shared/groups-expenses-form-schema';
 import { api } from '~/trpc/react';
-import type { RouterOutputs } from '~/trpc/shared';
+import { groupExpenseFormSchema, type RouterOutputs } from '~/trpc/shared';
 
 export type GroupExpenseFormProps = {
   group: Exclude<RouterOutputs['groups']['get'], null>;

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import GroupBalance from '~/app/groups/[groupId]/group-balance';
 import GroupDetails from '~/app/groups/[groupId]/group-details';
 import GroupExpenses from '~/app/groups/[groupId]/group-expenses';
+import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/server';
 
@@ -25,7 +26,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
         <Button variant="outline" asChild>
           <Link href={`${params.groupId}/expense`}>Register expense</Link>
         </Button>
-        <Button variant="outline">Register settlement</Button>
+        <RegisterSettlement {...{ group, user }} />
       </div>
       <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
         <GroupDetails {...{ group, user }} />

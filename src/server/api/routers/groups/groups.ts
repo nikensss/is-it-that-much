@@ -2,6 +2,7 @@ import { TRPCError } from '@trpc/server';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 import { groupExpensesRouter } from '~/server/api/routers/groups/expenses';
+import { groupSettlementsRouter } from '~/server/api/routers/groups/settlements';
 
 import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
 import { db } from '~/server/db';
@@ -158,23 +159,19 @@ export const groupsRouter = createTRPCRouter({
       const settlements = await db.settlement.findMany({ where: { groupId }, include: { from: true, to: true } });
 
       for (const { amount, from, to } of settlements) {
-        if (!payments.has(to.id)) {
+        const paymentsByTo = payments.get(to.id);
+        if (!paymentsByTo) {
           log.error('"to" user not found in payments', { userId: to.id });
           throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
         }
-        payments.set(to.id, payments.get(to.id)! - amount);
+        payments.set(to.id, paymentsByTo - amount);
 
-        if (!payments.has(from.id)) {
+        const paymentsByFrom = payments.get(from.id);
+        if (!paymentsByFrom) {
           log.error('"from" user not found in payments', { userId: from.id });
           throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
         }
-        payments.set(from.id, payments.get(from.id)! + amount);
-
-        if (!debts.has(from.id)) {
-          log.error('"from" user not found in debts', { userId: from.id });
-          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
-        }
-        debts.set(from.id, debts.get(from.id)! - amount);
+        payments.set(from.id, paymentsByFrom + amount);
       }
 
       const settlementsNeeded = [...payments.entries()].reduce((acc, [userId, amount]) => {
@@ -192,18 +189,25 @@ export const groupsRouter = createTRPCRouter({
 
       const suggestedSettlements: { from: string; to: string; amount: number }[] = [];
       for (const payer of payers.entries()) {
-        const to = payer[0];
+        const settleTo = payer[0];
         let paid = payer[1];
 
         while (paid > 0) {
-          for (const [from, owed] of owers.entries()) {
+          for (const [settleBy, owed] of owers.entries()) {
             if (paid <= 0) break;
             if (owed >= 0) continue;
 
             const amount = Math.min(paid, Math.abs(owed));
-            suggestedSettlements.push({ from, to, amount: amount });
+
+            const suggestedSettlement = suggestedSettlements.find((e) => e.from === settleBy && e.to === settleTo);
+            if (suggestedSettlement) {
+              suggestedSettlement.amount += amount;
+            } else {
+              suggestedSettlements.push({ from: settleBy, to: settleTo, amount: amount });
+            }
+
             paid -= amount;
-            owers.set(to, owed + amount);
+            owers.set(settleTo, owed + amount);
           }
         }
       }
@@ -226,6 +230,7 @@ export const groupsRouter = createTRPCRouter({
     }),
 
   expenses: groupExpensesRouter,
+  settlements: groupSettlementsRouter,
 });
 
 export async function assertUserInGroup({ groupId, userId }: { groupId: string; userId: string }) {

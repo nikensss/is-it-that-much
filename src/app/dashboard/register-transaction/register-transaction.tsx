@@ -80,7 +80,7 @@ export default function RegisterTransaction({
   function onSubmit(data: z.infer<typeof formSchema>) {
     if (timezone) {
       // little hack to make sure the date used is timezoned to the user's preference
-      // the calendar component cannot be timezond
+      // the calendar component cannot be timezoned
       data.date = zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), timezone);
     }
 
