@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import GroupBalance from '~/app/groups/[groupId]/group-balance';
 import GroupDetails from '~/app/groups/[groupId]/group-details';
-import GroupExpenses from '~/app/groups/[groupId]/group-expenses';
+import RecentGroupExpenses from '~/app/groups/[groupId]/group-expenses';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/server';
@@ -29,7 +29,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
         <GroupDetails {...{ group, user }} />
       </div>
       <div className="flex grow flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
-        <GroupExpenses {...{ transactions, user, groupId: params.groupId }} />
+        <RecentGroupExpenses {...{ transactions, user, groupId: params.groupId }} />
         <GroupBalance {...{ balance, user }} />
       </div>
     </>
