@@ -1,7 +1,9 @@
 import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { MoveRight } from 'lucide-react';
+import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { Separator } from '~/components/ui/separator';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type GroupBalanceProps = {
@@ -17,7 +19,10 @@ export default async function GroupBalance({ balance, user }: GroupBalanceProps)
       </header>
       <div className="flex grow flex-col gap-2">
         {balance.map((settlement) => (
-          <Settlement key={`${settlement.from.id}-${settlement.to.id}`} {...{ settlement, user }} />
+          <>
+            <Settlement key={`${settlement.from.id}-${settlement.to.id}`} {...{ settlement, user }} />
+            <Separator className="last:hidden" />
+          </>
         ))}
       </div>
     </div>
@@ -44,7 +49,7 @@ function Settlement({ settlement, user }: SettlementProps) {
 
   parts.push(`${settlement.amount / 100} ${currencySymbolMap[user.currency ?? 'EUR']}`);
   return (
-    <div className="flex items-center gap-2 border-b border-slate-200 p-2 last:border-none">
+    <Link href="#" className="mx-2 flex items-center gap-2 rounded-md p-1 lg:hover:bg-slate-900/20">
       <div className="flex gap-2">
         <Avatar>
           <AvatarImage src={settlement.from.imageUrl ?? ''} alt={`@${settlement.from.username}`} />
@@ -67,6 +72,6 @@ function Settlement({ settlement, user }: SettlementProps) {
       </div>
 
       <p>{parts.join(' ')}</p>
-    </div>
+    </Link>
   );
 }

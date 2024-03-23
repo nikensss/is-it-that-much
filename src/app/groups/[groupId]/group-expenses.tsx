@@ -3,6 +3,7 @@ import currencySymbolMap from 'currency-symbol-map/map';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { Separator } from '~/components/ui/separator';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export default async function GroupPage({
@@ -23,7 +24,10 @@ export default async function GroupPage({
       </Link>
       <div className="flex grow flex-col gap-2">
         {transactions.map((t) => (
-          <SharedTransactionView key={t.id} {...{ sharedTransaction: t, user }} />
+          <>
+            <SharedTransactionView key={t.id} {...{ sharedTransaction: t, user }} />
+            <Separator className="last:hidden" />
+          </>
         ))}
       </div>
     </div>
@@ -48,7 +52,10 @@ function SharedTransactionView({
   if (userPaid) payersNames.push('you');
 
   return (
-    <div className="flex items-center gap-2 border-b border-slate-200 p-2 last:border-none">
+    <Link
+      className="mx-2 flex items-center gap-2 rounded-md p-1 lg:hover:bg-slate-900/20"
+      href={`/groups/${sharedTransaction.groupId}/expenses/${sharedTransaction.id}`}
+    >
       <div className="flex flex-col-reverse items-center lg:flex-row-reverse">
         {payers.reverse().map((p) => (
           <Avatar key={p.id} className="-mb-6 first:mb-0 hover:z-10 lg:-mr-6 lg:mb-0 lg:first:mr-0">
@@ -65,7 +72,7 @@ function SharedTransactionView({
         {currencySymbolMap[user.currency ?? 'EUR']} on {format(sharedTransaction.transaction.date, 'MMMM do, yyyy')} for{' '}
         <span className="inline-block first-letter:lowercase">{sharedTransaction.transaction.description}</span>
       </div>
-    </div>
+    </Link>
   );
 }
 
