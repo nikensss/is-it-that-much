@@ -16,7 +16,6 @@ export default function RecentGroupActivity({
   expenses,
   settlements,
   user,
-  groupId,
 }: {
   user: RouterOutputs['users']['get'];
   expenses: RouterOutputs['groups']['expenses']['recent'];
@@ -37,7 +36,7 @@ export default function RecentGroupActivity({
   const allItems = [...settlementListItems, ...expenseListItems].sort((a, b) => b.date.getTime() - a.date.getTime());
   return (
     <GroupList>
-      <GroupListTitle href={`${groupId}/expenses`}>Recent activity</GroupListTitle>
+      <GroupListTitle>Recent activity</GroupListTitle>
       <GroupListBody>
         {allItems.slice(0, 5).map((item) => (
           <GroupListItem key={item.id}>{item.component}</GroupListItem>
