@@ -177,12 +177,12 @@ export const groupsRouter = createTRPCRouter({
         payments.set(from.id, paymentsByFrom + amount);
       }
 
-      const settlementsNeeded = [...payments.entries()].reduce((acc, [userId, amount]) => {
+      const balances = [...payments.entries()].reduce((acc, [userId, amount]) => {
         acc.set(userId, amount - (debts.get(userId) ?? 0));
         return acc;
       }, new Map<string, number>());
 
-      const { payers, owers } = [...settlementsNeeded].reduce(
+      const { payers, owers } = [...balances].reduce(
         (acc, [userId, amount]) => {
           amount > 0 ? acc.payers.set(userId, amount) : acc.owers.set(userId, amount);
           return acc;
@@ -210,7 +210,7 @@ export const groupsRouter = createTRPCRouter({
             }
 
             paid -= amount;
-            owers.set(settleTo, owed + amount);
+            owers.set(settleBy, owed + amount);
           }
         }
       }

@@ -7,6 +7,7 @@
     "build": "next build",
     "db:snapshot:lh": "dotenv -e .env -- ./scripts/snapshot-db",
     "db:snapshot:dev": "dotenv -e .env.dev -- ./scripts/snapshot-db",
+    "db:snapshot:prod": "dotenv -e .env.prod -- ./scripts/snapshot-db",
     "db:restore:lh": "dotenv -e .env -- ./scripts/restore-db",
     "db:restore:lh:vercel": "dotenv -e .env -- ./scripts/restore-db --vercel",
     "db:restore:dev": "dotenv -e .env.dev -- ./scripts/restore-db",
