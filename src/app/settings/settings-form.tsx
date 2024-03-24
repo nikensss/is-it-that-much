@@ -334,7 +334,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
             <Loader2 className="m-4 h-4 w-4 animate-spin" />
           ) : (
             <>
-              <Save className="mr-4" /> Save
+              <Save className="mr-2" /> Save
             </>
           )}
         </Button>

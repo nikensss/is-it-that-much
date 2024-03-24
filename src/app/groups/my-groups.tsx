@@ -20,7 +20,7 @@ export default async function MyGroups() {
             className="ry-2 flex select-none items-center rounded-md border border-slate-100 p-4 md:hover:cursor-pointer md:hover:border-slate-900 md:hover:shadow-md"
           >
             <div className="flex items-center justify-center">
-              <Avatar className="mr-4">
+              <Avatar className="mr-2">
                 <AvatarImage src="" alt="group image" />
                 <AvatarFallback>
                   <UsersRound />

@@ -4,11 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { format } from 'date-fns';
-import { CalendarIcon, ChevronRight, Loader2, Save } from 'lucide-react';
+import { CalendarIcon, ChevronRight, Loader2, Save, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
+import ButtonWithDialog from '~/app/_components/button-with-dialog.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { Calendar } from '~/components/ui/calendar';
@@ -48,6 +49,11 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
         owed: (expense?.TransactionSplit.find((s) => s.user.id === user.id)?.owed ?? 0) / 100,
       })),
     },
+  });
+
+  const del = api.groups.expenses.delete.useMutation({
+    onError: console.error,
+    onSuccess: () => router.push(`/groups/${group.id}`),
   });
 
   const upsert = api.groups.expenses.upsert.useMutation({
@@ -218,19 +224,37 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
             }}
           />
         </div>
-        <Button className="mt-auto" type="submit" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="mr-2" />
-              Save
-            </>
-          )}
-        </Button>
+        <div className={cn('grid grid-rows-1 gap-2', expense ? 'grid-cols-2' : 'grid-cols-1')}>
+          {expense ? (
+            <ButtonWithDialog
+              onConfirm={async () => {
+                if (!expense) return;
+                await del.mutateAsync({ groupId: group.id, sharedTransactionId: expense.id });
+              }}
+              title="Delete expense"
+              description="Are you sure you want to delete this expense? This action cannot be undone."
+              destructive
+            >
+              <Button className="mt-auto" type="button" variant="destructive">
+                <Trash2 className="mr-2" />
+                Delete
+              </Button>
+            </ButtonWithDialog>
+          ) : null}
+          <Button className="mt-auto" type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2" />
+                Save
+              </>
+            )}
+          </Button>
+        </div>
       </form>
     </Form>
   );
@@ -277,7 +301,7 @@ function SplitInput({ value, form, open, onOpenChange, title, group, user, onInp
                 className="flex items-center justify-between gap-2 border-b border-b-slate-200 p-2 py-4 last:border-0"
               >
                 <div className="flex items-center justify-center text-sm md:text-lg">
-                  <Avatar className="mr-4">
+                  <Avatar className="mr-2">
                     <AvatarImage src={u.imageUrl ?? ''} alt={`@${u.username}`} />
                     <AvatarFallback>
                       <AvatarIcon />

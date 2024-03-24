@@ -242,7 +242,7 @@ export default function UpdateTransaction({ timezone, weekStartsOn, transaction,
                   <Loader2 className="m-4 h-4 w-4 animate-spin" />
                 ) : (
                   <>
-                    <Save className="mr-4" /> Save
+                    <Save className="mr-2" /> Save
                   </>
                 )}
               </Button>
@@ -277,7 +277,7 @@ function DeleteTransaction({ transaction, onDelete }: DeleteTransactionProps) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="mt-2 min-w-[70px] grow md:mt-0" variant="destructive">
-          <Trash2 className="mr-4" /> Delete
+          <Trash2 className="mr-2" /> Delete
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">

@@ -87,7 +87,7 @@ export default function UserBannerClient({
       )}
     >
       <div className="flex items-center justify-center">
-        <Avatar className="mr-4">
+        <Avatar className="mr-2">
           <AvatarImage src={user.imageUrl ?? ''} alt={`@${user.username}`} />
           <AvatarFallback>
             <AvatarIcon />

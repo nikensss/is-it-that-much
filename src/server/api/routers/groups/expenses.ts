@@ -36,6 +36,13 @@ export const groupExpensesRouter = createTRPCRouter({
       });
     }),
 
+  delete: privateProcedure
+    .input(z.object({ groupId: z.string().cuid(), sharedTransactionId: z.string().cuid() }))
+    .mutation(async ({ ctx: { db, user }, input: { groupId, sharedTransactionId } }) => {
+      await assertUserInGroup({ groupId, userId: user.id });
+      await db.sharedTransaction.delete({ where: { id: sharedTransactionId, groupId } });
+    }),
+
   upsert: privateProcedure.input(groupExpenseFormSchema).mutation(async ({ ctx: { db }, input }) => {
     await assertUserInGroup({ groupId: input.groupId, userId: input.createdById });
 
