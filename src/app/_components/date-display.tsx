@@ -1,6 +1,5 @@
 import { formatDistanceToNowStrict, isBefore, isToday, isTomorrow, isYesterday, startOfDay } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~/components/ui/tooltip';
 
 export type DateDisplayProps = {
   timezone: string | null | undefined;
@@ -11,30 +10,23 @@ export default function DateDisplay({ date, timezone }: DateDisplayProps) {
   const formattedDate = formatInTimeZone(date, timezone ?? 'Europe/Amsterdam', 'LLLL d, yyyy');
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <time dateTime={formattedDate}>{getDistanceTo(date)}</time>
-        </TooltipTrigger>
-        <TooltipContent side="right">
-          <span>{formattedDate}</span>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <>
+      {formattedDate} (<time dateTime={formattedDate}>{getDistanceTo(date).toLowerCase()}</time>)
+    </>
   );
 }
 
 function getDistanceTo(date: Date) {
   if (isToday(date)) {
-    return 'Today';
+    return 'today';
   }
 
   if (isYesterday(date)) {
-    return 'Yesterday';
+    return 'yesterday';
   }
 
   if (isTomorrow(date)) {
-    return 'Tomorrow';
+    return 'tomorrow';
   }
 
   return formatDistanceToNowStrict(startOfDay(date), {

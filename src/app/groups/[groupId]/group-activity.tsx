@@ -1,7 +1,7 @@
 import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
-import { format } from 'date-fns';
 import { MoveRight } from 'lucide-react';
+import DateDisplay from '~/app/_components/date-display';
 import {
   GroupList,
   GroupListBody,
@@ -76,11 +76,16 @@ function SharedTransactionView({
           </Avatar>
         ))}
       </div>
-      <div>
-        <span className="inline-block first-letter:uppercase">{formatter.format(payersNames)}</span> paid{' '}
-        {sharedTransaction.transaction.amount / 100}
-        {currencySymbolMap[user.currency ?? 'EUR']} on {format(sharedTransaction.transaction.date, 'MMMM do, yyyy')} for{' '}
-        <span className="inline-block first-letter:lowercase">{sharedTransaction.transaction.description}</span>
+      <div className="flex flex-col">
+        <p>
+          <span className="inline-block first-letter:uppercase">{formatter.format(payersNames)}</span> paid{' '}
+          {sharedTransaction.transaction.amount / 100}
+          {currencySymbolMap[user.currency ?? 'EUR']} for{' '}
+          <span className="inline-block first-letter:lowercase">{sharedTransaction.transaction.description}</span>
+        </p>
+        <div className="text-xs text-gray-500">
+          <DateDisplay timezone={user.timezone} date={sharedTransaction.transaction.date} />
+        </div>
       </div>
     </GroupListItemLink>
   );
@@ -130,7 +135,12 @@ function RegisteredSettlementView({
         </Avatar>
       </div>
 
-      <p>{parts.join(' ')}</p>
+      <div className="flex flex-col">
+        <p>{parts.join(' ')}</p>
+        <div className="text-xs text-gray-500">
+          <DateDisplay timezone={user.timezone} date={settlement.date} />
+        </div>
+      </div>
     </GroupListItemLink>
   );
 }

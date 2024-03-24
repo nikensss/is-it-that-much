@@ -235,7 +235,7 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
               description="Are you sure you want to delete this expense? This action cannot be undone."
               destructive
             >
-              <Button className="mt-auto" type="button" variant="destructive">
+              <Button disabled={isLoading} className="mt-auto" type="button" variant="destructive">
                 <Trash2 className="mr-2" />
                 Delete
               </Button>
