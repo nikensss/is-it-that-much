@@ -21,7 +21,7 @@ export function GroupListBody({ children }: { children: React.ReactNode }) {
   return <div className="flex grow flex-col gap-0.5">{children}</div>;
 }
 
-export function GroupListItem({ children }: { children: React.ReactNode }) {
+export function GroupListSeparatedItem({ children }: { children: React.ReactNode }) {
   return (
     <>
       {children}
@@ -30,7 +30,10 @@ export function GroupListItem({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function GroupListItemLink({ href, children }: { href: string; children: React.ReactNode }) {
+export function GroupListItem({ href, children }: { href?: string; children: React.ReactNode }) {
+  const className = 'flex items-center gap-2 rounded-md p-2 lg:hover:bg-slate-900/20';
+  if (!href) return <div className={className}>{children}</div>;
+
   return (
     <Link className="flex items-center gap-2 rounded-md p-2 lg:hover:bg-slate-900/20" href={href}>
       {children}

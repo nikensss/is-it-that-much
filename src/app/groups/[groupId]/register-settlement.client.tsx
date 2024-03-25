@@ -4,11 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AvatarIcon, CalendarIcon, CheckIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
-import { Loader2, MoveDown } from 'lucide-react';
+import { Loader2, MoveDown, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import { useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
+import ButtonWithDialog from '~/app/_components/button-with-dialog.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { Calendar } from '~/components/ui/calendar';
@@ -24,9 +25,11 @@ import { groupSettlementFormSchema, type RouterOutputs } from '~/trpc/shared';
 export type RegisterSettlementProps = {
   group: Exclude<RouterOutputs['groups']['get'], null>;
   user: RouterOutputs['users']['get'];
+  children: ReactNode;
+  settlement?: RouterOutputs['groups']['settlements']['recent'][number];
 };
 
-export default function RegisterSettlement({ group, user }: RegisterSettlementProps) {
+export default function RegisterSettlement({ group, user, children, settlement }: RegisterSettlementProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -40,8 +43,13 @@ export default function RegisterSettlement({ group, user }: RegisterSettlementPr
     form.reset();
   };
 
-  const register = api.groups.settlements.create.useMutation({
+  const upsert = api.groups.settlements.upsert.useMutation({
     onMutate: () => setIsLoading(true),
+    onSettled: () => setIsOpen(false),
+    onSuccess: () => router.refresh(),
+  });
+
+  const del = api.groups.settlements.delete.useMutation({
     onSettled: () => setIsOpen(false),
     onSuccess: () => router.refresh(),
   });
@@ -49,11 +57,12 @@ export default function RegisterSettlement({ group, user }: RegisterSettlementPr
   const form = useForm<z.infer<typeof groupSettlementFormSchema>>({
     resolver: zodResolver(groupSettlementFormSchema),
     defaultValues: {
-      amount: 0,
-      date: new Date(),
+      id: settlement?.id ?? null,
+      amount: (settlement?.amount ?? 0) / 100,
+      date: settlement ? zonedTimeToUtc(settlement.date, user.timezone ?? 'Europe/Amsterdam') : new Date(),
       groupId: group.id,
-      fromId: user.id,
-      toId: group.UserGroup.find(({ userId }) => userId !== user.id)?.userId ?? '',
+      fromId: settlement?.from.id ?? user.id,
+      toId: settlement?.to.id ?? group.UserGroup.find(({ userId }) => userId !== user.id)?.userId ?? '',
     },
   });
 
@@ -64,15 +73,13 @@ export default function RegisterSettlement({ group, user }: RegisterSettlementPr
       data.date = zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), user.timezone);
     }
 
-    return register.mutateAsync(data);
+    return upsert.mutateAsync(data);
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="grow" onClick={resetForm}>
-          Register settlement
-        </Button>
+      <DialogTrigger onClick={resetForm} className="cursor-pointer" asChild>
+        {children}
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">
         <DialogHeader>
@@ -179,7 +186,20 @@ export default function RegisterSettlement({ group, user }: RegisterSettlementPr
                 </FormItem>
               )}
             />
-            <DialogFooter>
+            <DialogFooter className={cn(settlement?.id ? 'grid-cols-2' : 'grid-cols-1', 'grid grid-rows-1')}>
+              {settlement?.id ? (
+                <ButtonWithDialog
+                  title="Delete settlement"
+                  description="Are you sure you want to delete this settlement? This action cannot be undone."
+                  destructive
+                  onConfirm={() => del.mutateAsync({ groupId: group.id, settlementId: settlement.id })}
+                >
+                  <Button variant="destructive">
+                    <Trash2 className="mr-2" />
+                    Delete
+                  </Button>
+                </ButtonWithDialog>
+              ) : null}
               <Button disabled={isLoading} className="grow" type="submit">
                 {isLoading ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Save'}
               </Button>

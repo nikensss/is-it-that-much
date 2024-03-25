@@ -6,12 +6,22 @@ import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
 import { groupSettlementFormSchema } from '~/trpc/shared';
 
 export const groupSettlementsRouter = createTRPCRouter({
-  create: privateProcedure.input(groupSettlementFormSchema).mutation(async ({ ctx: { db }, input }) => {
+  upsert: privateProcedure.input(groupSettlementFormSchema).mutation(async ({ ctx: { db }, input }) => {
     await assertUserInGroup({ groupId: input.groupId, userId: input.fromId });
     await assertUserInGroup({ groupId: input.groupId, userId: input.toId });
 
-    return db.settlement.create({
-      data: {
+    return db.settlement.upsert({
+      where: {
+        id: input.id ?? '',
+      },
+      create: {
+        amount: parseInt(`${input.amount * 100}`),
+        date: input.date,
+        groupId: input.groupId,
+        fromId: input.fromId,
+        toId: input.toId,
+      },
+      update: {
         amount: parseInt(`${input.amount * 100}`),
         date: input.date,
         groupId: input.groupId,
@@ -20,6 +30,19 @@ export const groupSettlementsRouter = createTRPCRouter({
       },
     });
   }),
+
+  delete: privateProcedure
+    .input(z.object({ groupId: z.string().cuid(), settlementId: z.string().cuid() }))
+    .mutation(async ({ ctx: { db, user }, input: { groupId, settlementId } }) => {
+      await assertUserInGroup({ groupId: groupId, userId: user.id });
+
+      return db.settlement.delete({
+        where: {
+          id: settlementId,
+          groupId,
+        },
+      });
+    }),
 
   period: privateProcedure
     .input(
