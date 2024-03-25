@@ -27,8 +27,8 @@ export default async function GroupExpensesList({
   });
 
   return (
-    <div>
-      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
+    <div className="flex flex-col gap-2">
+      <header className="flex h-12 items-center justify-center rounded-md bg-slate-900">
         <h2 className="text-lg font-bold capitalize text-slate-200">Expenses</h2>
       </header>
       <section className="items-center justify-center gap-2 md:flex">
