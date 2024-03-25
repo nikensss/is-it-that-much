@@ -15,6 +15,9 @@ export default async function GroupSettlementsList({
   const { groupId } = params;
   if (!groupId) return notFound();
 
+  const group = await api.groups.get.query({ id: groupId }).catch(() => null);
+  if (!group) return notFound();
+
   const user = await api.users.get.query();
   const timezone = user?.timezone ?? 'Europe/Amsterdam';
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'] ?? '€';
@@ -46,7 +49,7 @@ export default async function GroupSettlementsList({
           </TableHeader>
           <TableBody>
             {settlements.map((settlement) => {
-              return <GroupSettlementTableRow key={settlement.id} {...{ settlement, user }} />;
+              return <GroupSettlementTableRow key={settlement.id} {...{ settlement, group, user }} />;
             })}
           </TableBody>
         </Table>

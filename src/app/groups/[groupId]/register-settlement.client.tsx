@@ -86,7 +86,7 @@ export default function RegisterSettlement({ group, user, children, settlement }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger onClick={resetForm} className="cursor-pointer" asChild>
+      <DialogTrigger type={undefined} onClick={resetForm} className="cursor-pointer" asChild>
         {children}
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">
