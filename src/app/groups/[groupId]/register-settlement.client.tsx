@@ -106,7 +106,13 @@ export default function RegisterSettlement({ group, user, children, settlement }
                       setPopoverOpen={setIsFromUserOpen}
                       users={group.UserGroup.map((e) => e.user)}
                       value={form.watch('fromId')}
-                      setValue={(value) => form.setValue('fromId', value)}
+                      setValue={(value) => {
+                        const to = form.getValues('toId');
+                        if (to === value) {
+                          form.setValue('toId', form.getValues('fromId'));
+                        }
+                        form.setValue('fromId', value);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -127,7 +133,13 @@ export default function RegisterSettlement({ group, user, children, settlement }
                       setPopoverOpen={setIsToUserOpen}
                       users={group.UserGroup.map((e) => e.user)}
                       value={form.watch('toId')}
-                      setValue={(value) => form.setValue('toId', value)}
+                      setValue={(value) => {
+                        const from = form.getValues('fromId');
+                        if (from === value) {
+                          form.setValue('fromId', form.getValues('toId'));
+                        }
+                        form.setValue('toId', value);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -200,7 +212,10 @@ export default function RegisterSettlement({ group, user, children, settlement }
                   title="Delete settlement"
                   description="Are you sure you want to delete this settlement? This action cannot be undone."
                   destructive
-                  onConfirm={() => del.mutateAsync({ groupId: group.id, settlementId: settlement.id })}
+                  onConfirm={async () => {
+                    if (!settlement?.id) return;
+                    await del.mutateAsync({ groupId: group.id, settlementId: settlement.id });
+                  }}
                 >
                   <Button variant="destructive">
                     <Trash2 className="mr-2" />
