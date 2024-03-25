@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import React from 'react';
 import { Separator } from '~/components/ui/separator';
 
 export function GroupList({ children }: { children: React.ReactNode }) {
@@ -18,25 +19,18 @@ export function GroupListTitle({ href, children }: { href?: string; children: Re
 }
 
 export function GroupListBody({ children }: { children: React.ReactNode }) {
-  return <div className="flex grow flex-col gap-0.5">{children}</div>;
-}
-
-export function GroupListSeparatedItem({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      {children}
-      <Separator className="last:hidden" />
-    </>
+    <div className="flex grow flex-col gap-0.5">
+      {React.Children.map(children, (c) => (
+        <>
+          {c}
+          <Separator className="last:hidden" />
+        </>
+      ))}
+    </div>
   );
 }
 
-export function GroupListItem({ href, children }: { href?: string; children: React.ReactNode }) {
-  const className = 'flex items-center gap-2 rounded-md p-2 lg:hover:bg-slate-900/20';
-  if (!href) return <div className={className}>{children}</div>;
-
-  return (
-    <Link className="flex items-center gap-2 rounded-md p-2 lg:hover:bg-slate-900/20" href={href}>
-      {children}
-    </Link>
-  );
+export function GroupListItem({ children }: { children: React.ReactNode }) {
+  return <div className="flex items-center gap-2 rounded-md p-2 lg:hover:bg-slate-900/20">{children}</div>;
 }

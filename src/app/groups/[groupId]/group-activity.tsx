@@ -1,14 +1,9 @@
 import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { MoveRight } from 'lucide-react';
+import Link from 'next/link';
 import DateDisplay from '~/app/_components/date-display';
-import {
-  GroupList,
-  GroupListBody,
-  GroupListItem,
-  GroupListSeparatedItem,
-  GroupListTitle,
-} from '~/app/groups/[groupId]/group-list';
+import { GroupList, GroupListBody, GroupListItem, GroupListTitle } from '~/app/groups/[groupId]/group-list';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import type { RouterOutputs } from '~/trpc/shared';
@@ -39,11 +34,7 @@ export default function RecentGroupActivity({
   return (
     <GroupList>
       <GroupListTitle>Recent activity</GroupListTitle>
-      <GroupListBody>
-        {allItems.slice(0, 5).map((item) => (
-          <GroupListSeparatedItem key={item.id}>{item.component}</GroupListSeparatedItem>
-        ))}
-      </GroupListBody>
+      <GroupListBody>{allItems.slice(0, 5).map((item) => item.component)}</GroupListBody>
     </GroupList>
   );
 }
@@ -66,29 +57,31 @@ function SharedTransactionView({
   if (userPaid) payersNames.push('you');
 
   return (
-    <GroupListItem href={`/groups/${sharedTransaction.groupId}/expenses/${sharedTransaction.id}`}>
-      <div className="flex flex-col-reverse items-center lg:flex-row-reverse">
-        {payers.reverse().map((p) => (
-          <Avatar key={p.id} className="-mb-6 first:mb-0 hover:z-10 lg:-mr-6 lg:mb-0 lg:first:mr-0">
-            <AvatarImage src={p.imageUrl ?? ''} alt={`@${p.username}`} />
-            <AvatarFallback>
-              <AvatarIcon />
-            </AvatarFallback>
-          </Avatar>
-        ))}
-      </div>
-      <div className="flex flex-col">
-        <p>
-          <span className="inline-block first-letter:uppercase">{formatter.format(payersNames)}</span> paid{' '}
-          {sharedTransaction.transaction.amount / 100}
-          {currencySymbolMap[user.currency ?? 'EUR']} for{' '}
-          <span className="inline-block first-letter:lowercase">{sharedTransaction.transaction.description}</span>
-        </p>
-        <div className="text-xs text-gray-500">
-          <DateDisplay timezone={user.timezone} date={sharedTransaction.transaction.date} />
+    <Link href={`/groups/${sharedTransaction.groupId}/expenses/${sharedTransaction.id}`}>
+      <GroupListItem>
+        <div className="flex flex-col-reverse items-center lg:flex-row-reverse">
+          {payers.reverse().map((p) => (
+            <Avatar key={p.id} className="-mb-6 first:mb-0 hover:z-10 lg:-mr-6 lg:mb-0 lg:first:mr-0">
+              <AvatarImage src={p.imageUrl ?? ''} alt={`@${p.username}`} />
+              <AvatarFallback>
+                <AvatarIcon />
+              </AvatarFallback>
+            </Avatar>
+          ))}
         </div>
-      </div>
-    </GroupListItem>
+        <div className="flex flex-col">
+          <p>
+            <span className="inline-block first-letter:uppercase">{formatter.format(payersNames)}</span> paid{' '}
+            {sharedTransaction.transaction.amount / 100}
+            {currencySymbolMap[user.currency ?? 'EUR']} for{' '}
+            <span className="inline-block first-letter:lowercase">{sharedTransaction.transaction.description}</span>
+          </p>
+          <div className="text-xs text-gray-500">
+            <DateDisplay timezone={user.timezone} date={sharedTransaction.transaction.date} />
+          </div>
+        </div>
+      </GroupListItem>
+    </Link>
   );
 }
 

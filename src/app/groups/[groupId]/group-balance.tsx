@@ -1,13 +1,7 @@
 import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { MoveRight } from 'lucide-react';
-import {
-  GroupList,
-  GroupListBody,
-  GroupListSeparatedItem,
-  GroupListItem,
-  GroupListTitle,
-} from '~/app/groups/[groupId]/group-list';
+import { GroupList, GroupListBody, GroupListItem, GroupListTitle } from '~/app/groups/[groupId]/group-list';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import type { RouterOutputs } from '~/trpc/shared';
 
@@ -22,9 +16,9 @@ export default async function GroupBalance({ balance, user }: GroupBalanceProps)
       <GroupListTitle>Balance</GroupListTitle>
       <GroupListBody>
         {balance.map((settlement) => (
-          <GroupListSeparatedItem key={`${settlement.from.id}-${settlement.to.id}`}>
-            <SuggestedSettlement key={`${settlement.from.id}-${settlement.to.id}`} {...{ settlement, user }} />
-          </GroupListSeparatedItem>
+          <GroupListItem key={`${settlement.from.id}-${settlement.to.id}`}>
+            <SuggestedSettlement {...{ settlement, user }} />
+          </GroupListItem>
         ))}
       </GroupListBody>
     </GroupList>
@@ -52,7 +46,7 @@ function SuggestedSettlement({ settlement, user }: SuggestedSettlementProps) {
 
   parts.push(`${settlement.amount / 100} ${currencySymbolMap[user.currency ?? 'EUR']}`);
   return (
-    <GroupListItem href="#">
+    <>
       <div className="flex gap-2">
         <Avatar>
           <AvatarImage src={settlement.from.imageUrl ?? ''} alt={`@${settlement.from.username}`} />
@@ -75,6 +69,6 @@ function SuggestedSettlement({ settlement, user }: SuggestedSettlementProps) {
       </div>
 
       <p>{parts.join(' ')}</p>
-    </GroupListItem>
+    </>
   );
 }
