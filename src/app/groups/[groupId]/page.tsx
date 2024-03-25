@@ -43,7 +43,7 @@ export default async function GroupPage({ params: { groupId } }: { params: { gro
       </div>
       <div className="flex grow flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
         <RecentGroupActivity {...{ expenses, settlements, user, group }} />
-        <GroupBalance {...{ balance, user }} />
+        <GroupBalance {...{ group, balance, user }} />
       </div>
     </>
   );

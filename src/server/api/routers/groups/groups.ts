@@ -123,7 +123,21 @@ export const groupsRouter = createTRPCRouter({
     .query(async ({ ctx: { db, user }, input: { groupId } }) => {
       const group = await db.group.findUnique({
         where: { id: groupId },
-        include: { UserGroup: { include: { user: true } } },
+        include: {
+          UserGroup: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  firstName: true,
+                  lastName: true,
+                  imageUrl: true,
+                },
+              },
+            },
+          },
+        },
       });
       if (!group) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Group not found' });
       await assertUserInGroup({ groupId, userId: user.id });

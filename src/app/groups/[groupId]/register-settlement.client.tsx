@@ -26,7 +26,7 @@ export type RegisterSettlementProps = {
   group: Exclude<RouterOutputs['groups']['get'], null>;
   user: RouterOutputs['users']['get'];
   children: ReactNode;
-  settlement?: RouterOutputs['groups']['settlements']['recent'][number];
+  settlement?: Partial<RouterOutputs['groups']['settlements']['recent'][number]>;
 };
 
 export default function RegisterSettlement({ group, user, children, settlement }: RegisterSettlementProps) {
@@ -41,6 +41,14 @@ export default function RegisterSettlement({ group, user, children, settlement }
     setIsOpen(true);
     setIsLoading(false);
     form.reset();
+
+    form.setValue('fromId', settlement?.from?.id ?? user.id);
+    form.setValue('toId', settlement?.to?.id ?? group.UserGroup.find(({ userId }) => userId !== user.id)?.userId ?? '');
+    form.setValue('amount', (settlement?.amount ?? 0) / 100);
+    form.setValue(
+      'date',
+      settlement?.date ? zonedTimeToUtc(settlement.date, user.timezone ?? 'Europe/Amsterdam') : new Date(),
+    );
   };
 
   const upsert = api.groups.settlements.upsert.useMutation({
@@ -59,10 +67,10 @@ export default function RegisterSettlement({ group, user, children, settlement }
     defaultValues: {
       id: settlement?.id ?? null,
       amount: (settlement?.amount ?? 0) / 100,
-      date: settlement ? zonedTimeToUtc(settlement.date, user.timezone ?? 'Europe/Amsterdam') : new Date(),
+      date: settlement?.date ? zonedTimeToUtc(settlement.date, user.timezone ?? 'Europe/Amsterdam') : new Date(),
       groupId: group.id,
-      fromId: settlement?.from.id ?? user.id,
-      toId: settlement?.to.id ?? group.UserGroup.find(({ userId }) => userId !== user.id)?.userId ?? '',
+      fromId: settlement?.from?.id ?? user.id,
+      toId: settlement?.to?.id ?? group.UserGroup.find(({ userId }) => userId !== user.id)?.userId ?? '',
     },
   });
 
