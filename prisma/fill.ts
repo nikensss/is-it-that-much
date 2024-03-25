@@ -4,7 +4,9 @@ import { addDays, startOfMonth } from 'date-fns';
 
 async function main() {
   console.log({ email: process.env.EMAIL });
-  const user = await db.user.findUnique({ where: { email: process.env.EMAIL } });
+  const user = await db.user.findUnique({
+    where: { email: process.env.EMAIL },
+  });
   if (!user) throw new Error('User not found');
 
   const dates: Date[] = [];
