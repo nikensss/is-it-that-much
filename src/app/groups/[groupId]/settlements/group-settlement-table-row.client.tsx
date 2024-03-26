@@ -18,8 +18,8 @@ export default function GroupSettlementTableRow({
   return (
     <RegisterSettlement {...{ settlement, user, group }}>
       <TableRow>
-        <TableCell>
-          <DateDisplay timezone={user.timezone} date={settlement.date} />
+        <TableCell className="text-nowrap">
+          <DateDisplay distance="newline" timezone={user.timezone} date={settlement.date} />
         </TableCell>
         <TableCell>{settlement.amount / 100}</TableCell>
         <TableCell>

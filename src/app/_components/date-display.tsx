@@ -4,14 +4,16 @@ import { formatInTimeZone } from 'date-fns-tz';
 export type DateDisplayProps = {
   timezone: string | null | undefined;
   date: Date;
+  distance?: 'newline' | 'inline';
 };
 
-export default function DateDisplay({ date, timezone }: DateDisplayProps) {
+export default function DateDisplay({ date, timezone, distance = 'inline' }: DateDisplayProps) {
   const formattedDate = formatInTimeZone(date, timezone ?? 'Europe/Amsterdam', 'LLLL d, yyyy');
 
   return (
     <>
-      {formattedDate} (<time dateTime={formattedDate}>{getDistanceTo(date).toLowerCase()}</time>)
+      {formattedDate} {distance === 'newline' ? <br /> : null}(
+      <time dateTime={formattedDate}>{getDistanceTo(date).toLowerCase()}</time>)
     </>
   );
 }

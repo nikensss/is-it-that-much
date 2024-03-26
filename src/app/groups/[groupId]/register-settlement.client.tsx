@@ -206,7 +206,8 @@ export default function RegisterSettlement({ group, user, children, settlement }
                 </FormItem>
               )}
             />
-            <DialogFooter className={cn(settlement?.id ? 'grid-cols-2' : 'grid-cols-1', 'grid grid-rows-1')}>
+
+            <DialogFooter className={cn(settlement?.id ? 'grid-cols-2' : 'grid-cols-1', 'grid grid-rows-1 gap-2')}>
               {settlement?.id ? (
                 <ButtonWithDialog
                   title="Delete settlement"
