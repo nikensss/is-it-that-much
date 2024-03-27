@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss';
 import { fontFamily } from 'tailwindcss/defaultTheme';
+import colors from 'tailwindcss/colors';
 
 const config = {
   darkMode: ['class'],
@@ -16,6 +17,9 @@ const config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-sans)', ...fontFamily.sans],
+      },
+      colors: {
+        primary: colors.stone,
       },
       keyframes: {
         'accordion-down': {

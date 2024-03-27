@@ -10,11 +10,11 @@
   h5,
   h6,
   p {
-    @apply text-slate-900;
+    @apply text-primary-900;
   }
 
   body {
-    @apply bg-slate-900;
+    @apply bg-primary-900;
   }
 }
 

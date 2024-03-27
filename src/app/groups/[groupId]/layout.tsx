@@ -12,8 +12,8 @@ export default async function GroupLayout({ params, children }: { children: Reac
   return (
     <div className="flex grow flex-col gap-2">
       <Link href={`/groups/${group.id}`}>
-        <header className="flex h-12 flex-col items-center justify-center rounded-md bg-slate-900">
-          <h2 className="text-lg font-bold capitalize text-slate-200">{group.name}</h2>
+        <header className="bg-primary-900 flex h-12 flex-col items-center justify-center rounded-md">
+          <h2 className="text-primary-200 text-lg font-bold capitalize">{group.name}</h2>
         </header>
       </Link>
       {children}

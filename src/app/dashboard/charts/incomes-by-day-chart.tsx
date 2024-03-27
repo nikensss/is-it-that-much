@@ -26,7 +26,7 @@ export default async function IncomesByDay({ timezone, incomes, from, to }: Inco
   }
 
   const fullConfig = resolveConfig(tailwindConfig);
-  const backgroundColor = fullConfig.theme.colors.slate[900];
+  const backgroundColor = fullConfig.theme.colors.primary[900];
 
   return (
     <BarChart

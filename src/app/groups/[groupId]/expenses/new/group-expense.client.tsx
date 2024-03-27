@@ -135,7 +135,7 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
                       min={0.01}
                       onChange={(e) => form.setValue('amount', parseFloat(e.target.value) || 0)}
                     />
-                    <div className="flex items-center justify-center self-stretch rounded-r-md border border-slate-200 bg-slate-200 px-2 peer-focus-visible:ring-1 peer-focus-visible:ring-slate-950 ">
+                    <div className="border-primary-200 bg-primary-200 peer-focus-visible:ring-primary-950 flex items-center justify-center self-stretch rounded-r-md border px-2 peer-focus-visible:ring-1 ">
                       <p>{currencySymbolMap[user.currency ?? 'EUR']}</p>
                     </div>
                   </div>
@@ -283,7 +283,7 @@ function SplitInput({ value, form, open, onOpenChange, title, group, user, onInp
         <Collapsible open={open} onOpenChange={onOpenChange}>
           <CollapsibleTrigger
             asChild
-            className="my-2 select-none rounded-md py-0.5 transition-all md:hover:cursor-pointer md:hover:bg-slate-100"
+            className="md:hover:bg-primary-100 my-2 select-none rounded-md py-0.5 transition-all md:hover:cursor-pointer"
           >
             <div className="flex items-center justify-start">
               <Button className="max-md:pl-0" variant="ghost" disabled>
@@ -298,7 +298,7 @@ function SplitInput({ value, form, open, onOpenChange, title, group, user, onInp
             {group.UserGroup.sort((a, b) => a.user.id.localeCompare(b.user.id)).map(({ user: u }) => (
               <div
                 key={u.id}
-                className="flex items-center justify-between gap-2 border-b border-b-slate-200 p-2 py-4 last:border-0"
+                className="border-b-primary-200 flex items-center justify-between gap-2 border-b p-2 py-4 last:border-0"
               >
                 <div className="flex items-center justify-center text-sm md:text-lg">
                   <Avatar className="mr-2">
@@ -330,7 +330,7 @@ function SplitInput({ value, form, open, onOpenChange, title, group, user, onInp
                         min={0}
                         onChange={(e) => onInputChange(parseFloat(e.target.value), u)}
                       />
-                      <div className="flex items-center justify-center self-stretch rounded-r-md border border-slate-200 bg-slate-200 px-2 peer-focus-visible:ring-1 peer-focus-visible:ring-slate-950 ">
+                      <div className="border-primary-200 bg-primary-200 peer-focus-visible:ring-primary-950 flex items-center justify-center self-stretch rounded-r-md border px-2 peer-focus-visible:ring-1 ">
                         <p>{currencySymbolMap[user.currency ?? 'EUR']}</p>
                       </div>
                     </div>

@@ -118,7 +118,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                   className={cn(
                     'flex items-stretch justify-start rounded-md border',
                     (() => {
-                      if (usernameLockQuery.isFetching) return 'border-slate-900';
+                      if (usernameLockQuery.isFetching) return 'border-primary-900';
                       if (!isLockOwned || requestedUsername.length < 3 || requestedUsername.length > 120) {
                         return 'border-red-500';
                       }
@@ -126,7 +126,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                     })(),
                   )}
                 >
-                  <div className="flex w-9 items-center justify-center rounded-l-md bg-slate-100 px-1">
+                  <div className="flex w-9 items-center justify-center rounded-l-md bg-primary-100 px-1">
                     <Dot
                       className={cn(
                         'animate-ping',
