@@ -1,0 +1,22 @@
+name: create pull request to dev
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - dev
+      - master
+
+jobs:
+  createDraftPR:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Execute bash script
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x ./scripts/create-pr-to-dev
+          ./scripts/create-pr-to-dev
