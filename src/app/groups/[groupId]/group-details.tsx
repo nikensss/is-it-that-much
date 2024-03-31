@@ -18,7 +18,7 @@ export default async function GroupDetails({
       <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 flex-col items-center justify-center rounded-md">
         <h2 className="text-primary-200 text-lg font-bold first-letter:uppercase">Details</h2>
       </header>
-      <main>
+      <main className="flex grow flex-col">
         <p className="text-center text-lg font-bold first-letter:uppercase">{group.description}</p>
         <p className="text-center text-lg">Members</p>
         <div className="mb-2 flex flex-col gap-2">
@@ -26,7 +26,7 @@ export default async function GroupDetails({
             return <UserBannerClient key={u.id} user={u} isSelf={u.id === user?.id} />;
           })}
         </div>
-        <div className="flex items-center justify-center gap-2">
+        <div className="mt-auto flex items-center justify-center gap-2">
           <Button asChild variant="outline" className="w-full">
             <Link href={`/groups/${group.id}/edit`}>Edit</Link>
           </Button>
