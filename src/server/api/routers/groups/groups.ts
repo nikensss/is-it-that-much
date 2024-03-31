@@ -97,6 +97,7 @@ export const groupsRouter = createTRPCRouter({
 
       await db.usersGroups.deleteMany({
         where: {
+          groupId: group.id,
           userId: {
             notIn: [user.id, ...members],
           },
