@@ -1,9 +1,17 @@
 import Link from 'next/link';
 import MyGroups from '~/app/groups/my-groups';
-import RecentGroupActivity from '~/app/groups/recent-group-activity';
+import RecentGroupsActivity from '~/app/groups/recent-groups-activity';
 import { Button } from '~/components/ui/button';
+import { api } from '~/trpc/server';
 
 export default async function GroupsPage() {
+  const [user, groups, expenses, settlements] = await Promise.all([
+    api.users.get.query(),
+    api.groups.all.get.query(),
+    api.groups.all.expenses.recent.query(),
+    api.groups.all.settlements.recent.query(),
+  ]);
+
   return (
     <>
       <div className="mb-2 grid">
@@ -12,8 +20,8 @@ export default async function GroupsPage() {
         </Button>
       </div>
       <div className="mt-2 grid grow gap-2 md:grid-cols-2">
-        <MyGroups />
-        <RecentGroupActivity />
+        <MyGroups groups={groups} />
+        <RecentGroupsActivity {...{ user, groups, expenses, settlements }} />
       </div>
     </>
   );

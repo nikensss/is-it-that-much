@@ -3,7 +3,14 @@ import currencySymbolMap from 'currency-symbol-map/map';
 import { MoveRight } from 'lucide-react';
 import Link from 'next/link';
 import DateDisplay from '~/app/_components/date-display';
-import { GroupList, GroupListBody, GroupListItem, GroupListTitle } from '~/app/groups/[groupId]/group-list';
+import {
+  GroupList,
+  GroupListBody,
+  GroupListItem,
+  GroupListItemBody,
+  GroupListItemTitle,
+  GroupListTitle,
+} from '~/app/groups/[groupId]/group-list';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import type { RouterOutputs } from '~/trpc/shared';
@@ -41,12 +48,14 @@ export default function RecentGroupActivity({
   );
 }
 
-function SharedTransactionView({
+export function SharedTransactionView({
   sharedTransaction,
   user,
+  title,
 }: {
   user: RouterOutputs['users']['get'];
   sharedTransaction: RouterOutputs['groups']['expenses']['recent'][number];
+  title?: string;
 }) {
   const userPaid = sharedTransaction.TransactionSplit.some((s) => s.user.id === user.id && s.paid > 0);
   const payers = sharedTransaction.TransactionSplit.filter((s) => s.paid > 0)
@@ -61,40 +70,45 @@ function SharedTransactionView({
   return (
     <Link href={`/groups/${sharedTransaction.groupId}/expenses/${sharedTransaction.id}`}>
       <GroupListItem>
-        <div className="flex flex-col-reverse items-center lg:flex-row-reverse">
-          {payers.reverse().map((p) => (
-            <Avatar key={p.id} className="-mb-6 first:mb-0 hover:z-10 lg:-mr-6 lg:mb-0 lg:first:mr-0">
-              <AvatarImage src={p.imageUrl ?? ''} alt={`@${p.username}`} />
-              <AvatarFallback>
-                <AvatarIcon />
-              </AvatarFallback>
-            </Avatar>
-          ))}
-        </div>
-        <div className="flex flex-col">
-          <p>
-            <span className="inline-block first-letter:uppercase">{formatter.format(payersNames)}</span> paid{' '}
-            {sharedTransaction.transaction.amount / 100}
-            {currencySymbolMap[user.currency ?? 'EUR']} for{' '}
-            <span className="inline-block first-letter:lowercase">{sharedTransaction.transaction.description}</span>
-          </p>
-          <div className="text-xs text-gray-500">
-            <DateDisplay timezone={user.timezone} date={sharedTransaction.transaction.date} />
+        {title ? <GroupListItemTitle>{title}</GroupListItemTitle> : null}
+        <GroupListItemBody>
+          <div className="flex flex-col-reverse items-center lg:flex-row-reverse">
+            {payers.reverse().map((p) => (
+              <Avatar key={p.id} className="-mb-6 first:mb-0 hover:z-10 lg:-mr-6 lg:mb-0 lg:first:mr-0">
+                <AvatarImage src={p.imageUrl ?? ''} alt={`@${p.username}`} />
+                <AvatarFallback>
+                  <AvatarIcon />
+                </AvatarFallback>
+              </Avatar>
+            ))}
           </div>
-        </div>
+          <div className="flex flex-col">
+            <p>
+              <span className="inline-block first-letter:uppercase">{formatter.format(payersNames)}</span> paid{' '}
+              {sharedTransaction.transaction.amount / 100}
+              {currencySymbolMap[user.currency ?? 'EUR']} for{' '}
+              <span className="inline-block first-letter:lowercase">{sharedTransaction.transaction.description}</span>
+            </p>
+            <div className="text-xs text-gray-500">
+              <DateDisplay timezone={user.timezone} date={sharedTransaction.transaction.date} />
+            </div>
+          </div>
+        </GroupListItemBody>
       </GroupListItem>
     </Link>
   );
 }
 
-function RegisteredSettlementView({
+export function RegisteredSettlementView({
   settlement,
   user,
   group,
+  title,
 }: {
   group: Exclude<RouterOutputs['groups']['get'], null>;
   user: RouterOutputs['users']['get'];
   settlement: RouterOutputs['groups']['settlements']['recent'][number];
+  title?: string;
 }) {
   const parts: string[] = [];
   if (settlement.from.id === user.id) {
@@ -114,33 +128,36 @@ function RegisteredSettlementView({
   return (
     <RegisterSettlement {...{ group, user, settlement }}>
       <GroupListItem>
-        <div className="flex gap-2">
-          <Avatar>
-            <AvatarImage src={settlement.from.imageUrl ?? ''} alt={`@${settlement.from.username}`} />
-            <AvatarFallback>
-              <AvatarIcon />
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col items-center">
-            <p className="whitespace-nowrap text-nowrap text-sm">
-              {settlement.amount / 100} {currencySymbolMap[user.currency ?? 'EUR']}
-            </p>
-            <MoveRight className="text-primary-900 -mt-2" />
+        {title ? <GroupListItemTitle>{title}</GroupListItemTitle> : null}
+        <GroupListItemBody>
+          <div className="flex gap-2">
+            <Avatar>
+              <AvatarImage src={settlement.from.imageUrl ?? ''} alt={`@${settlement.from.username}`} />
+              <AvatarFallback>
+                <AvatarIcon />
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col items-center">
+              <p className="whitespace-nowrap text-nowrap text-sm">
+                {settlement.amount / 100} {currencySymbolMap[user.currency ?? 'EUR']}
+              </p>
+              <MoveRight className="text-primary-900 -mt-2" />
+            </div>
+            <Avatar>
+              <AvatarImage src={settlement.to.imageUrl ?? ''} alt={`@${settlement.to.username}`} />
+              <AvatarFallback>
+                <AvatarIcon />
+              </AvatarFallback>
+            </Avatar>
           </div>
-          <Avatar>
-            <AvatarImage src={settlement.to.imageUrl ?? ''} alt={`@${settlement.to.username}`} />
-            <AvatarFallback>
-              <AvatarIcon />
-            </AvatarFallback>
-          </Avatar>
-        </div>
 
-        <div className="flex flex-col">
-          <p>{parts.join(' ')}</p>
-          <div className="text-xs text-gray-500">
-            <DateDisplay timezone={user.timezone} date={settlement.date} />
+          <div className="flex flex-col">
+            <p>{parts.join(' ')}</p>
+            <div className="text-xs text-gray-500">
+              <DateDisplay timezone={user.timezone} date={settlement.date} />
+            </div>
           </div>
-        </div>
+        </GroupListItemBody>
       </GroupListItem>
     </RegisterSettlement>
   );

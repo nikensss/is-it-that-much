@@ -1,3 +1,4 @@
+import { settings } from '.eslintrc.cjs';
 import { TRPCError } from '@trpc/server';
 import { log } from 'next-axiom';
 import { z } from 'zod';
@@ -53,23 +54,6 @@ export const groupsRouter = createTRPCRouter({
       });
     }),
 
-  all: privateProcedure.query(async ({ ctx: { db, user } }) => {
-    return db.group.findMany({
-      where: {
-        UserGroup: {
-          some: {
-            user,
-          },
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-      },
-    });
-  }),
-
   upsert: privateProcedure
     .input(
       z.object({
@@ -97,6 +81,7 @@ export const groupsRouter = createTRPCRouter({
 
       await db.usersGroups.deleteMany({
         where: {
+          groupId: group.id,
           userId: {
             notIn: [user.id, ...members],
           },
@@ -248,6 +233,121 @@ export const groupsRouter = createTRPCRouter({
 
   expenses: groupExpensesRouter,
   settlements: groupSettlementsRouter,
+
+  all: createTRPCRouter({
+    get: privateProcedure.query(async ({ ctx: { db, user } }) => {
+      return db.group.findMany({
+        where: {
+          UserGroup: {
+            some: {
+              user,
+            },
+          },
+        },
+        include: {
+          UserGroup: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  firstName: true,
+                  lastName: true,
+                  imageUrl: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
+
+    expenses: createTRPCRouter({
+      recent: privateProcedure.query(async ({ ctx: { db, user } }) => {
+        return db.sharedTransaction.findMany({
+          where: {
+            group: {
+              UserGroup: {
+                some: {
+                  user,
+                },
+              },
+            },
+          },
+          select: {
+            id: true,
+            groupId: true,
+            createdById: true,
+            transactionId: true,
+            transaction: true,
+            TransactionSplit: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    username: true,
+                    firstName: true,
+                    lastName: true,
+                    imageUrl: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            transaction: {
+              date: 'desc',
+            },
+          },
+        });
+      }),
+    }),
+
+    settlements: createTRPCRouter({
+      recent: privateProcedure.query(async ({ ctx: { db, user } }) => {
+        return db.settlement.findMany({
+          where: {
+            group: {
+              UserGroup: {
+                some: {
+                  user,
+                },
+              },
+            },
+          },
+          include: {
+            from: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+                imageUrl: true,
+              },
+            },
+            to: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+                imageUrl: true,
+              },
+            },
+            group: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            date: 'desc',
+          },
+        });
+      }),
+    }),
+  }),
 });
 
 export async function assertUserInGroup({ groupId, userId }: { groupId: string; userId: string }) {

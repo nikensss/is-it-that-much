@@ -2,11 +2,13 @@ import { UsersRound } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { cn } from '~/lib/utils';
-import { api } from '~/trpc/server';
+import type { RouterOutputs } from '~/trpc/shared';
 
-export default async function MyGroups() {
-  const groups = await api.groups.all.query();
+export type MyGroupsProps = {
+  groups: RouterOutputs['groups']['all']['get'];
+};
 
+export default async function MyGroups({ groups }: MyGroupsProps) {
   return (
     <section className="border-primary-200 rounded-md border bg-white p-2">
       <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md">
