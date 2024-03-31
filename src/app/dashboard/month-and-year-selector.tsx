@@ -2,16 +2,18 @@
 
 import { format, parse } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { cn } from '~/lib/utils';
 
-export default function MonthAndYearSelector({ month, year }: { month: string; year: string }) {
+export default function MonthAndYearSelector(input: { month: string; year: string }) {
   const router = useRouter();
   const pathname = usePathname();
+
+  const [month, setMonth] = useState(input.month);
+  const [year, setYear] = useState(input.year);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,43 +25,42 @@ export default function MonthAndYearSelector({ month, year }: { month: string; y
         </Button>
       </PopoverTrigger>
       <PopoverContent className="flex select-none flex-col gap-1 p-1 shadow-lg">
-        <YearSelector {...{ month, year, router, pathname }} />
-        <MonthSelector onClick={() => setIsOpen(false)} {...{ month, year, router, pathname }} />
+        <YearSelector {...{ year, setYear }} />
+        <MonthSelector {...{ month, setMonth }} />
+        <Button
+          onClick={() => {
+            setIsOpen(false);
+            const searchParams = new URLSearchParams();
+            searchParams.set('month', month);
+            searchParams.set('year', year);
+            router.push(`${pathname}?${searchParams.toString()}`);
+          }}
+        >
+          Update
+        </Button>
       </PopoverContent>
     </Popover>
   );
 }
 
-type MonthAndYearSelectorChild = {
-  month: string;
+type YearSelectorProps = {
   year: string;
-  router: AppRouterInstance;
-  pathname: string;
+  setYear: (year: string) => void;
 };
 
-function YearSelector({ month, year, router, pathname }: MonthAndYearSelectorChild) {
+function YearSelector({ year, setYear }: YearSelectorProps) {
   return (
     <div className="border-primary-200 flex items-center rounded-lg border shadow-lg">
       <div
         className="group flex grow items-center justify-center p-2 pr-0 hover:cursor-pointer"
-        onClick={() => {
-          const params = new URLSearchParams();
-          params.set('year', `${parseInt(year) - 1}`);
-          params.set('month', month);
-          router.push(pathname + '?' + params.toString());
-        }}
+        onClick={() => setYear(`${parseInt(year) - 1}`)}
       >
         <ChevronLeft size={24} className="transition md:group-hover:-translate-x-1" />
       </div>
       <div>{year}</div>
       <div
         className="group flex grow items-center justify-center p-2 pl-0 hover:cursor-pointer"
-        onClick={() => {
-          const params = new URLSearchParams();
-          params.set('year', `${parseInt(year) + 1}`);
-          params.set('month', month);
-          router.push(pathname + '?' + params.toString());
-        }}
+        onClick={() => setYear(`${parseInt(year) + 1}`)}
       >
         <ChevronRight size={24} className="transition md:group-hover:translate-x-1" />
       </div>
@@ -67,15 +68,11 @@ function YearSelector({ month, year, router, pathname }: MonthAndYearSelectorChi
   );
 }
 
-function MonthSelector({
-  month,
-  year,
-  router,
-  pathname,
-  onClick,
-}: MonthAndYearSelectorChild & {
-  onClick: () => void;
-}) {
+type MonthSelectorProps = {
+  month: string;
+  setMonth: (month: string) => void;
+};
+function MonthSelector({ month, setMonth }: MonthSelectorProps) {
   const months = [
     'January',
     'February',
@@ -97,11 +94,8 @@ function MonthSelector({
         <Button
           key={idx}
           onClick={() => {
-            onClick();
-            const params = new URLSearchParams();
-            params.set('month', m);
-            params.set('year', year);
-            router.push(pathname + '?' + params.toString());
+            const selectedMonth = months[idx];
+            if (selectedMonth) setMonth(selectedMonth);
           }}
           variant="outline"
           className={cn(
