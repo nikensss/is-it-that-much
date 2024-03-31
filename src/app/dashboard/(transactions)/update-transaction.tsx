@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon } from '@radix-ui/react-icons';
+import currencySymbolMap from 'currency-symbol-map/map';
 import { format } from 'date-fns';
 import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz';
 import { Loader2, Save, Trash2 } from 'lucide-react';
@@ -22,7 +23,7 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
-import { Input } from '~/components/ui/input';
+import { Input, InputWithCurrency } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { TableCell, TableRow } from '~/components/ui/table';
 import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
@@ -31,13 +32,20 @@ import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type UpdateTransactionProps = {
+  currency: string | null;
   timezone: string;
   weekStartsOn: number;
   transaction: RouterOutputs['transactions']['personal']['period'][number];
   tags: RouterOutputs['tags']['all'];
 };
 
-export default function UpdateTransaction({ timezone, weekStartsOn, transaction, tags }: UpdateTransactionProps) {
+export default function UpdateTransaction({
+  currency,
+  timezone,
+  weekStartsOn,
+  transaction,
+  tags,
+}: UpdateTransactionProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -136,8 +144,8 @@ export default function UpdateTransaction({ timezone, weekStartsOn, transaction,
                   <FormItem>
                     <FormLabel>Amount</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
+                      <InputWithCurrency
+                        currency={currencySymbolMap[currency ?? 'EUR'] ?? '€'}
                         onFocus={(e) => e.target.select()}
                         step={0.01}
                         min={0.01}

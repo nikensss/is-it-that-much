@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { TransactionType } from '@prisma/client';
 import { CalendarIcon } from '@radix-ui/react-icons';
+import currencySymbolMap from 'currency-symbol-map/map';
 import { format } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Loader2 } from 'lucide-react';
@@ -14,7 +15,7 @@ import { Button } from '~/components/ui/button';
 import { Calendar } from '~/components/ui/calendar';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '~/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
-import { Input } from '~/components/ui/input';
+import { Input, InputWithCurrency } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
 import { getRandomElement } from '~/lib/utils';
@@ -22,6 +23,7 @@ import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type RegisterTransactionProps = {
+  currency: string | null;
   timezone: string;
   weekStartsOn: number;
   descriptions: string[];
@@ -30,6 +32,7 @@ export type RegisterTransactionProps = {
 };
 
 export default function RegisterTransaction({
+  currency,
   timezone,
   weekStartsOn,
   descriptions,
@@ -125,8 +128,8 @@ export default function RegisterTransaction({
                   <FormItem>
                     <FormLabel>Amount</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
+                      <InputWithCurrency
+                        currency={currencySymbolMap[currency ?? 'EUR'] ?? '€'}
                         onFocus={(e) => e.target.select()}
                         step={0.01}
                         min={0.01}

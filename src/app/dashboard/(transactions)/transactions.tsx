@@ -46,6 +46,7 @@ export default async function TransactionsOverview({ type, searchParams }: Trans
             {transactions.map((transaction) => {
               return (
                 <UpdateTransaction
+                  currency={user.currency}
                   key={transaction.id}
                   transaction={transaction}
                   weekStartsOn={weekStartsOn}

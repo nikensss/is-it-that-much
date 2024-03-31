@@ -20,4 +20,30 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
 });
 Input.displayName = 'Input';
 
-export { Input };
+export interface InputWithCurrencyProps extends InputProps {
+  currency: string;
+}
+
+const InputWithCurrency = React.forwardRef<HTMLInputElement, InputWithCurrencyProps>(
+  ({ className, currency, ...props }, ref) => {
+    return (
+      <div className="flex items-center justify-end">
+        <Input
+          className={cn(
+            'peer rounded-r-none pr-1 text-right [appearance:textfield] max-md:max-w-24 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+            className,
+          )}
+          type="number"
+          ref={ref}
+          {...props}
+        />
+        <div className="border-primary-200 bg-primary-200 peer-focus-visible:ring-primary-950 flex items-center justify-center self-stretch rounded-r-md border px-2 peer-focus-visible:ring-1 ">
+          <p>{currency}</p>
+        </div>
+      </div>
+    );
+  },
+);
+InputWithCurrency.displayName = 'InputWithCurrency';
+
+export { Input, InputWithCurrency };

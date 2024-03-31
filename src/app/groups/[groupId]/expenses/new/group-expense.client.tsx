@@ -15,7 +15,7 @@ import { Button } from '~/components/ui/button';
 import { Calendar } from '~/components/ui/calendar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '~/components/ui/collapsible';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
-import { Input } from '~/components/ui/input';
+import { Input, InputWithCurrency } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
@@ -128,19 +128,13 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
               <FormItem>
                 <FormLabel>Amount</FormLabel>
                 <FormControl>
-                  <div className="flex items-center justify-end">
-                    <Input
-                      className="peer rounded-r-none pr-1 text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                      {...field}
-                      type="number"
-                      step={0.01}
-                      min={0.01}
-                      onChange={(e) => form.setValue('amount', parseFloat(e.target.value) || 0)}
-                    />
-                    <div className="border-primary-200 bg-primary-200 peer-focus-visible:ring-primary-950 flex items-center justify-center self-stretch rounded-r-md border px-2 peer-focus-visible:ring-1 ">
-                      <p>{currencySymbolMap[user.currency ?? 'EUR']}</p>
-                    </div>
-                  </div>
+                  <InputWithCurrency
+                    currency={currencySymbolMap[user.currency ?? 'EUR'] ?? '€'}
+                    {...field}
+                    step={0.01}
+                    min={0.01}
+                    onChange={(e) => form.setValue('amount', parseFloat(e.target.value) || 0)}
+                  />
                 </FormControl>
                 <FormDescription>How much was it?</FormDescription>
                 <FormMessage />
@@ -323,19 +317,13 @@ function SplitInput({ value, form, open, onOpenChange, title, group, user, onInp
                 </div>
                 <FormItem>
                   <FormControl>
-                    <div className="flex items-center justify-end">
-                      <Input
-                        className="peer rounded-r-none pr-1 text-right [appearance:textfield] max-md:max-w-24 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                        type="number"
-                        value={value.find((s) => s.userId === u.id)?.value ?? 0}
-                        step={0.01}
-                        min={0}
-                        onChange={(e) => onInputChange(parseFloat(e.target.value), u)}
-                      />
-                      <div className="border-primary-200 bg-primary-200 peer-focus-visible:ring-primary-950 flex items-center justify-center self-stretch rounded-r-md border px-2 peer-focus-visible:ring-1 ">
-                        <p>{currencySymbolMap[user.currency ?? 'EUR']}</p>
-                      </div>
-                    </div>
+                    <InputWithCurrency
+                      currency={currencySymbolMap[user.currency ?? 'EUR'] ?? '€'}
+                      value={value.find((s) => s.userId === u.id)?.value ?? 0}
+                      step={0.01}
+                      min={0}
+                      onChange={(e) => onInputChange(parseFloat(e.target.value), u)}
+                    />
                   </FormControl>
                 </FormItem>
               </div>
