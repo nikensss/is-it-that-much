@@ -32,8 +32,8 @@ export default async function GroupSettlementsList({
 
   return (
     <div className="flex grow flex-col gap-2">
-      <header className="bg-primary-900 flex h-12 items-center justify-center rounded-md">
-        <h2 className="text-primary-200 text-lg font-bold capitalize">Settlements</h2>
+      <header className="flex h-12 items-center justify-center rounded-md bg-slate-900">
+        <h2 className="text-lg font-bold capitalize text-slate-200">Settlements</h2>
       </header>
       <section className="items-center justify-center gap-2 md:flex">
         <DateRangePicker timezone={timezone} />
@@ -43,10 +43,10 @@ export default async function GroupSettlementsList({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-primary-900 font-bold">Date</TableHead>
-                <TableHead className="text-primary-900 text-nowrap font-bold">{`Amount (${currencySymbol})`}</TableHead>
-                <TableHead className="text-primary-900 font-bold">From</TableHead>
-                <TableHead className="text-primary-900 font-bold">To</TableHead>
+                <TableHead className="font-bold text-slate-900">Date</TableHead>
+                <TableHead className="text-nowrap font-bold text-slate-900">{`Amount (${currencySymbol})`}</TableHead>
+                <TableHead className="font-bold text-slate-900">From</TableHead>
+                <TableHead className="font-bold text-slate-900">To</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

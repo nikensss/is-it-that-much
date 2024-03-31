@@ -16,9 +16,9 @@ export default async function DashboardRecentTrasnsactions() {
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];
 
   return (
-    <div className="border-primary-200 rounded-md border bg-white p-2">
-      <header className="bg-primary-900 mb-0 mt-0.5 flex h-12 items-center justify-center rounded-md">
-        <h2 className="text-primary-200 text-lg font-bold">Recent Transactions</h2>
+    <div className="rounded-md border border-slate-200 bg-white p-2">
+      <header className="mb-0 mt-0.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
+        <h2 className="text-lg font-bold text-slate-200">Recent Transactions</h2>
       </header>
       <div className="flex flex-col md:my-4 md:flex-row">
         <DashboardRecentTransactionsCard
@@ -66,7 +66,7 @@ function DashboardRecentTransactionsCard({
       <h2 className="relative mb-2 text-center text-lg font-bold">
         <Link
           href={href}
-          className="md:after:hover:tranprimary-x-2 relative md:after:absolute md:after:right-[-1.5rem] md:after:top-0 md:after:ml-0.5 md:after:block md:after:opacity-0 md:after:transition-all md:after:content-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWFycm93LXJpZ2h0Ij48cGF0aCBkPSJNNSAxMmgxNCIvPjxwYXRoIGQ9Im0xMiA1IDcgNy03IDciLz48L3N2Zz4=')] md:hover:underline md:after:hover:opacity-100"
+          className="relative md:after:absolute md:after:right-[-1.5rem] md:after:top-0 md:after:ml-0.5 md:after:block md:after:opacity-0 md:after:transition-all md:after:content-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWFycm93LXJpZ2h0Ij48cGF0aCBkPSJNNSAxMmgxNCIvPjxwYXRoIGQ9Im0xMiA1IDcgNy03IDciLz48L3N2Zz4=')] md:hover:underline md:after:hover:translate-x-2 md:after:hover:opacity-100"
         >
           {title}
         </Link>

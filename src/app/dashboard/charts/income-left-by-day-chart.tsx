@@ -41,7 +41,7 @@ export default async function IncomeLeftByDay({ timezone, incomes, expenses, fro
   }
 
   const fullConfig = resolveConfig(tailwindConfig);
-  const primary900 = fullConfig.theme.colors.primary[900];
+  const slate900 = fullConfig.theme.colors.slate[900];
 
   const lastDayWithTransactions = Math.max(...expensesByDay.keys(), ...incomesByDay.keys());
 
@@ -50,8 +50,8 @@ export default async function IncomeLeftByDay({ timezone, incomes, expenses, fro
       labels={labels}
       datasets={[
         {
-          borderColor: primary900,
-          backgroundColor: primary900,
+          borderColor: slate900,
+          backgroundColor: slate900,
           label: 'Incomes',
           data: labels.slice(0, lastDayWithTransactions).map((d) => (incomeLeftByDay.get(d) ?? 0) / 100),
         },

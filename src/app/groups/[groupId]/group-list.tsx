@@ -3,13 +3,13 @@ import React from 'react';
 import { Separator } from '~/components/ui/separator';
 
 export function GroupList({ children }: { children: React.ReactNode }) {
-  return <div className="border-primary-200 flex grow flex-col rounded-md border p-2">{children}</div>;
+  return <div className="flex grow flex-col rounded-md border border-slate-200 p-2">{children}</div>;
 }
 
 export function GroupListTitle({ href, children }: { href?: string; children: React.ReactNode }) {
   const title = (
-    <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 flex-col items-center justify-center rounded-md">
-      <h2 className="text-primary-200 text-lg font-bold capitalize">{children}</h2>
+    <header className="my-0.5 mb-1.5 flex h-12 flex-col items-center justify-center rounded-md bg-slate-900">
+      <h2 className="text-lg font-bold capitalize text-slate-200">{children}</h2>
     </header>
   );
 
@@ -32,5 +32,5 @@ export function GroupListBody({ children }: { children: React.ReactNode }) {
 }
 
 export function GroupListItem({ children }: { children: React.ReactNode }) {
-  return <div className="lg:hover:bg-primary-900/20 flex items-center gap-2 rounded-md p-2">{children}</div>;
+  return <div className="flex items-center gap-2 rounded-md p-2 lg:hover:bg-slate-900/20">{children}</div>;
 }

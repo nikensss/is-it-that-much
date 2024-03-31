@@ -26,7 +26,7 @@ export default async function ExpensesByDayChart({ timezone, expenses, from, to 
   }
 
   const fullConfig = resolveConfig(tailwindConfig);
-  const backgroundColor = fullConfig.theme.colors.primary[900];
+  const backgroundColor = fullConfig.theme.colors.slate[900];
 
   return (
     <BarChart

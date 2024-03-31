@@ -250,7 +250,7 @@ function UserSelect({
 }) {
   return (
     <Popover open={isPopoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger className="border-primary-200 h-full w-full rounded-md border">
+      <PopoverTrigger className="h-full w-full rounded-md border border-slate-200">
         <User user={users.find(({ id }) => id === value)} />
       </PopoverTrigger>
       <PopoverContent className="p-2" align="center">

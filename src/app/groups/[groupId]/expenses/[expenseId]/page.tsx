@@ -14,8 +14,8 @@ export default async function GroupExpenseOverview({ params }: { params: { group
 
   return (
     <div className="flex grow flex-col">
-      <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 flex-col items-center justify-center rounded-md">
-        <h2 className="text-primary-200 text-lg font-bold capitalize">Edit expense</h2>
+      <header className="my-0.5 mb-1.5 flex h-12 flex-col items-center justify-center rounded-md bg-slate-900">
+        <h2 className="text-lg font-bold capitalize text-slate-200">Edit expense</h2>
       </header>
       <GroupExpenseForm {...{ group, user, expense }} />
     </div>

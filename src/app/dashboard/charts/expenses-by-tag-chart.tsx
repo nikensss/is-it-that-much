@@ -17,7 +17,7 @@ export default async function ExpensesByTagChart({ expenses }: ExpensesByTagChar
   }
 
   const fullConfig = resolveConfig(tailwindConfig);
-  const backgroundColor = fullConfig.theme.colors.primary[900];
+  const backgroundColor = fullConfig.theme.colors.slate[900];
 
   const entries = [...expensesPerTag.entries()].sort((a, b) => b[1] - a[1]);
   const labels = entries.map(([tag]) => tag);

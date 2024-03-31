@@ -4,7 +4,7 @@ import MobileNavbar from '~/app/_components/navbar/navbar.mobile';
 
 export function NavBar() {
   return (
-    <header className="bg-primary-900 text-primary-50 sticky top-0 z-50 flex h-16 items-center justify-between px-4 md:justify-center">
+    <header className="sticky top-0 z-50 flex h-16 items-center justify-between bg-slate-900 px-4 text-slate-50 md:justify-center">
       <Link className="z-10 flex items-center justify-center px-2" href="/">
         <WalletIcon className="h-6 w-6" />
         <span className="sr-only">Is It That Much?</span>
@@ -12,7 +12,7 @@ export function NavBar() {
       <nav className="z-10 hidden items-center justify-center md:ml-auto md:mr-2 md:flex md:gap-2">
         <DesktopNavbar />
       </nav>
-      <h1 className="text-primary-100 z-10 md:hidden">
+      <h1 className="z-10 text-slate-100 md:hidden">
         <Link href="/">Is It That Much?</Link>
       </h1>
       <nav className="z-10 flex px-2 md:hidden">
