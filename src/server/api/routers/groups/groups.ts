@@ -1,4 +1,3 @@
-import { settings } from '.eslintrc.cjs';
 import { TRPCError } from '@trpc/server';
 import { log } from 'next-axiom';
 import { z } from 'zod';

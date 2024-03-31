@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { format } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { CalendarIcon, ChevronRight, Loader2, Save, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -98,6 +99,12 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
         type: 'validate',
         message: 'The owed amount does not match the total amount',
       });
+    }
+
+    if (user.timezone) {
+      // little hack to make sure the date used is timezoned to the user's preference
+      // the calendar component cannot be timezoned
+      data.date = zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), user.timezone ?? 'Europe/Amsterdam');
     }
 
     upsert.mutate(data);
