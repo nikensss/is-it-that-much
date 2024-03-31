@@ -14,9 +14,9 @@ export default async function GroupDetails({
   const users = group.UserGroup.map((e) => e.user);
 
   return (
-    <div className="flex flex-col rounded-md border border-slate-200 p-2">
-      <header className="my-0.5 mb-1.5 flex h-12 flex-col items-center justify-center rounded-md bg-slate-900">
-        <h2 className="text-lg font-bold text-slate-200 first-letter:uppercase">Details</h2>
+    <div className="border-primary-200 flex flex-col rounded-md border p-2">
+      <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 flex-col items-center justify-center rounded-md">
+        <h2 className="text-primary-200 text-lg font-bold first-letter:uppercase">Details</h2>
       </header>
       <main className="flex grow flex-col">
         <p className="text-center text-lg font-bold first-letter:uppercase">{group.description}</p>

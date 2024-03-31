@@ -5,11 +5,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   await api.users.sync.mutate();
 
   return (
-    <div className="flex grow flex-col bg-slate-100 p-2">
+    <div className="bg-primary-100 flex grow flex-col p-2">
       <div className="flex grow flex-col rounded-md bg-white p-2 shadow-md">
-        <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
+        <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md">
           <Link href="/dashboard">
-            <h2 className="text-lg font-bold text-slate-200">Dashboard</h2>
+            <h2 className="text-primary-200 text-lg font-bold">Dashboard</h2>
           </Link>
         </header>
         {children}

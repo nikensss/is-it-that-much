@@ -81,8 +81,8 @@ export default function UserBannerClient({
   return (
     <div
       className={cn(
-        'ry-2 flex select-none items-center rounded-md border border-slate-100 p-4 md:hover:border-slate-900 md:hover:shadow-md',
-        isSelf ? 'pointer-events-none bg-slate-900/20' : '',
+        'ry-2 border-primary-100 md:hover:border-primary-900 flex select-none items-center rounded-md border p-4 md:hover:shadow-md',
+        isSelf ? 'bg-primary-900/20 pointer-events-none' : '',
         className,
       )}
     >
@@ -116,7 +116,7 @@ export default function UserBannerClient({
               title="Cancel friend request"
               description={`Are you sure you want to cancel your friend request sent to ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
             >
-              <Button className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
+              <Button className="bg-primary-100 text-primary-900 hover:bg-primary-900 hover:text-primary-100">
                 <RotateCcw />
               </Button>
             </ButtonWithDialog>
@@ -128,7 +128,7 @@ export default function UserBannerClient({
               title="Send friend request"
               description={`Are you sure you want to send a friend request to ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
             >
-              <Button className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
+              <Button className="bg-primary-100 text-primary-900 hover:bg-primary-900 hover:text-primary-100">
                 <UserRoundPlus />
               </Button>
             </ButtonWithDialog>
@@ -144,7 +144,7 @@ export default function UserBannerClient({
               title="Accept friend request"
               description={`Are you sure you want to accept the friend request from ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
             >
-              <Button className="bg-slate-100 text-slate-900 hover:bg-slate-900 hover:text-slate-100">
+              <Button className="bg-primary-100 text-primary-900 hover:bg-primary-900 hover:text-primary-100">
                 <UserRoundCheck />
               </Button>
             </ButtonWithDialog>
@@ -156,7 +156,7 @@ export default function UserBannerClient({
               title="Reject friend request"
               description={`Are you sure you want to reject the friend request from ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
             >
-              <Button className="bg-red-100 text-slate-900 hover:bg-red-600 hover:text-slate-100">
+              <Button className="text-primary-900 hover:text-primary-100 bg-red-100 hover:bg-red-600">
                 <UserRoundX />
               </Button>
             </ButtonWithDialog>
@@ -171,7 +171,7 @@ export default function UserBannerClient({
             title="Remove friend"
             description={`Are you sure you want to remove ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''} from your friends list?`}
           >
-            <Button className="bg-red-100 text-slate-900 hover:bg-red-600 hover:text-slate-100">
+            <Button className="text-primary-900 hover:text-primary-100 bg-red-100 hover:bg-red-600">
               <UserRoundMinus />
             </Button>
           </ButtonWithDialog>
@@ -182,7 +182,7 @@ export default function UserBannerClient({
             title="Block user"
             description={`Are you sure you want to block ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
           >
-            <Button disabled className="bg-red-100 text-slate-900 hover:bg-red-600 hover:text-slate-100">
+            <Button disabled className="text-primary-900 hover:text-primary-100 bg-red-100 hover:bg-red-600">
               <Ban />
             </Button>
           </ButtonWithDialog>

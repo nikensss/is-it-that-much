@@ -121,7 +121,7 @@ const FormDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttribu
       <p
         ref={ref}
         id={formDescriptionId}
-        className={cn('text-[0.8rem] text-slate-500 dark:text-slate-400', className)}
+        className={cn('text-primary-500 dark:text-primary-400 text-[0.8rem]', className)}
         {...props}
       />
     );

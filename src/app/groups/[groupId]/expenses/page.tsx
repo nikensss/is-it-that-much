@@ -28,8 +28,8 @@ export default async function GroupExpensesList({
 
   return (
     <div className="flex flex-col gap-2">
-      <header className="flex h-12 items-center justify-center rounded-md bg-slate-900">
-        <h2 className="text-lg font-bold capitalize text-slate-200">Expenses</h2>
+      <header className="bg-primary-900 flex h-12 items-center justify-center rounded-md">
+        <h2 className="text-primary-200 text-lg font-bold capitalize">Expenses</h2>
       </header>
       <section className="items-center justify-center gap-2 md:flex">
         <DateRangePicker timezone={timezone} />
@@ -38,11 +38,11 @@ export default async function GroupExpensesList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-bold text-slate-900">Date</TableHead>
-              <TableHead className="font-bold text-slate-900">Description</TableHead>
-              <TableHead className="font-bold text-slate-900">{`Amount (${currencySymbol})`}</TableHead>
-              <TableHead className="font-bold text-slate-900">Paid by</TableHead>
-              <TableHead className="font-bold text-slate-900">Paid for</TableHead>
+              <TableHead className="text-primary-900 font-bold">Date</TableHead>
+              <TableHead className="text-primary-900 font-bold">Description</TableHead>
+              <TableHead className="text-primary-900 font-bold">{`Amount (${currencySymbol})`}</TableHead>
+              <TableHead className="text-primary-900 font-bold">Paid by</TableHead>
+              <TableHead className="text-primary-900 font-bold">Paid for</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -25,10 +25,10 @@ export default async function Charts({ month, year }: { month: string; year: str
   ]);
 
   return (
-    <section className="flex items-center justify-center rounded-md border border-slate-200 bg-white p-2">
+    <section className="border-primary-200 flex items-center justify-center rounded-md border bg-white p-2">
       <div className="h-full w-full">
-        <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
-          <h2 className="text-lg font-bold text-slate-200">Charts</h2>
+        <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md">
+          <h2 className="text-primary-200 text-lg font-bold">Charts</h2>
         </header>
         <Tabs defaultValue="expenses-by-day" className="mt-4 h-full w-full">
           <TabsList className="flex w-full justify-between md:grid md:grid-cols-4">

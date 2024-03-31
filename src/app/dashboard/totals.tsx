@@ -17,9 +17,9 @@ export default async function DashboardTotals({ month, year }: { month: string; 
   const [totalExpenses, totalIncomes] = [expenses._sum?.amount ?? 0, incomes._sum?.amount ?? 0];
 
   return (
-    <section className="rounded-md border border-slate-200 bg-white p-2">
-      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
-        <h2 className="flex items-center justify-center text-lg font-bold text-slate-200">
+    <section className="border-primary-200 rounded-md border bg-white p-2">
+      <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md">
+        <h2 className="text-primary-200 flex items-center justify-center text-lg font-bold">
           Totals in <MonthAndYearSelector {...{ month, year }} />
         </h2>
       </header>

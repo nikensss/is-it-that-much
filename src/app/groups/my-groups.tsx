@@ -8,16 +8,16 @@ export default async function MyGroups() {
   const groups = await api.groups.all.query();
 
   return (
-    <section className="rounded-md border border-slate-200 bg-white p-2">
-      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-slate-900">
-        <h2 className="text-lg font-bold text-slate-200">My groups</h2>
+    <section className="border-primary-200 rounded-md border bg-white p-2">
+      <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md">
+        <h2 className="text-primary-200 text-lg font-bold">My groups</h2>
       </header>
       <main className="flex flex-col gap-2">
         {groups.map((group) => (
           <Link
             href={`/groups/${group.id}`}
             key={group.id}
-            className="ry-2 flex select-none items-center rounded-md border border-slate-100 p-4 md:hover:cursor-pointer md:hover:border-slate-900 md:hover:shadow-md"
+            className="ry-2 border-primary-100 md:hover:border-primary-900 flex select-none items-center rounded-md border p-4 md:hover:cursor-pointer md:hover:shadow-md"
           >
             <div className="flex items-center justify-center">
               <Avatar className="mr-2">

@@ -51,7 +51,7 @@ export default function DateRangePicker({ timezone }: DateRangePickerProps) {
             id="date"
             variant={'outline'}
             className={cn(
-              'w-full justify-center gap-2 text-left font-normal shadow-slate-400',
+              'shadow-primary-400 w-full justify-center gap-2 text-left font-normal',
               !period && 'text-muted-foreground',
             )}
           >

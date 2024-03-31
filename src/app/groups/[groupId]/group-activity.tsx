@@ -123,7 +123,7 @@ function RegisteredSettlementView({
             <p className="whitespace-nowrap text-nowrap text-sm">
               {settlement.amount / 100} {currencySymbolMap[user.currency ?? 'EUR']}
             </p>
-            <MoveRight className="-mt-2 text-slate-900" />
+            <MoveRight className="text-primary-900 -mt-2" />
           </div>
           <Avatar>
             <AvatarImage src={settlement.to.imageUrl ?? ''} alt={`@${settlement.to.username}`} />
