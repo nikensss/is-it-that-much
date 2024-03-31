@@ -11,8 +11,6 @@ export default async function Dashboard({ searchParams }: { searchParams: Record
   const month = searchParams?.month ?? format(new Date(), 'LLLL');
   const year = searchParams?.year ?? format(new Date(), 'yyyy');
 
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
   return (
     <main className="flex-1 bg-white">
       <section className="mb-2 grid grid-cols-2 gap-2">
