@@ -13,11 +13,13 @@ export default function RecentGroupActivity({
   settlements,
   user,
   group,
+  amountToShow,
 }: {
   user: RouterOutputs['users']['get'];
   expenses: RouterOutputs['groups']['expenses']['recent'];
   settlements: RouterOutputs['groups']['settlements']['recent'];
   group: Exclude<RouterOutputs['groups']['get'], null>;
+  amountToShow: number;
 }) {
   const settlementListItems = settlements.map((s) => ({
     date: s.date,
@@ -34,7 +36,7 @@ export default function RecentGroupActivity({
   return (
     <GroupList>
       <GroupListTitle>Recent activity</GroupListTitle>
-      <GroupListBody>{allItems.slice(0, 5).map((item) => item.component)}</GroupListBody>
+      <GroupListBody>{allItems.slice(0, amountToShow).map((item) => item.component)}</GroupListBody>
     </GroupList>
   );
 }
