@@ -6,6 +6,7 @@ import RecentGroupActivity from '~/app/groups/[groupId]/group-activity';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/server';
+import GroupCharts from '~/app/groups/[groupId]/group-charts';
 
 export default async function GroupPage({ params: { groupId } }: { params: { groupId: string } }) {
   const group = await api.groups.get.query({ id: groupId }).catch(() => null);
@@ -32,6 +33,7 @@ export default async function GroupPage({ params: { groupId } }: { params: { gro
       </div>
       <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
         <GroupDetails {...{ group, user }} />
+        <GroupCharts {...{ group, user }} />
       </div>
       <div className="grid grid-cols-1 grid-rows-2 gap-2 lg:grid-cols-2 lg:grid-rows-1">
         <Button variant="outline" asChild>

@@ -62,7 +62,7 @@ function getTabsTrigger(value: string) {
       <span className="compact animate-pulse">
         <BarChart3 />
       </span>
-      <span className="full capitalize">{value.replace(/-/g, ' ')}</span>
+      <span className="full first-letter:uppercase">{value.replace(/-/g, ' ')}</span>
     </TabsTrigger>
   );
 }

@@ -49,7 +49,7 @@ function YearSelector({ month, year, router, pathname }: MonthAndYearSelectorChi
           router.push(pathname + '?' + params.toString());
         }}
       >
-        <ChevronLeft size={24} className="md:group-hover:-tranprimary-x-1 transition" />
+        <ChevronLeft size={24} className="transition md:group-hover:-translate-x-1" />
       </div>
       <div>{year}</div>
       <div
@@ -61,7 +61,7 @@ function YearSelector({ month, year, router, pathname }: MonthAndYearSelectorChi
           router.push(pathname + '?' + params.toString());
         }}
       >
-        <ChevronRight size={24} className="md:group-hover:tranprimary-x-1 transition" />
+        <ChevronRight size={24} className="transition md:group-hover:translate-x-1" />
       </div>
     </div>
   );

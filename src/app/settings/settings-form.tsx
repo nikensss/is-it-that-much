@@ -126,7 +126,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                     })(),
                   )}
                 >
-                  <div className="flex w-9 items-center justify-center rounded-l-md bg-primary-100 px-1">
+                  <div className="bg-primary-100 flex w-9 items-center justify-center rounded-l-md px-1">
                     <Dot
                       className={cn(
                         'animate-ping',
