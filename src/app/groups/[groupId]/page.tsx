@@ -16,8 +16,8 @@ export default async function GroupPage({ params: { groupId } }: { params: { gro
   if (!user) return notFound();
 
   const balance = await api.groups.balance.query({ groupId });
-  const expenses = await api.groups.expenses.recent.query({ groupId });
-  const settlements = await api.groups.settlements.recent.query({ groupId });
+  const expenses = await api.groups.expenses.recent.query({ groupId, take: Math.max(5, balance.length) });
+  const settlements = await api.groups.settlements.recent.query({ groupId, take: Math.max(5, balance.length) });
 
   return (
     <>
@@ -44,7 +44,7 @@ export default async function GroupPage({ params: { groupId } }: { params: { gro
         </Button>
       </div>
       <div className="flex grow flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
-        <RecentGroupActivity {...{ expenses, settlements, user, group }} />
+        <RecentGroupActivity {...{ expenses, settlements, user, group, amountToShow: Math.max(5, balance.length) }} />
         <GroupBalance {...{ group, balance, user }} />
       </div>
     </>

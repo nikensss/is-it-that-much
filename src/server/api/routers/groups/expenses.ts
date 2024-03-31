@@ -148,8 +148,8 @@ export const groupExpensesRouter = createTRPCRouter({
     }),
 
   recent: privateProcedure
-    .input(z.object({ groupId: z.string().cuid() }))
-    .query(async ({ ctx: { db, user }, input: { groupId } }) => {
+    .input(z.object({ groupId: z.string().cuid(), take: z.number().default(5) }))
+    .query(async ({ ctx: { db, user }, input: { groupId, take } }) => {
       await assertUserInGroup({ groupId, userId: user.id });
 
       return db.sharedTransaction.findMany({
@@ -177,7 +177,7 @@ export const groupExpensesRouter = createTRPCRouter({
             date: 'desc',
           },
         },
-        take: 5,
+        take,
       });
     }),
 });
