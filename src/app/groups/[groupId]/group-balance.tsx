@@ -1,7 +1,13 @@
 import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { MoveRight } from 'lucide-react';
-import { GroupList, GroupListBody, GroupListItem, GroupListTitle } from '~/app/groups/[groupId]/group-list';
+import {
+  GroupList,
+  GroupListBody,
+  GroupListItem,
+  GroupListItemBody,
+  GroupListTitle,
+} from '~/app/groups/[groupId]/group-list';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import type { RouterOutputs } from '~/trpc/shared';
@@ -50,28 +56,30 @@ function SuggestedSettlement({ settlement, user, group }: SuggestedSettlementPro
   return (
     <RegisterSettlement {...{ settlement, user, group }}>
       <GroupListItem>
-        <div className="flex gap-2">
-          <Avatar>
-            <AvatarImage src={settlement.from.imageUrl ?? ''} alt={`@${settlement.from.username}`} />
-            <AvatarFallback>
-              <AvatarIcon />
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col items-center">
-            <p className="whitespace-nowrap text-nowrap text-sm">
-              {settlement.amount / 100} {currencySymbolMap[user.currency ?? 'EUR']}
-            </p>
-            <MoveRight className="text-primary-900 -mt-2" />
+        <GroupListItemBody>
+          <div className="flex gap-2">
+            <Avatar>
+              <AvatarImage src={settlement.from.imageUrl ?? ''} alt={`@${settlement.from.username}`} />
+              <AvatarFallback>
+                <AvatarIcon />
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col items-center">
+              <p className="whitespace-nowrap text-nowrap text-sm">
+                {settlement.amount / 100} {currencySymbolMap[user.currency ?? 'EUR']}
+              </p>
+              <MoveRight className="text-primary-900 -mt-2" />
+            </div>
+            <Avatar>
+              <AvatarImage src={settlement.to.imageUrl ?? ''} alt={`@${settlement.to.username}`} />
+              <AvatarFallback>
+                <AvatarIcon />
+              </AvatarFallback>
+            </Avatar>
           </div>
-          <Avatar>
-            <AvatarImage src={settlement.to.imageUrl ?? ''} alt={`@${settlement.to.username}`} />
-            <AvatarFallback>
-              <AvatarIcon />
-            </AvatarFallback>
-          </Avatar>
-        </div>
 
-        <p>{parts.join(' ')}</p>
+          <p>{parts.join(' ')}</p>
+        </GroupListItemBody>
       </GroupListItem>
     </RegisterSettlement>
   );
