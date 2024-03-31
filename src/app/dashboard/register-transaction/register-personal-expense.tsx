@@ -7,11 +7,12 @@ export default async function DashboardRegisterPersonalExpense() {
     api.tags.all.query({ type: TransactionType.EXPENSE }),
     api.users.get.query(),
   ]);
-  const weekStartsOn = user?.weekStartsOn ?? 1;
-  const timezone = user?.timezone ?? 'Europe/Amsterdam';
+  const weekStartsOn = user.weekStartsOn ?? 1;
+  const timezone = user.timezone ?? 'Europe/Amsterdam';
 
   return (
     <RegisterTransaction
+      currency={user.currency}
       timezone={timezone}
       weekStartsOn={weekStartsOn}
       tags={tags}

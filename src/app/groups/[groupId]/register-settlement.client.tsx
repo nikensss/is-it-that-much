@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AvatarIcon, CalendarIcon, CheckIcon } from '@radix-ui/react-icons';
+import currencySymbolMap from 'currency-symbol-map/map';
 import { format } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Loader2, MoveDown, Trash2 } from 'lucide-react';
@@ -16,7 +17,7 @@ import { Calendar } from '~/components/ui/calendar';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '~/components/ui/command';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '~/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
-import { Input } from '~/components/ui/input';
+import { InputWithCurrency } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
@@ -154,8 +155,8 @@ export default function RegisterSettlement({ group, user, children, settlement }
                 <FormItem>
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
+                    <InputWithCurrency
+                      currency={currencySymbolMap[user.currency ?? 'EUR'] ?? '€'}
                       onFocus={(e) => e.target.select()}
                       step={0.01}
                       min={0.01}

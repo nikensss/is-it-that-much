@@ -19,11 +19,11 @@ export default async function GroupCharts({
   const timezone = user.timezone ?? 'Europe/Amsterdam';
   const users = group.UserGroup.map((e) => e.user);
 
-  const time = new Date();
+  const now = new Date();
   const preferredTimezoneOffset = getTimezoneOffset(timezone);
   const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-  const from = new Date(startOfMonth(time).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
-  const to = new Date(endOfMonth(time).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+  const from = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+  const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
 
   const [expenses, settlements] = await Promise.all([
     api.groups.expenses.period.query({ groupId: group.id, from, to }),
