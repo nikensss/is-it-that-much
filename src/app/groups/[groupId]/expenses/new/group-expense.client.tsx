@@ -132,6 +132,8 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
                     <Input
                       className="peer rounded-r-none pr-1 text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       {...field}
+                      type="number"
+                      step={0.01}
                       min={0.01}
                       onChange={(e) => form.setValue('amount', parseFloat(e.target.value) || 0)}
                     />
