@@ -224,7 +224,7 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
             }}
           />
         </div>
-        <div className={cn('grid grid-rows-1 gap-2', expense ? 'grid-cols-2' : 'grid-cols-1')}>
+        <div className={cn('mt-auto grid grid-rows-1 gap-2', expense ? 'grid-cols-2' : 'grid-cols-1')}>
           {expense ? (
             <ButtonWithDialog
               onConfirm={async () => {
