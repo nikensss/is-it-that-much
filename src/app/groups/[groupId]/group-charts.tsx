@@ -48,19 +48,19 @@ export default async function GroupCharts({
         </TabsList>
 
         <TabsContent value="paid-by-day">
-          <BarChart labels={labels} datasets={paidByDay} />
+          <BarChart {...{ labels, datasets: paidByDay }} />
         </TabsContent>
 
         <TabsContent value="owed-by-day">
-          <BarChart labels={labels} datasets={owedByDay} />
+          <BarChart {...{ labels, datasets: owedByDay }} />
         </TabsContent>
 
         <TabsContent value="sent-by-day">
-          <BarChart labels={labels} datasets={sentByDay} />
+          <BarChart {...{ labels, datasets: sentByDay }} />
         </TabsContent>
 
         <TabsContent value="received-by-day">
-          <BarChart labels={labels} datasets={receivedByDay} />
+          <BarChart {...{ labels, datasets: receivedByDay }} />
         </TabsContent>
       </Tabs>
     </div>
