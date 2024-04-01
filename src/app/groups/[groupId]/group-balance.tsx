@@ -68,7 +68,7 @@ function SuggestedSettlement({ settlement, user, group }: SuggestedSettlementPro
               <p className="whitespace-nowrap text-nowrap text-sm">
                 {settlement.amount / 100} {currencySymbolMap[user.currency ?? 'EUR']}
               </p>
-              <MoveRight className="text-primary-900 -mt-2" />
+              <MoveRight className="text-primary-900 animate-bounce-sideways -mt-2" />
             </div>
             <Avatar>
               <AvatarImage src={settlement.to.imageUrl ?? ''} alt={`@${settlement.to.username}`} />
