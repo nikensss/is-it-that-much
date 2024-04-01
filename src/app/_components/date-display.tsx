@@ -1,5 +1,5 @@
 import { formatDistanceToNowStrict, isBefore, isToday, isTomorrow, isYesterday, startOfDay } from 'date-fns';
-import { formatInTimeZone } from 'date-fns-tz';
+import { formatInTimeZone, utcToZonedTime } from 'date-fns-tz';
 
 export type DateDisplayProps = {
   timezone: string | null | undefined;
@@ -13,25 +13,26 @@ export default function DateDisplay({ date, timezone, distance = 'inline' }: Dat
   return (
     <>
       {formattedDate} {distance === 'newline' ? <br /> : null}(
-      <time dateTime={formattedDate}>{getDistanceTo(date).toLowerCase()}</time>)
+      <time dateTime={formattedDate}>{getDistanceTo(date, timezone ?? 'Europe/Amsterdam').toLowerCase()}</time>)
     </>
   );
 }
 
-function getDistanceTo(date: Date) {
-  if (isToday(date)) {
+function getDistanceTo(date: Date, timezone: string) {
+  const timezoned = utcToZonedTime(date.getTime(), timezone);
+  if (isToday(timezoned)) {
     return 'today';
   }
 
-  if (isYesterday(date)) {
+  if (isYesterday(timezoned)) {
     return 'yesterday';
   }
 
-  if (isTomorrow(date)) {
+  if (isTomorrow(timezoned)) {
     return 'tomorrow';
   }
 
-  return formatDistanceToNowStrict(startOfDay(date), {
+  return formatDistanceToNowStrict(startOfDay(timezoned), {
     addSuffix: true,
     unit: 'day',
     roundingMethod: isBefore(date, Date.now()) ? 'floor' : 'ceil',

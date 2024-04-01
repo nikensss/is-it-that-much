@@ -1,23 +1,23 @@
-import { endOfMonth, parse, startOfMonth } from 'date-fns';
+import { endOfMonth, parse } from 'date-fns';
 import { api } from '~/trpc/server';
 import ExpensesByDayChart from '~/app/dashboard/charts/expenses-by-day-chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import ExpensesByTagChart from '~/app/dashboard/charts/expenses-by-tag-chart';
 import IncomesByDay from '~/app/dashboard/charts/incomes-by-day-chart';
 import IncomeLeftByDay from '~/app/dashboard/charts/income-left-by-day-chart';
-import { getTimezoneOffset } from 'date-fns-tz';
 import { BarChart3 } from 'lucide-react';
 import { TransactionType } from '@prisma/client';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 export default async function Charts({ month, year }: { month: string; year: string }) {
   const user = await api.users.get.query();
-  const timezone = user?.timezone ?? 'Europe/Amsterdam';
 
-  const now = parse(`${month}, ${year}`, 'LLLL, yyyy', new Date());
-  const preferredTimezoneOffset = getTimezoneOffset(timezone);
-  const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-  const from = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
-  const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+  const timezone = user.timezone ?? 'Europe/Amsterdam';
+  const time = parse(`${month}, ${year}`, 'LLLL, yyyy', Date.now());
+  const from = zonedTimeToUtc(time, timezone);
+  const to = zonedTimeToUtc(endOfMonth(time), timezone);
+
+  const labels = Array.from({ length: utcToZonedTime(to, timezone).getDate() }, (_, i) => i + 1);
 
   const [expenses, incomes] = await Promise.all([
     api.transactions.personal.period.query({ type: TransactionType.EXPENSE, from, to }),
@@ -36,7 +36,7 @@ export default async function Charts({ month, year }: { month: string; year: str
           </TabsList>
 
           <TabsContent value="expenses-by-day">
-            <ExpensesByDayChart timezone={timezone} expenses={expenses} from={from} to={to} />
+            <ExpensesByDayChart {...{ timezone, expenses, labels }} />
           </TabsContent>
 
           <TabsContent value="expenses-by-tag">
@@ -44,11 +44,11 @@ export default async function Charts({ month, year }: { month: string; year: str
           </TabsContent>
 
           <TabsContent value="incomes-by-day">
-            <IncomesByDay timezone={timezone} incomes={incomes} from={from} to={to} />
+            <IncomesByDay {...{ timezone, incomes, labels }} />
           </TabsContent>
 
           <TabsContent value="income-left">
-            <IncomeLeftByDay timezone={timezone} incomes={incomes} expenses={expenses} from={from} to={to} />
+            <IncomeLeftByDay {...{ timezone, incomes, expenses, labels }} />
           </TabsContent>
         </Tabs>
       </div>

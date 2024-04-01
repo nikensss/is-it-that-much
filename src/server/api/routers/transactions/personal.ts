@@ -1,6 +1,6 @@
 import { TransactionType } from '@prisma/client';
 import { endOfMonth, startOfMonth } from 'date-fns';
-import { getTimezoneOffset, utcToZonedTime } from 'date-fns-tz';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
@@ -44,18 +44,15 @@ export const personalTransactionsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx: { db, user }, input }) => {
-      const timezone = user.timezone ?? 'Europe/Amsterdam';
-      const now = utcToZonedTime(Date.now(), timezone);
-      const preferredTimezoneOffset = getTimezoneOffset(timezone);
-      const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-      const from = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
-      const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+      const t = utcToZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
+      const from = zonedTimeToUtc(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+      const to = zonedTimeToUtc(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
 
       return db.transaction.findMany({
         where: {
           date: {
-            gte: input?.from ?? from,
-            lte: input?.to ?? to,
+            gte: input.from ?? from,
+            lte: input.to ?? to,
           },
           type: input.type,
           PersonalTransaction: {
@@ -79,16 +76,13 @@ export const personalTransactionsRouter = createTRPCRouter({
     .input(
       z.object({
         type: z.nativeEnum(TransactionType),
-        date: z.date().optional(),
+        date: z.date().nullish(),
       }),
     )
-    .query(async ({ ctx: { db, user }, input }) => {
-      const timezone = user?.timezone ?? 'Europe/Amsterdam';
-      const now = utcToZonedTime(input.date ?? Date.now(), timezone);
-      const preferredTimezoneOffset = getTimezoneOffset(timezone);
-      const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-      const from = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
-      const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+    .query(async ({ ctx: { db, user }, input: { type, date } }) => {
+      const t = utcToZonedTime(date?.getTime() ?? Date.now(), user.timezone ?? 'Europe/Amsterdam');
+      const from = zonedTimeToUtc(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+      const to = zonedTimeToUtc(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
 
       return db.transaction.aggregate({
         where: {
@@ -96,7 +90,7 @@ export const personalTransactionsRouter = createTRPCRouter({
             gte: from,
             lte: to,
           },
-          type: input.type,
+          type,
           PersonalTransaction: {
             userId: user.id,
           },

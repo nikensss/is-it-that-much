@@ -1,6 +1,6 @@
 import type { ChartDataset } from 'chart.js';
-import { addDays, endOfMonth, isAfter, startOfMonth } from 'date-fns';
-import { formatInTimeZone, getTimezoneOffset } from 'date-fns-tz';
+import { endOfMonth, parse } from 'date-fns';
+import { formatInTimeZone, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { BarChart3 } from 'lucide-react';
 import tailwindConfig from 'tailwind.config';
 import resolveConfig from 'tailwindcss/resolveConfig';
@@ -12,18 +12,20 @@ import type { RouterOutputs } from '~/trpc/shared';
 export default async function GroupCharts({
   group,
   user,
+  month,
+  year,
 }: {
   user: RouterOutputs['users']['get'];
   group: Exclude<RouterOutputs['groups']['get'], null>;
+  month: string;
+  year: string;
 }) {
   const timezone = user.timezone ?? 'Europe/Amsterdam';
   const users = group.UserGroup.map((e) => e.user);
 
-  const now = new Date();
-  const preferredTimezoneOffset = getTimezoneOffset(timezone);
-  const localeTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-  const from = new Date(startOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
-  const to = new Date(endOfMonth(now).getTime() - preferredTimezoneOffset - localeTimezoneOffset);
+  const time = parse(`${month}, ${year}`, 'LLLL, yyyy', Date.now());
+  const from = zonedTimeToUtc(time, timezone);
+  const to = zonedTimeToUtc(endOfMonth(time), timezone);
 
   const [expenses, settlements] = await Promise.all([
     api.groups.expenses.period.query({ groupId: group.id, from, to }),
@@ -33,7 +35,7 @@ export default async function GroupCharts({
   const {
     labels,
     datasets: { paidByDay, owedByDay, sentByDay, receivedByDay },
-  } = getDatasets({ users, timezone, expenses, settlements, from, to });
+  } = getDatasets({ users, timezone, expenses, settlements, to });
 
   return (
     <div className="border-primary-200 flex flex-col rounded-md border p-2">
@@ -81,7 +83,6 @@ type GetDatasetsProps = {
   timezone: string;
   expenses: RouterOutputs['groups']['expenses']['period'];
   settlements: RouterOutputs['groups']['settlements']['period'];
-  from: Date;
   to: Date;
 };
 
@@ -90,11 +91,8 @@ type GetDatasetsOutput = {
   datasets: Record<'paidByDay' | 'owedByDay' | 'sentByDay' | 'receivedByDay', ChartDataset<'bar', number[]>[]>;
 };
 
-function getDatasets({ users, timezone, expenses, settlements, from, to }: GetDatasetsProps): GetDatasetsOutput {
-  const labels: number[] = [];
-  for (let i = from; !isAfter(i, to); i = addDays(i, 1)) {
-    labels.push(parseInt(formatInTimeZone(i, timezone, 'dd')));
-  }
+function getDatasets({ users, timezone, expenses, settlements, to }: GetDatasetsProps): GetDatasetsOutput {
+  const labels = Array.from({ length: utcToZonedTime(to, timezone).getDate() }, (_, i) => i + 1);
 
   const paymentsByUser = new Map<string, Map<number, number>>();
   const debtsByUser = new Map<string, Map<number, number>>();

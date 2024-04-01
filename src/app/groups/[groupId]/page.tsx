@@ -7,8 +7,15 @@ import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.clien
 import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/server';
 import GroupCharts from '~/app/groups/[groupId]/group-charts';
+import { format } from 'date-fns';
 
-export default async function GroupPage({ params: { groupId } }: { params: { groupId: string } }) {
+export default async function GroupPage({
+  params: { groupId },
+  searchParams,
+}: {
+  params: { groupId: string };
+  searchParams: Record<string, string | undefined>;
+}) {
   const group = await api.groups.get.query({ id: groupId }).catch(() => null);
   if (!group) return notFound();
 
@@ -18,6 +25,9 @@ export default async function GroupPage({ params: { groupId } }: { params: { gro
   const balance = await api.groups.balance.query({ groupId });
   const expenses = await api.groups.expenses.recent.query({ groupId, take: Math.max(5, balance.length) });
   const settlements = await api.groups.settlements.recent.query({ groupId, take: Math.max(5, balance.length) });
+
+  const month = searchParams?.month ?? format(new Date(), 'LLLL');
+  const year = searchParams?.year ?? format(new Date(), 'yyyy');
 
   return (
     <>
@@ -33,7 +43,7 @@ export default async function GroupPage({ params: { groupId } }: { params: { gro
       </div>
       <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
         <GroupDetails {...{ group, user }} />
-        <GroupCharts {...{ group, user }} />
+        <GroupCharts {...{ group, user, month, year }} />
       </div>
       <div className="grid grid-cols-1 grid-rows-2 gap-2 lg:grid-cols-2 lg:grid-rows-1">
         <Button variant="outline" asChild>

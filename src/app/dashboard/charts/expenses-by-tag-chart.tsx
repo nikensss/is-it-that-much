@@ -1,5 +1,3 @@
-import resolveConfig from 'tailwindcss/resolveConfig';
-import tailwindConfig from '~/../tailwind.config';
 import BarChart from '~/app/dashboard/charts/bar-chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
@@ -16,16 +14,10 @@ export default async function ExpensesByTagChart({ expenses }: ExpensesByTagChar
     }
   }
 
-  const fullConfig = resolveConfig(tailwindConfig);
-  const backgroundColor = fullConfig.theme.colors.primary[900];
-
   const entries = [...expensesPerTag.entries()].sort((a, b) => b[1] - a[1]);
   const labels = entries.map(([tag]) => tag);
 
   return (
-    <BarChart
-      labels={labels}
-      datasets={[{ backgroundColor, label: 'Expenses', data: labels.map((d) => expensesPerTag.get(d) ?? 0) }]}
-    />
+    <BarChart labels={labels} datasets={[{ label: 'Expenses', data: labels.map((d) => expensesPerTag.get(d) ?? 0) }]} />
   );
 }
