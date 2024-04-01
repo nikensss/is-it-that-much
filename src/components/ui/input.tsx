@@ -35,6 +35,7 @@ const InputWithCurrency = React.forwardRef<HTMLInputElement, InputWithCurrencyPr
           )}
           type="number"
           ref={ref}
+          onFocus={(e) => e.target.select()}
           {...props}
         />
         <div className="border-primary-200 bg-primary-200 peer-focus-visible:ring-primary-950 flex items-center justify-center self-stretch rounded-r-md border px-2 peer-focus-visible:ring-1 ">
