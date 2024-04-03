@@ -2,15 +2,12 @@ import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { MoveRight } from 'lucide-react';
 import Link from 'next/link';
+import { Block } from '~/app/_components/block/block';
+import { BlockBody } from '~/app/_components/block/block-body';
+import { BlockList } from '~/app/_components/block/block-list';
+import { BlockTitle } from '~/app/_components/block/block-title';
 import DateDisplay from '~/app/_components/date-display';
-import {
-  GroupList,
-  GroupListBody,
-  GroupListItem,
-  GroupListItemBody,
-  GroupListItemTitle,
-  GroupListTitle,
-} from '~/app/groups/[groupId]/group-list';
+import { GroupListItem, GroupListItemBody, GroupListItemTitle } from '~/app/groups/[groupId]/group-list';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import type { RouterOutputs } from '~/trpc/shared';
@@ -41,10 +38,14 @@ export default function RecentGroupActivity({
 
   const allItems = [...settlementListItems, ...expenseListItems].sort((a, b) => b.date.getTime() - a.date.getTime());
   return (
-    <GroupList>
-      <GroupListTitle>Recent activity</GroupListTitle>
-      <GroupListBody>{allItems.slice(0, amountToShow).map((item) => item.component)}</GroupListBody>
-    </GroupList>
+    <Block>
+      <BlockTitle>Recent activity</BlockTitle>
+      <BlockBody>
+        <BlockList className="flex grow flex-col gap-0.5">
+          {allItems.slice(0, amountToShow).map((item) => item.component)}
+        </BlockList>
+      </BlockBody>
+    </Block>
   );
 }
 
@@ -141,7 +142,7 @@ export function RegisteredSettlementView({
               <p className="whitespace-nowrap text-nowrap text-sm">
                 {settlement.amount / 100} {currencySymbolMap[user.currency ?? 'EUR']}
               </p>
-              <MoveRight className="text-primary-900 animate-bounce-sideways -mt-2" />
+              <MoveRight className="-mt-2 animate-bounce-sideways text-primary-900" />
             </div>
             <Avatar>
               <AvatarImage src={settlement.to.imageUrl ?? ''} alt={`@${settlement.to.username}`} />

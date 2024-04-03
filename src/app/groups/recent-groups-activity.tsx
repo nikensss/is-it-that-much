@@ -1,5 +1,8 @@
+import { Block } from '~/app/_components/block/block';
+import { BlockBody } from '~/app/_components/block/block-body';
+import { BlockList } from '~/app/_components/block/block-list';
+import { BlockTitle } from '~/app/_components/block/block-title';
 import { RegisteredSettlementView, SharedTransactionView } from '~/app/groups/[groupId]/group-activity';
-import { GroupList, GroupListBody, GroupListTitle } from '~/app/groups/[groupId]/group-list';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type RecentGroupsActivityProps = {
@@ -38,9 +41,13 @@ export default function RecentGroupsActivity({ user, groups, expenses, settlemen
   );
 
   return (
-    <GroupList>
-      <GroupListTitle>Recent activity</GroupListTitle>
-      <GroupListBody>{allItems.slice(0, 8).map((item) => item.component)}</GroupListBody>
-    </GroupList>
+    <Block>
+      <BlockTitle>Recent activity</BlockTitle>
+      <BlockBody>
+        <BlockList className="flex grow flex-col gap-0.5">
+          {allItems.slice(0, 8).map((item) => item.component)}
+        </BlockList>
+      </BlockBody>
+    </Block>
   );
 }

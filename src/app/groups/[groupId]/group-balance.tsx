@@ -1,13 +1,11 @@
 import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { MoveRight } from 'lucide-react';
-import {
-  GroupList,
-  GroupListBody,
-  GroupListItem,
-  GroupListItemBody,
-  GroupListTitle,
-} from '~/app/groups/[groupId]/group-list';
+import { Block } from '~/app/_components/block/block';
+import { BlockBody } from '~/app/_components/block/block-body';
+import { BlockList } from '~/app/_components/block/block-list';
+import { BlockTitle } from '~/app/_components/block/block-title';
+import { GroupListItem, GroupListItemBody } from '~/app/groups/[groupId]/group-list';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import type { RouterOutputs } from '~/trpc/shared';
@@ -20,14 +18,16 @@ export type GroupBalanceProps = {
 
 export default async function GroupBalance({ group, balance, user }: GroupBalanceProps) {
   return (
-    <GroupList>
-      <GroupListTitle>Balance</GroupListTitle>
-      <GroupListBody>
-        {balance.map((settlement) => (
-          <SuggestedSettlement key={`${settlement.from.id}-${settlement.to.id}`} {...{ group, settlement, user }} />
-        ))}
-      </GroupListBody>
-    </GroupList>
+    <Block>
+      <BlockTitle>Balance</BlockTitle>
+      <BlockBody>
+        <BlockList className="flex grow flex-col gap-0.5">
+          {balance.map((settlement) => (
+            <SuggestedSettlement key={`${settlement.from.id}-${settlement.to.id}`} {...{ group, settlement, user }} />
+          ))}
+        </BlockList>
+      </BlockBody>
+    </Block>
   );
 }
 
@@ -68,7 +68,7 @@ function SuggestedSettlement({ settlement, user, group }: SuggestedSettlementPro
               <p className="whitespace-nowrap text-nowrap text-sm">
                 {settlement.amount / 100} {currencySymbolMap[user.currency ?? 'EUR']}
               </p>
-              <MoveRight className="text-primary-900 animate-bounce-sideways -mt-2" />
+              <MoveRight className="-mt-2 animate-bounce-sideways text-primary-900" />
             </div>
             <Avatar>
               <AvatarImage src={settlement.to.imageUrl ?? ''} alt={`@${settlement.to.username}`} />
