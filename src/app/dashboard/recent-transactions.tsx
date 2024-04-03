@@ -1,7 +1,7 @@
 import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import Link from 'next/link';
-import { Block, BlockBody, BlockTitle } from '~/app/_components/block/block';
+import { Block, BlockBody, BlockTitle } from '~/app/_components/block';
 import DateDisplay, { type DateDisplayProps } from '~/app/_components/date-display';
 import { Badge } from '~/components/ui/badge';
 import { api } from '~/trpc/server';

@@ -1,4 +1,4 @@
-import { Block, BlockBody, BlockContainer, BlockTitle } from '~/app/_components/block/block';
+import { Block, BlockBody, BlockContainer, BlockTitle } from '~/app/_components/block';
 import SettingsForm from '~/app/settings/settings-form';
 import { api } from '~/trpc/server';
 

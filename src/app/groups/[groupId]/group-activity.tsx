@@ -10,7 +10,7 @@ import {
   BlockListItemBody,
   BlockListItemTitle,
   BlockTitle,
-} from '~/app/_components/block/block';
+} from '~/app/_components/block';
 import DateDisplay from '~/app/_components/date-display';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';

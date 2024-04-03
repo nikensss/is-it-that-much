@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Block, BlockBody, BlockTitle } from '~/app/_components/block/block';
+import { Block, BlockBody, BlockTitle } from '~/app/_components/block';
 import UserBannerClient from '~/app/friends/user-banner.client';
 import LeaveGroupButton from '~/app/groups/[groupId]/leave-group-button';
 import { Button } from '~/components/ui/button';

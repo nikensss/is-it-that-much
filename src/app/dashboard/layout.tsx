@@ -1,4 +1,4 @@
-import { Block, BlockBody, BlockContainer, BlockTitle } from '~/app/_components/block/block';
+import { Block, BlockBody, BlockContainer, BlockTitle } from '~/app/_components/block';
 import { api } from '~/trpc/server';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {

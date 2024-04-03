@@ -2,7 +2,7 @@ import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { parse } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
-import { Block, BlockBody, BlockTitle } from '~/app/_components/block/block';
+import { Block, BlockBody, BlockTitle } from '~/app/_components/block';
 import MonthAndYearSelector from '~/app/dashboard/month-and-year-selector';
 import { api } from '~/trpc/server';
 

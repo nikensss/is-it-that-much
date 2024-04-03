@@ -2,7 +2,7 @@ import { TransactionType } from '@prisma/client';
 import { endOfMonth, parse } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { BarChart3 } from 'lucide-react';
-import { Block, BlockBody, BlockTitle } from '~/app/_components/block/block';
+import { Block, BlockBody, BlockTitle } from '~/app/_components/block';
 import ExpensesByDayChart from '~/app/dashboard/charts/expenses-by-day-chart';
 import ExpensesByTagChart from '~/app/dashboard/charts/expenses-by-tag-chart';
 import IncomeLeftByDay from '~/app/dashboard/charts/income-left-by-day-chart';

@@ -1,14 +1,7 @@
 import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { MoveRight } from 'lucide-react';
-import {
-  Block,
-  BlockBody,
-  BlockList,
-  BlockListItem,
-  BlockListItemBody,
-  BlockTitle,
-} from '~/app/_components/block/block';
+import { Block, BlockBody, BlockList, BlockListItem, BlockListItemBody, BlockTitle } from '~/app/_components/block';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import type { RouterOutputs } from '~/trpc/shared';

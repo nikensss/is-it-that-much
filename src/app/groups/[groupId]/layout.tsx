@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { BlockBody, BlockTitle } from '~/app/_components/block/block';
+import { BlockBody, BlockTitle } from '~/app/_components/block';
 import { api } from '~/trpc/server';
 
 export default async function GroupLayout({ params, children }: { children: ReactNode; params: { groupId: string } }) {
