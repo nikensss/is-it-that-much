@@ -1,8 +1,5 @@
 import { UserRoundCog, UserRoundSearchIcon, UsersRound } from 'lucide-react';
-import { Block } from '~/app/_components/block/block';
-import { BlockBody } from '~/app/_components/block/block-body';
-import { BlockContainer } from '~/app/_components/block/block-container';
-import { BlockTitle } from '~/app/_components/block/block-title';
+import { Block, BlockBody, BlockContainer, BlockTitle } from '~/app/_components/block/block';
 import FindFriends from '~/app/friends/find-friends.client';
 import MyFriends from '~/app/friends/my-friends.client';
 import PendingFriendRequests from '~/app/friends/pending-friend-requests.client';

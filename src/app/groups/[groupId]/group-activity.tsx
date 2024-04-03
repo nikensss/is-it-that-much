@@ -2,12 +2,16 @@ import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { MoveRight } from 'lucide-react';
 import Link from 'next/link';
-import { Block } from '~/app/_components/block/block';
-import { BlockBody } from '~/app/_components/block/block-body';
-import { BlockList } from '~/app/_components/block/block-list';
-import { BlockTitle } from '~/app/_components/block/block-title';
+import {
+  Block,
+  BlockBody,
+  BlockList,
+  BlockListItem,
+  BlockListItemBody,
+  BlockListItemTitle,
+  BlockTitle,
+} from '~/app/_components/block/block';
 import DateDisplay from '~/app/_components/date-display';
-import { GroupListItem, GroupListItemBody, GroupListItemTitle } from '~/app/groups/[groupId]/group-list';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import type { RouterOutputs } from '~/trpc/shared';
@@ -70,9 +74,9 @@ export function SharedTransactionView({
 
   return (
     <Link href={`/groups/${sharedTransaction.groupId}/expenses/${sharedTransaction.id}`}>
-      <GroupListItem>
-        {title ? <GroupListItemTitle>{title}</GroupListItemTitle> : null}
-        <GroupListItemBody>
+      <BlockListItem>
+        {title ? <BlockListItemTitle>{title}</BlockListItemTitle> : null}
+        <BlockListItemBody>
           <div className="flex flex-col-reverse items-center lg:flex-row-reverse">
             {payers.reverse().map((p) => (
               <Avatar key={p.id} className="-mb-6 first:mb-0 hover:z-10 lg:-mr-6 lg:mb-0 lg:first:mr-0">
@@ -94,8 +98,8 @@ export function SharedTransactionView({
               <DateDisplay timezone={user.timezone} date={sharedTransaction.transaction.date} />
             </div>
           </div>
-        </GroupListItemBody>
-      </GroupListItem>
+        </BlockListItemBody>
+      </BlockListItem>
     </Link>
   );
 }
@@ -128,9 +132,9 @@ export function RegisteredSettlementView({
 
   return (
     <RegisterSettlement {...{ group, user, settlement }}>
-      <GroupListItem>
-        {title ? <GroupListItemTitle>{title}</GroupListItemTitle> : null}
-        <GroupListItemBody>
+      <BlockListItem>
+        {title ? <BlockListItemTitle>{title}</BlockListItemTitle> : null}
+        <BlockListItemBody>
           <div className="flex gap-2">
             <Avatar>
               <AvatarImage src={settlement.from.imageUrl ?? ''} alt={`@${settlement.from.username}`} />
@@ -158,8 +162,8 @@ export function RegisteredSettlementView({
               <DateDisplay timezone={user.timezone} date={settlement.date} />
             </div>
           </div>
-        </GroupListItemBody>
-      </GroupListItem>
+        </BlockListItemBody>
+      </BlockListItem>
     </RegisterSettlement>
   );
 }

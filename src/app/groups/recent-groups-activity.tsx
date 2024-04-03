@@ -1,7 +1,4 @@
-import { Block } from '~/app/_components/block/block';
-import { BlockBody } from '~/app/_components/block/block-body';
-import { BlockList } from '~/app/_components/block/block-list';
-import { BlockTitle } from '~/app/_components/block/block-title';
+import { Block, BlockBody, BlockList, BlockTitle } from '~/app/_components/block/block';
 import { RegisteredSettlementView, SharedTransactionView } from '~/app/groups/[groupId]/group-activity';
 import type { RouterOutputs } from '~/trpc/shared';
 

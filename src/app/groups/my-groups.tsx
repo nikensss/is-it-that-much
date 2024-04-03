@@ -1,8 +1,6 @@
 import { UsersRound } from 'lucide-react';
 import Link from 'next/link';
-import { Block } from '~/app/_components/block/block';
-import { BlockBody } from '~/app/_components/block/block-body';
-import { BlockTitle } from '~/app/_components/block/block-title';
+import { Block, BlockBody, BlockTitle } from '~/app/_components/block/block';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { cn } from '~/lib/utils';
 import type { RouterOutputs } from '~/trpc/shared';

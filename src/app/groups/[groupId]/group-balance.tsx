@@ -1,11 +1,14 @@
 import { AvatarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { MoveRight } from 'lucide-react';
-import { Block } from '~/app/_components/block/block';
-import { BlockBody } from '~/app/_components/block/block-body';
-import { BlockList } from '~/app/_components/block/block-list';
-import { BlockTitle } from '~/app/_components/block/block-title';
-import { GroupListItem, GroupListItemBody } from '~/app/groups/[groupId]/group-list';
+import {
+  Block,
+  BlockBody,
+  BlockList,
+  BlockListItem,
+  BlockListItemBody,
+  BlockTitle,
+} from '~/app/_components/block/block';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import type { RouterOutputs } from '~/trpc/shared';
@@ -55,8 +58,8 @@ function SuggestedSettlement({ settlement, user, group }: SuggestedSettlementPro
 
   return (
     <RegisterSettlement {...{ settlement, user, group }}>
-      <GroupListItem>
-        <GroupListItemBody>
+      <BlockListItem>
+        <BlockListItemBody>
           <div className="flex gap-2">
             <Avatar>
               <AvatarImage src={settlement.from.imageUrl ?? ''} alt={`@${settlement.from.username}`} />
@@ -79,8 +82,8 @@ function SuggestedSettlement({ settlement, user, group }: SuggestedSettlementPro
           </div>
 
           <p>{parts.join(' ')}</p>
-        </GroupListItemBody>
-      </GroupListItem>
+        </BlockListItemBody>
+      </BlockListItem>
     </RegisterSettlement>
   );
 }

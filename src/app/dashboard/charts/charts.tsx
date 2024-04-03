@@ -1,16 +1,14 @@
-import { endOfMonth, parse } from 'date-fns';
-import { api } from '~/trpc/server';
-import ExpensesByDayChart from '~/app/dashboard/charts/expenses-by-day-chart';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
-import ExpensesByTagChart from '~/app/dashboard/charts/expenses-by-tag-chart';
-import IncomesByDay from '~/app/dashboard/charts/incomes-by-day-chart';
-import IncomeLeftByDay from '~/app/dashboard/charts/income-left-by-day-chart';
-import { BarChart3 } from 'lucide-react';
 import { TransactionType } from '@prisma/client';
+import { endOfMonth, parse } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
-import { BlockTitle } from '~/app/_components/block/block-title';
-import { BlockBody } from '~/app/_components/block/block-body';
-import { Block } from '~/app/_components/block/block';
+import { BarChart3 } from 'lucide-react';
+import { Block, BlockBody, BlockTitle } from '~/app/_components/block/block';
+import ExpensesByDayChart from '~/app/dashboard/charts/expenses-by-day-chart';
+import ExpensesByTagChart from '~/app/dashboard/charts/expenses-by-tag-chart';
+import IncomeLeftByDay from '~/app/dashboard/charts/income-left-by-day-chart';
+import IncomesByDay from '~/app/dashboard/charts/incomes-by-day-chart';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
+import { api } from '~/trpc/server';
 
 export default async function Charts({ month, year }: { month: string; year: string }) {
   const user = await api.users.get.query();

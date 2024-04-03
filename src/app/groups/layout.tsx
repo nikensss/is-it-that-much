@@ -1,7 +1,4 @@
-import { Block } from '~/app/_components/block/block';
-import { BlockBody } from '~/app/_components/block/block-body';
-import { BlockContainer } from '~/app/_components/block/block-container';
-import { BlockTitle } from '~/app/_components/block/block-title';
+import { Block, BlockBody, BlockContainer, BlockTitle } from '~/app/_components/block/block';
 
 export default function GroupsLayout({ children }: { children: React.ReactNode }) {
   return (
