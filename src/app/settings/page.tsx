@@ -9,7 +9,7 @@ export default async function SettingsPage() {
     <BlockContainer>
       <Block>
         <BlockTitle>Settings</BlockTitle>
-        <BlockBody>
+        <BlockBody className="flex grow flex-col">
           <SettingsForm
             username={user?.username}
             timezone={user?.timezone}

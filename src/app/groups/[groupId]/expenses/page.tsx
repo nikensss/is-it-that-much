@@ -1,5 +1,6 @@
 import currencySymbolMap from 'currency-symbol-map/map';
 import { notFound } from 'next/navigation';
+import { BlockBody, BlockTitle } from '~/app/_components/block';
 import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker';
 import GroupExpenseTableRow from '~/app/groups/[groupId]/expenses/group-expense-table-row.client';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '~/components/ui/table';
@@ -27,22 +28,20 @@ export default async function GroupExpensesList({
   });
 
   return (
-    <div className="flex flex-col gap-2">
-      <header className="bg-primary-900 flex h-12 items-center justify-center rounded-md">
-        <h2 className="text-primary-200 text-lg font-bold capitalize">Expenses</h2>
-      </header>
-      <section className="items-center justify-center gap-2 md:flex">
-        <DateRangePicker timezone={timezone} />
-      </section>
-      <section>
+    <BlockBody className="flex flex-col gap-2">
+      <BlockTitle>Expenses</BlockTitle>
+      <BlockBody>
+        <div className="items-center justify-center md:flex">
+          <DateRangePicker timezone={timezone} />
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-primary-900 font-bold">Date</TableHead>
-              <TableHead className="text-primary-900 font-bold">Description</TableHead>
-              <TableHead className="text-primary-900 font-bold">{`Amount (${currencySymbol})`}</TableHead>
-              <TableHead className="text-primary-900 font-bold">Paid by</TableHead>
-              <TableHead className="text-primary-900 font-bold">Paid for</TableHead>
+              <TableHead className="font-bold text-primary-900">Date</TableHead>
+              <TableHead className="font-bold text-primary-900">Description</TableHead>
+              <TableHead className="font-bold text-primary-900">{`Amount (${currencySymbol})`}</TableHead>
+              <TableHead className="font-bold text-primary-900">Paid by</TableHead>
+              <TableHead className="font-bold text-primary-900">Paid for</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -51,7 +50,7 @@ export default async function GroupExpensesList({
             })}
           </TableBody>
         </Table>
-      </section>
-    </div>
+      </BlockBody>
+    </BlockBody>
   );
 }

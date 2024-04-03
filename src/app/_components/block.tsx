@@ -14,22 +14,22 @@ export function BlockTitle({ children, href }: { href?: string; children: React.
   if (!href) {
     return (
       <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-primary-900">
-        <h2 className="flex items-center justify-center text-lg font-bold text-primary-200">{children}</h2>
+        <h2 className="flex items-center justify-center text-lg font-bold capitalize text-primary-200">{children}</h2>
       </header>
     );
   }
 
   return (
-    <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-primary-900">
-      <Link href={href}>
+    <Link href={href}>
+      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-primary-900">
         <h2 className="flex items-center justify-center text-lg font-bold text-primary-200">{children}</h2>
-      </Link>
-    </header>
+      </header>
+    </Link>
   );
 }
 
-export function BlockBody({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+export function BlockBody({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <div className={className}>{children}</div>;
 }
 
 export function BlockList({ className, children }: { className?: string; children: React.ReactNode }) {

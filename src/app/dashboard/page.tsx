@@ -12,34 +12,24 @@ export default async function Dashboard({ searchParams }: { searchParams: Record
   const year = searchParams?.year ?? format(new Date(), 'yyyy');
 
   return (
-    <main className="flex-1 bg-white">
-      <section className="mb-2 grid grid-cols-2 gap-2">
+    <main className="flex flex-1 flex-col gap-2 bg-white">
+      <section className="grid grid-cols-2 gap-2">
         <DashboardRegisterPersonalExpense />
         <DashboardRegisterPersonalIncome />
       </section>
-      <section className="mb-2">
-        <div className="grid gap-2 md:grid-cols-2">
-          <DashboardTotals {...{ month, year }} />
-          <Charts {...{ month, year }} />
-        </div>
-      </section>
-      <section className="mb-2 grid grid-cols-2 grid-rows-2 gap-2 md:grid-cols-4 md:grid-rows-1">
-        <Button asChild variant="outline">
-          <Link href="/dashboard/expenses">Expenses</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/dashboard/incomes">Incomes</Link>
-        </Button>
+      <div className="grid gap-2 md:grid-cols-2">
+        <DashboardTotals {...{ month, year }} />
+        <Charts {...{ month, year }} />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
         <Button asChild variant="outline">
           <Link href="/dashboard/tags">Tags</Link>
         </Button>
         <Button asChild variant="outline">
           <Link href="#">Categories</Link>
         </Button>
-      </section>
-      <section>
-        <DashboardRecentTrasnsactions />
-      </section>
+      </div>
+      <DashboardRecentTrasnsactions />
     </main>
   );
 }

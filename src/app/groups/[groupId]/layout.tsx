@@ -11,9 +11,9 @@ export default async function GroupLayout({ params, children }: { children: Reac
   if (!user) return notFound();
 
   return (
-    <div className="flex grow flex-col gap-2">
+    <>
       <BlockTitle href={`/groups/${group.id}`}>{group.name}</BlockTitle>
-      <BlockBody>{children}</BlockBody>
-    </div>
+      <BlockBody className="flex flex-col gap-2">{children}</BlockBody>
+    </>
   );
 }

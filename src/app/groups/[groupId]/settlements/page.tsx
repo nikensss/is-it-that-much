@@ -1,5 +1,6 @@
 import currencySymbolMap from 'currency-symbol-map/map';
 import { notFound } from 'next/navigation';
+import { BlockBody, BlockTitle } from '~/app/_components/block';
 import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker';
 import GroupSettlementTableRow from '~/app/groups/[groupId]/settlements/group-settlement-table-row.client';
 import { ScrollArea, ScrollBar } from '~/components/ui/scroll-area';
@@ -31,22 +32,20 @@ export default async function GroupSettlementsList({
   });
 
   return (
-    <div className="flex grow flex-col gap-2">
-      <header className="bg-primary-900 flex h-12 items-center justify-center rounded-md">
-        <h2 className="text-primary-200 text-lg font-bold capitalize">Settlements</h2>
-      </header>
-      <section className="items-center justify-center gap-2 md:flex">
-        <DateRangePicker timezone={timezone} />
-      </section>
-      <section className="flex grow flex-col">
+    <BlockBody className="flex grow flex-col gap-2">
+      <BlockTitle>Settlements</BlockTitle>
+      <BlockBody className="flex grow flex-col">
+        <div className="items-center justify-center gap-2 md:flex">
+          <DateRangePicker timezone={timezone} />
+        </div>
         <ScrollArea className="max-w-[92vw] grow">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-primary-900 font-bold">Date</TableHead>
-                <TableHead className="text-primary-900 text-nowrap font-bold">{`Amount (${currencySymbol})`}</TableHead>
-                <TableHead className="text-primary-900 font-bold">From</TableHead>
-                <TableHead className="text-primary-900 font-bold">To</TableHead>
+                <TableHead className="font-bold text-primary-900">Date</TableHead>
+                <TableHead className="text-nowrap font-bold text-primary-900">{`Amount (${currencySymbol})`}</TableHead>
+                <TableHead className="font-bold text-primary-900">From</TableHead>
+                <TableHead className="font-bold text-primary-900">To</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -57,7 +56,7 @@ export default async function GroupSettlementsList({
           </Table>
           <ScrollBar className="mt-auto" orientation="horizontal" />
         </ScrollArea>
-      </section>
-    </div>
+      </BlockBody>
+    </BlockBody>
   );
 }

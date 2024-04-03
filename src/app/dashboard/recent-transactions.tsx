@@ -1,6 +1,5 @@
 import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
-import Link from 'next/link';
 import { Block, BlockBody, BlockTitle } from '~/app/_components/block';
 import DateDisplay, { type DateDisplayProps } from '~/app/_components/date-display';
 import { Badge } from '~/components/ui/badge';
@@ -19,24 +18,22 @@ export default async function DashboardRecentTrasnsactions() {
   return (
     <Block>
       <BlockTitle>Recent Transactions</BlockTitle>
-      <BlockBody>
-        <div className="flex flex-col md:my-4 md:flex-row">
-          <DashboardRecentTransactionsCard
-            currencySymbol={currencySymbol ?? '€'}
-            timezone={user?.timezone}
-            href="/dashboard/expenses"
-            title={'Expenses'}
-            transactions={expenses}
-          />
-          <div className="self-stretch border-b border-r border-gray-400"></div>
-          <DashboardRecentTransactionsCard
-            currencySymbol={currencySymbol ?? '€'}
-            timezone={user?.timezone}
-            href="/dashboard/incomes"
-            title={'Incomes'}
-            transactions={incomes}
-          />
-        </div>
+      <BlockBody className="flex flex-col gap-2 md:flex-row">
+        <DashboardRecentTransactionsList
+          currencySymbol={currencySymbol ?? '€'}
+          timezone={user?.timezone}
+          href="/dashboard/expenses"
+          title={'Expenses'}
+          transactions={expenses}
+        />
+        <div className="self-stretch border-b border-r border-gray-400"></div>
+        <DashboardRecentTransactionsList
+          currencySymbol={currencySymbol ?? '€'}
+          timezone={user?.timezone}
+          href="/dashboard/incomes"
+          title={'Incomes'}
+          transactions={incomes}
+        />
       </BlockBody>
     </Block>
   );
@@ -50,7 +47,7 @@ type DashboardRecentTransactionCardParams = {
   transactions: RouterOutputs['transactions']['personal']['recent'];
 };
 
-function DashboardRecentTransactionsCard({
+function DashboardRecentTransactionsList({
   currencySymbol,
   href,
   title,
@@ -63,17 +60,12 @@ function DashboardRecentTransactionsCard({
   }
 
   return (
-    <div className="m-2 flex-1 bg-white">
-      <h2 className="relative mb-2 text-center text-lg font-bold">
-        <Link
-          href={href}
-          className="relative md:after:absolute md:after:right-[-1.5rem] md:after:top-0 md:after:ml-0.5 md:after:block md:after:opacity-0 md:after:transition-all md:after:content-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWFycm93LXJpZ2h0Ij48cGF0aCBkPSJNNSAxMmgxNCIvPjxwYXRoIGQ9Im0xMiA1IDcgNy03IDciLz48L3N2Zz4=')] md:hover:underline md:after:hover:translate-x-2 md:after:hover:opacity-100"
-        >
-          {title}
-        </Link>
-      </h2>
-      <div className="divide-y divide-gray-200">{transactionElements}</div>
-    </div>
+    <BlockBody className="flex-1">
+      <BlockTitle href={href}>{title}</BlockTitle>
+      <BlockBody>
+        <div className="divide-y divide-gray-200">{transactionElements}</div>
+      </BlockBody>
+    </BlockBody>
   );
 }
 
@@ -108,7 +100,7 @@ function Transaction({
             {transaction.amount / 100}
           </span>
         </p>
-        <div className="cursor-pointer select-all text-xs text-gray-500 dark:text-gray-400">
+        <div className="text-xs text-gray-500 dark:text-gray-400">
           <DateDisplay timezone={timezone} date={transaction.date} />
         </div>
       </div>

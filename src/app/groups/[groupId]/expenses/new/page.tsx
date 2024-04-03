@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { BlockBody, BlockTitle } from '~/app/_components/block';
 import GroupExpenseForm from '~/app/groups/[groupId]/expenses/new/group-expense.client';
 import { api } from '~/trpc/server';
 
@@ -9,11 +10,11 @@ export default async function GroupExpense({ params }: { params: { groupId: stri
   const user = await api.users.get.query();
 
   return (
-    <div className="flex grow flex-col">
-      <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 flex-col items-center justify-center rounded-md">
-        <h2 className="text-primary-200 text-lg font-bold capitalize">New expense</h2>
-      </header>
-      <GroupExpenseForm {...{ group, user }} />
-    </div>
+    <BlockBody className="flex grow flex-col">
+      <BlockTitle>New expense</BlockTitle>
+      <BlockBody>
+        <GroupExpenseForm {...{ group, user }} />
+      </BlockBody>
+    </BlockBody>
   );
 }
