@@ -26,7 +26,7 @@ export default async function DashboardRecentTrasnsactions() {
           title={'Expenses'}
           transactions={expenses}
         />
-        <div className="self-stretch border-b border-r border-gray-400"></div>
+        <div className="hidden self-stretch border-b border-r border-gray-400 md:block"></div>
         <DashboardRecentTransactionsList
           currencySymbol={currencySymbol ?? '€'}
           timezone={user?.timezone}
