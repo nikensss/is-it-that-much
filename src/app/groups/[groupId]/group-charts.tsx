@@ -4,6 +4,9 @@ import { formatInTimeZone, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { BarChart3 } from 'lucide-react';
 import tailwindConfig from 'tailwind.config';
 import resolveConfig from 'tailwindcss/resolveConfig';
+import { Block } from '~/app/_components/block/block';
+import { BlockBody } from '~/app/_components/block/block-body';
+import { BlockTitle } from '~/app/_components/block/block-title';
 import BarChart from '~/app/dashboard/charts/bar-chart.client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { api } from '~/trpc/server';
@@ -38,32 +41,32 @@ export default async function GroupCharts({
   } = getDatasets({ users, timezone, expenses, settlements, to });
 
   return (
-    <div className="border-primary-200 flex flex-col rounded-md border p-2">
-      <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 flex-col items-center justify-center rounded-md">
-        <h2 className="text-primary-200 text-lg font-bold first-letter:uppercase">Charts</h2>
-      </header>
-      <Tabs defaultValue="paid-by-day" className="mt-4 h-full w-full">
-        <TabsList className="flex w-full justify-between md:grid md:grid-cols-4">
-          {['paid-by-day', 'owed-by-day', 'sent-by-day', 'received-by-day'].map(getTabsTrigger)}
-        </TabsList>
+    <Block>
+      <BlockTitle>Charts</BlockTitle>
+      <BlockBody>
+        <Tabs defaultValue="paid-by-day" className="mt-4 h-full w-full">
+          <TabsList className="flex w-full justify-between md:grid md:grid-cols-4">
+            {['paid-by-day', 'owed-by-day', 'sent-by-day', 'received-by-day'].map(getTabsTrigger)}
+          </TabsList>
 
-        <TabsContent value="paid-by-day">
-          <BarChart {...{ labels, datasets: paidByDay }} />
-        </TabsContent>
+          <TabsContent value="paid-by-day">
+            <BarChart {...{ labels, datasets: paidByDay }} />
+          </TabsContent>
 
-        <TabsContent value="owed-by-day">
-          <BarChart {...{ labels, datasets: owedByDay }} />
-        </TabsContent>
+          <TabsContent value="owed-by-day">
+            <BarChart {...{ labels, datasets: owedByDay }} />
+          </TabsContent>
 
-        <TabsContent value="sent-by-day">
-          <BarChart {...{ labels, datasets: sentByDay }} />
-        </TabsContent>
+          <TabsContent value="sent-by-day">
+            <BarChart {...{ labels, datasets: sentByDay }} />
+          </TabsContent>
 
-        <TabsContent value="received-by-day">
-          <BarChart {...{ labels, datasets: receivedByDay }} />
-        </TabsContent>
-      </Tabs>
-    </div>
+          <TabsContent value="received-by-day">
+            <BarChart {...{ labels, datasets: receivedByDay }} />
+          </TabsContent>
+        </Tabs>
+      </BlockBody>
+    </Block>
   );
 }
 

@@ -1,38 +1,34 @@
-import Link from 'next/link';
 import React from 'react';
+import { Block } from '~/app/_components/block/block';
+import { BlockBody } from '~/app/_components/block/block-body';
+import { BlockTitle } from '~/app/_components/block/block-title';
 import { Separator } from '~/components/ui/separator';
 
 export function GroupList({ children }: { children: React.ReactNode }) {
-  return <div className="border-primary-200 flex grow flex-col rounded-md border p-2">{children}</div>;
+  return <Block>{children}</Block>;
 }
 
 export function GroupListTitle({ href, children }: { href?: string; children: React.ReactNode }) {
-  const title = (
-    <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 flex-col items-center justify-center rounded-md">
-      <h2 className="text-primary-200 text-lg font-bold capitalize">{children}</h2>
-    </header>
-  );
-
-  if (!href) return title;
-
-  return <Link href={href}>{title}</Link>;
+  return <BlockTitle href={href}>{children}</BlockTitle>;
 }
 
 export function GroupListBody({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex grow flex-col gap-0.5">
-      {React.Children.map(children, (c) => (
-        <>
-          {c}
-          <Separator className="last:hidden" />
-        </>
-      ))}
-    </div>
+    <BlockBody>
+      <div className="flex grow flex-col gap-0.5">
+        {React.Children.map(children, (c) => (
+          <>
+            {c}
+            <Separator className="last:hidden" />
+          </>
+        ))}
+      </div>
+    </BlockBody>
   );
 }
 
 export function GroupListItem({ children }: { children: React.ReactNode }) {
-  return <div className="lg:hover:bg-primary-900/20 rounded-md p-2">{children}</div>;
+  return <div className="rounded-md p-2 lg:hover:bg-primary-900/20">{children}</div>;
 }
 
 export function GroupListItemTitle({ children }: { children: React.ReactNode }) {

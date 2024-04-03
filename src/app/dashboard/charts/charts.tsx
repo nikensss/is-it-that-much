@@ -8,6 +8,9 @@ import IncomeLeftByDay from '~/app/dashboard/charts/income-left-by-day-chart';
 import { BarChart3 } from 'lucide-react';
 import { TransactionType } from '@prisma/client';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { BlockTitle } from '~/app/_components/block/block-title';
+import { BlockBody } from '~/app/_components/block/block-body';
+import { Block } from '~/app/_components/block/block';
 
 export default async function Charts({ month, year }: { month: string; year: string }) {
   const user = await api.users.get.query();
@@ -25,11 +28,9 @@ export default async function Charts({ month, year }: { month: string; year: str
   ]);
 
   return (
-    <section className="border-primary-200 flex items-center justify-center rounded-md border bg-white p-2">
-      <div className="h-full w-full">
-        <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md">
-          <h2 className="text-primary-200 text-lg font-bold">Charts</h2>
-        </header>
+    <Block>
+      <BlockTitle>Charts</BlockTitle>
+      <BlockBody>
         <Tabs defaultValue="expenses-by-day" className="mt-4 h-full w-full">
           <TabsList className="flex w-full justify-between md:grid md:grid-cols-4">
             {['expenses-by-day', 'expenses-by-tag', 'incomes-by-day', 'income-left'].map(getTabsTrigger)}
@@ -51,8 +52,8 @@ export default async function Charts({ month, year }: { month: string; year: str
             <IncomeLeftByDay {...{ timezone, incomes, expenses, labels }} />
           </TabsContent>
         </Tabs>
-      </div>
-    </section>
+      </BlockBody>
+    </Block>
   );
 }
 

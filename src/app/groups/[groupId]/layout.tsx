@@ -1,6 +1,7 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { BlockBody } from '~/app/_components/block/block-body';
+import { BlockTitle } from '~/app/_components/block/block-title';
 import { api } from '~/trpc/server';
 
 export default async function GroupLayout({ params, children }: { children: ReactNode; params: { groupId: string } }) {
@@ -9,14 +10,11 @@ export default async function GroupLayout({ params, children }: { children: Reac
 
   const user = await api.users.get.query().catch(() => null);
   if (!user) return notFound();
+
   return (
     <div className="flex grow flex-col gap-2">
-      <Link href={`/groups/${group.id}`}>
-        <header className="bg-primary-900 flex h-12 flex-col items-center justify-center rounded-md">
-          <h2 className="text-primary-200 text-lg font-bold capitalize">{group.name}</h2>
-        </header>
-      </Link>
-      {children}
+      <BlockTitle href={`/groups/${group.id}`}>{group.name}</BlockTitle>
+      <BlockBody>{children}</BlockBody>
     </div>
   );
 }

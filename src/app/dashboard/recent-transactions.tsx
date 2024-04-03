@@ -1,6 +1,9 @@
 import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import Link from 'next/link';
+import { Block } from '~/app/_components/block/block';
+import { BlockBody } from '~/app/_components/block/block-body';
+import { BlockTitle } from '~/app/_components/block/block-title';
 import DateDisplay, { type DateDisplayProps } from '~/app/_components/date-display';
 import { Badge } from '~/components/ui/badge';
 import { api } from '~/trpc/server';
@@ -16,28 +19,28 @@ export default async function DashboardRecentTrasnsactions() {
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];
 
   return (
-    <div className="border-primary-200 rounded-md border bg-white p-2">
-      <header className="bg-primary-900 mb-0 mt-0.5 flex h-12 items-center justify-center rounded-md">
-        <h2 className="text-primary-200 text-lg font-bold">Recent Transactions</h2>
-      </header>
-      <div className="flex flex-col md:my-4 md:flex-row">
-        <DashboardRecentTransactionsCard
-          currencySymbol={currencySymbol ?? '€'}
-          timezone={user?.timezone}
-          href="/dashboard/expenses"
-          title={'Expenses'}
-          transactions={expenses}
-        />
-        <div className="self-stretch border-b border-r border-gray-400"></div>
-        <DashboardRecentTransactionsCard
-          currencySymbol={currencySymbol ?? '€'}
-          timezone={user?.timezone}
-          href="/dashboard/incomes"
-          title={'Incomes'}
-          transactions={incomes}
-        />
-      </div>
-    </div>
+    <Block>
+      <BlockTitle>Recent Transactions</BlockTitle>
+      <BlockBody>
+        <div className="flex flex-col md:my-4 md:flex-row">
+          <DashboardRecentTransactionsCard
+            currencySymbol={currencySymbol ?? '€'}
+            timezone={user?.timezone}
+            href="/dashboard/expenses"
+            title={'Expenses'}
+            transactions={expenses}
+          />
+          <div className="self-stretch border-b border-r border-gray-400"></div>
+          <DashboardRecentTransactionsCard
+            currencySymbol={currencySymbol ?? '€'}
+            timezone={user?.timezone}
+            href="/dashboard/incomes"
+            title={'Incomes'}
+            transactions={incomes}
+          />
+        </div>
+      </BlockBody>
+    </Block>
   );
 }
 

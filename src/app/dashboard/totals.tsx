@@ -2,6 +2,9 @@ import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { parse } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
+import { Block } from '~/app/_components/block/block';
+import { BlockBody } from '~/app/_components/block/block-body';
+import { BlockTitle } from '~/app/_components/block/block-title';
 import MonthAndYearSelector from '~/app/dashboard/month-and-year-selector';
 import { api } from '~/trpc/server';
 
@@ -21,35 +24,35 @@ export default async function DashboardTotals({ month, year }: { month: string; 
   const [totalExpenses, totalIncomes] = [expenses._sum?.amount ?? 0, incomes._sum?.amount ?? 0];
 
   return (
-    <section className="border-primary-200 rounded-md border bg-white p-2">
-      <header className="bg-primary-900 my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md">
-        <h2 className="text-primary-200 flex items-center justify-center text-lg font-bold">
-          Totals in <MonthAndYearSelector {...{ month, year }} />
-        </h2>
-      </header>
-      <div className="grid items-start gap-4 md:gap-10">
-        <div className="rounded-md bg-white p-4 shadow-md ">
-          <h2 className="mb-2 text-lg font-bold">Total Expenses</h2>
-          <p className="text-2xl font-semibold">
-            {currencySymbol}
-            {totalExpenses / 100}
-          </p>
+    <Block>
+      <BlockTitle>
+        Totals in <MonthAndYearSelector {...{ month, year }} />
+      </BlockTitle>
+      <BlockBody>
+        <div className="grid items-start gap-4 md:gap-10">
+          <div className="rounded-md bg-white p-4 shadow-md ">
+            <h2 className="mb-2 text-lg font-bold">Total Expenses</h2>
+            <p className="text-2xl font-semibold">
+              {currencySymbol}
+              {totalExpenses / 100}
+            </p>
+          </div>
+          <div className="rounded-md bg-white p-4 shadow-md ">
+            <h2 className="mb-2 text-lg font-bold">Total Incomes</h2>
+            <p className="text-2xl font-semibold">
+              {currencySymbol}
+              {totalIncomes / 100}
+            </p>
+          </div>
+          <div className="rounded-md bg-white p-4 shadow-md ">
+            <h2 className="mb-2 text-lg font-bold">Income left</h2>
+            <p className="text-2xl font-semibold">
+              {currencySymbol}
+              {(totalIncomes - totalExpenses) / 100}
+            </p>
+          </div>
         </div>
-        <div className="rounded-md bg-white p-4 shadow-md ">
-          <h2 className="mb-2 text-lg font-bold">Total Incomes</h2>
-          <p className="text-2xl font-semibold">
-            {currencySymbol}
-            {totalIncomes / 100}
-          </p>
-        </div>
-        <div className="rounded-md bg-white p-4 shadow-md ">
-          <h2 className="mb-2 text-lg font-bold">Income left</h2>
-          <p className="text-2xl font-semibold">
-            {currencySymbol}
-            {(totalIncomes - totalExpenses) / 100}
-          </p>
-        </div>
-      </div>
-    </section>
+      </BlockBody>
+    </Block>
   );
 }
