@@ -6,7 +6,7 @@ export default async function GroupUpdate({ params }: { params: { groupId: strin
   const user = await api.users.get.query();
   if (!user) return notFound();
 
-  const group = await api.groups.get.query({ id: params.groupId });
+  const group = await api.groups.get.query({ groupId: params.groupId });
 
   return <GroupUpsertForm {...{ user, group }} />;
 }

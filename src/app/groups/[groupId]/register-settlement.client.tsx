@@ -66,7 +66,7 @@ export default function RegisterSettlement({ group, user, children, settlement }
   const form = useForm<z.infer<typeof groupSettlementFormSchema>>({
     resolver: zodResolver(groupSettlementFormSchema),
     defaultValues: {
-      id: settlement?.id ?? null,
+      settlementId: settlement?.id ?? null,
       amount: (settlement?.amount ?? 0) / 100,
       date: settlement?.date ? zonedTimeToUtc(settlement.date, user.timezone ?? 'Europe/Amsterdam') : new Date(),
       groupId: group.id,
@@ -251,7 +251,7 @@ function UserSelect({
 }) {
   return (
     <Popover open={isPopoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger className="border-primary-200 h-full w-full rounded-md border">
+      <PopoverTrigger className="h-full w-full rounded-md border border-primary-200">
         <User user={users.find(({ id }) => id === value)} />
       </PopoverTrigger>
       <PopoverContent className="p-2" align="center">

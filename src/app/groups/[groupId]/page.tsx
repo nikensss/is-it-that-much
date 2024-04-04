@@ -16,14 +16,14 @@ export default async function GroupPage({
   params: { groupId: string };
   searchParams: Record<string, string | undefined>;
 }) {
-  const group = await api.groups.get.query({ id: groupId }).catch(() => null);
+  const group = await api.groups.get.query({ groupId: groupId }).catch(() => null);
   if (!group) return notFound();
 
   const user = await api.users.get.query().catch(() => null);
   if (!user) return notFound();
 
-  const balance = await api.groups.balance.query({ groupId });
-  const expenses = await api.groups.expenses.recent.query({ groupId, take: Math.max(5, balance.length) });
+  const balance = await api.groups.balance.query({ groupId: groupId });
+  const expenses = await api.groups.expenses.recent.query({ groupId: groupId, take: Math.max(5, balance.length) });
   const settlements = await api.groups.settlements.recent.query({ groupId, take: Math.max(5, balance.length) });
 
   const month = searchParams?.month ?? format(new Date(), 'LLLL');

@@ -1,18 +1,25 @@
+import { TRPCError } from '@trpc/server';
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { log } from 'next-axiom';
 import { z } from 'zod';
-import { assertUserInGroup } from '~/server/api/routers/groups/groups';
-import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, groupProcedure } from '~/server/api/trpc';
 import { groupSettlementFormSchema } from '~/trpc/shared';
 
 export const groupSettlementsRouter = createTRPCRouter({
-  upsert: privateProcedure.input(groupSettlementFormSchema).mutation(async ({ ctx: { db }, input }) => {
-    await assertUserInGroup({ groupId: input.groupId, userId: input.fromId });
-    await assertUserInGroup({ groupId: input.groupId, userId: input.toId });
+  upsert: groupProcedure.input(groupSettlementFormSchema).mutation(async ({ ctx: { db, group }, input }) => {
+    const usersInGroup = await db.usersGroups.count({
+      where: { groupId: group.id, userId: { in: [input.toId, input.fromId] } },
+    });
+
+    if (usersInGroup !== 2) {
+      log.warn('User is not in group', { groupId: group.id, fromId: input.fromId, toId: input.toId });
+      throw new TRPCError({ code: 'FORBIDDEN' });
+    }
 
     return db.settlement.upsert({
       where: {
-        id: input.id ?? '',
+        id: input.settlementId ?? '',
       },
       create: {
         amount: parseInt(`${input.amount * 100}`),
@@ -31,37 +38,22 @@ export const groupSettlementsRouter = createTRPCRouter({
     });
   }),
 
-  delete: privateProcedure
-    .input(z.object({ groupId: z.string().cuid(), settlementId: z.string().cuid() }))
-    .mutation(async ({ ctx: { db, user }, input: { groupId, settlementId } }) => {
-      await assertUserInGroup({ groupId: groupId, userId: user.id });
-
-      return db.settlement.delete({
-        where: {
-          id: settlementId,
-          groupId,
-        },
-      });
+  delete: groupProcedure
+    .input(z.object({ settlementId: z.string().cuid() }))
+    .mutation(async ({ ctx: { db, group }, input: { settlementId } }) => {
+      return db.settlement.delete({ where: { id: settlementId, groupId: group.id } });
     }),
 
-  period: privateProcedure
-    .input(
-      z.object({
-        groupId: z.string().cuid(),
-        from: z.date().nullish(),
-        to: z.date().nullish(),
-      }),
-    )
-    .query(async ({ ctx: { db, user }, input }) => {
-      await assertUserInGroup({ groupId: input.groupId, userId: user.id });
-
+  period: groupProcedure
+    .input(z.object({ from: z.date().nullish(), to: z.date().nullish() }))
+    .query(async ({ ctx: { db, user, group }, input }) => {
       const t = utcToZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
       const from = zonedTimeToUtc(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
       const to = zonedTimeToUtc(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
 
       return db.settlement.findMany({
         where: {
-          groupId: input.groupId,
+          groupId: group.id,
           date: {
             gte: input.from ?? from,
             lte: input.to ?? to,
@@ -93,14 +85,12 @@ export const groupSettlementsRouter = createTRPCRouter({
       });
     }),
 
-  recent: privateProcedure
-    .input(z.object({ groupId: z.string().cuid(), take: z.number().default(5) }))
-    .query(async ({ ctx: { db, user }, input: { groupId, take } }) => {
-      await assertUserInGroup({ groupId, userId: user.id });
-
+  recent: groupProcedure
+    .input(z.object({ take: z.number().default(5) }))
+    .query(async ({ ctx: { db, group }, input: { take } }) => {
       return db.settlement.findMany({
         where: {
-          groupId,
+          groupId: group.id,
         },
         include: {
           from: {

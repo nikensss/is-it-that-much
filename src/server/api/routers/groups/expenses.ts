@@ -2,20 +2,17 @@ import { TransactionType } from '@prisma/client';
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { z } from 'zod';
-import { assertUserInGroup } from '~/server/api/routers/groups/groups';
-import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, groupProcedure } from '~/server/api/trpc';
 import { groupExpenseFormSchema } from '~/trpc/shared';
 
 export const groupExpensesRouter = createTRPCRouter({
-  get: privateProcedure
-    .input(z.object({ groupId: z.string().cuid(), expenseId: z.string().cuid() }))
-    .query(async ({ ctx: { db, user }, input }) => {
-      await assertUserInGroup({ groupId: input.groupId, userId: user.id });
-
+  get: groupProcedure
+    .input(z.object({ expenseId: z.string().cuid() }))
+    .query(async ({ ctx: { db, group }, input: { expenseId } }) => {
       return db.sharedTransaction.findUnique({
         where: {
-          id: input.expenseId,
-          groupId: input.groupId,
+          id: expenseId,
+          groupId: group.id,
         },
         include: {
           transaction: true,
@@ -36,16 +33,13 @@ export const groupExpensesRouter = createTRPCRouter({
       });
     }),
 
-  delete: privateProcedure
-    .input(z.object({ groupId: z.string().cuid(), sharedTransactionId: z.string().cuid() }))
-    .mutation(async ({ ctx: { db, user }, input: { groupId, sharedTransactionId } }) => {
-      await assertUserInGroup({ groupId, userId: user.id });
-      await db.sharedTransaction.delete({ where: { id: sharedTransactionId, groupId } });
+  delete: groupProcedure
+    .input(z.object({ sharedTransactionId: z.string().cuid() }))
+    .mutation(async ({ ctx: { db, group }, input: { sharedTransactionId } }) => {
+      await db.sharedTransaction.delete({ where: { id: sharedTransactionId, groupId: group.id } });
     }),
 
-  upsert: privateProcedure.input(groupExpenseFormSchema).mutation(async ({ ctx: { db }, input }) => {
-    await assertUserInGroup({ groupId: input.groupId, userId: input.createdById });
-
+  upsert: groupProcedure.input(groupExpenseFormSchema).mutation(async ({ ctx: { db }, input }) => {
     const expense = input.expenseId ? await db.sharedTransaction.findUnique({ where: { id: input.expenseId } }) : null;
 
     const transaction = await db.transaction.upsert({
@@ -95,24 +89,21 @@ export const groupExpensesRouter = createTRPCRouter({
     }
   }),
 
-  period: privateProcedure
+  period: groupProcedure
     .input(
       z.object({
-        groupId: z.string().cuid(),
         from: z.date().nullish(),
         to: z.date().nullish(),
       }),
     )
-    .query(async ({ ctx: { db, user }, input }) => {
-      await assertUserInGroup({ groupId: input.groupId, userId: user.id });
-
+    .query(async ({ ctx: { db, user, group }, input }) => {
       const t = utcToZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
       const from = zonedTimeToUtc(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
       const to = zonedTimeToUtc(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
 
       return db.sharedTransaction.findMany({
         where: {
-          groupId: input.groupId,
+          groupId: group.id,
           transaction: {
             date: {
               gte: input.from ?? from,
@@ -144,14 +135,12 @@ export const groupExpensesRouter = createTRPCRouter({
       });
     }),
 
-  recent: privateProcedure
-    .input(z.object({ groupId: z.string().cuid(), take: z.number().default(5) }))
-    .query(async ({ ctx: { db, user }, input: { groupId, take } }) => {
-      await assertUserInGroup({ groupId, userId: user.id });
-
+  recent: groupProcedure
+    .input(z.object({ take: z.number().default(5) }))
+    .query(async ({ ctx: { db, group }, input: { take } }) => {
       return db.sharedTransaction.findMany({
         where: {
-          groupId,
+          groupId: group.id,
         },
         include: {
           transaction: true,

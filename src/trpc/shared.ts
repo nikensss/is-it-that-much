@@ -32,7 +32,7 @@ export type RouterOutputs = inferRouterOutputs<AppRouter>;
 
 export const groupSettlementFormSchema = z
   .object({
-    id: z.string().cuid().nullable(),
+    settlementId: z.string().cuid().nullable(),
     amount: z.number().min(0.01),
     date: z.date(),
     groupId: z.string().cuid(),

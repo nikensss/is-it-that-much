@@ -17,7 +17,6 @@ import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
 
 const formSchema = z.object({
-  id: z.string().cuid().optional(),
   name: z.string().min(3),
   description: z.string().optional(),
   members: z
@@ -54,7 +53,13 @@ export default function GroupUpsertForm({
     },
   });
 
-  const upsert = api.groups.upsert.useMutation({
+  const create = api.groups.create.useMutation({
+    onMutate: () => setIsLoading(true),
+    onSuccess: (r) => router.push(`/groups/${r}`),
+    onError: () => setIsLoading(false),
+  });
+
+  const update = api.groups.update.useMutation({
     onMutate: () => setIsLoading(true),
     onSuccess: (r) => router.push(`/groups/${r}`),
     onError: () => setIsLoading(false),
@@ -80,11 +85,9 @@ export default function GroupUpsertForm({
       <form
         className="flex grow flex-col"
         onSubmit={form.handleSubmit((d) => {
-          return upsert.mutateAsync({
-            ...d,
-            ...(group?.id ? { id: group.id } : {}),
-            members: d.members.map((m) => m.id),
-          });
+          if (group) return update.mutateAsync({ ...d, groupId: group.id, members: d.members.map((m) => m.id) });
+
+          return create.mutateAsync({ ...d, members: d.members.map((m) => m.id) });
         })}
       >
         <FormField
@@ -193,7 +196,7 @@ export default function GroupUpsertForm({
               destructive
               title="Delete group"
               description="Are you sure you want to delete this group? All the information will be lost and unrecoverable."
-              onConfirm={() => del.mutateAsync({ id: group.id })}
+              onConfirm={() => del.mutateAsync({ groupId: group.id })}
             >
               <Button className="grow" variant="destructive" type="button">
                 Delete

@@ -286,7 +286,7 @@ function SplitInput({ value, form, open, onOpenChange, title, group, user, onInp
         <Collapsible open={open} onOpenChange={onOpenChange}>
           <CollapsibleTrigger
             asChild
-            className="md:hover:bg-primary-100 my-2 select-none rounded-md py-0.5 transition-all md:hover:cursor-pointer"
+            className="my-2 select-none rounded-md py-0.5 transition-all md:hover:cursor-pointer md:hover:bg-primary-100"
           >
             <div className="flex items-center justify-start">
               <Button className="max-md:pl-0" variant="ghost" disabled>
@@ -301,7 +301,7 @@ function SplitInput({ value, form, open, onOpenChange, title, group, user, onInp
             {group.UserGroup.sort((a, b) => a.user.id.localeCompare(b.user.id)).map(({ user: u }) => (
               <div
                 key={u.id}
-                className="border-b-primary-200 flex items-center justify-between gap-2 border-b p-2 py-4 last:border-0"
+                className="flex items-center justify-between gap-2 border-b border-b-primary-200 p-2 py-4 last:border-0"
               >
                 <div className="flex items-center justify-center text-sm md:text-lg">
                   <Avatar className="mr-2">

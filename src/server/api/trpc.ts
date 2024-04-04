@@ -9,7 +9,7 @@
 import { auth } from '@clerk/nextjs';
 import { TRPCError, initTRPC } from '@trpc/server';
 import superjson from 'superjson';
-import { ZodError } from 'zod';
+import { ZodError, z } from 'zod';
 
 import { db } from '~/server/db';
 
@@ -84,3 +84,34 @@ export const privateProcedure = t.procedure.use(async ({ ctx, next }) => {
 
   return next({ ctx: { user } });
 });
+
+export const groupProcedure = privateProcedure
+  .input(z.object({ groupId: z.string().cuid() }))
+  .use(async ({ ctx: { db, user }, input: { groupId: id }, next }) => {
+    const isUserInGroup = await db.usersGroups.findFirst({ where: { groupId: id, userId: user.id } });
+    if (!isUserInGroup) throw new TRPCError({ code: 'FORBIDDEN' });
+
+    const group = await db.group.findFirst({
+      where: { id },
+      include: {
+        UserGroup: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                imageUrl: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!group) throw new TRPCError({ code: 'BAD_REQUEST' });
+
+    return next({ ctx: { group } });
+  });

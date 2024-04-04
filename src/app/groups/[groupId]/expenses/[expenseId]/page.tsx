@@ -4,7 +4,7 @@ import GroupExpenseForm from '~/app/groups/[groupId]/expenses/new/group-expense.
 import { api } from '~/trpc/server';
 
 export default async function GroupExpenseOverview({ params }: { params: { groupId: string; expenseId: string } }) {
-  const group = await api.groups.get.query({ id: params.groupId }).catch(() => null);
+  const group = await api.groups.get.query({ groupId: params.groupId }).catch(() => null);
   if (!group) return notFound();
 
   const user = await api.users.get.query().catch(() => null);

@@ -17,7 +17,7 @@ export default async function GroupSettlementsList({
   const { groupId } = params;
   if (!groupId) return notFound();
 
-  const group = await api.groups.get.query({ id: groupId }).catch(() => null);
+  const group = await api.groups.get.query({ groupId: groupId }).catch(() => null);
   if (!group) return notFound();
 
   const user = await api.users.get.query();

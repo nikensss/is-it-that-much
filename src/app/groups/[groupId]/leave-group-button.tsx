@@ -16,7 +16,7 @@ export default function LeaveGroupButton({ groupId }: { groupId: string }) {
       description="Are you sure you want to leave this group? This action cannot be undone."
       onConfirm={async () => {
         try {
-          await mutation.mutateAsync({ id: groupId });
+          await mutation.mutateAsync({ groupId: groupId });
         } catch (ex) {
           console.error(ex);
         } finally {
