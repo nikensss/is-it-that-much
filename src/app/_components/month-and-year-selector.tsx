@@ -20,7 +20,7 @@ export default function MonthAndYearSelector(input: { month: string; year: strin
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button className="bg-primary-900 ml-2 w-36" variant="outline">
+        <Button className="ml-2 w-36 bg-primary-900" variant="outline">
           {format(parse(`${month}, ${year}`, 'LLLL, yyyy', new Date()), 'MMMM, yyyy')}
         </Button>
       </PopoverTrigger>
@@ -50,7 +50,7 @@ type YearSelectorProps = {
 
 function YearSelector({ year, setYear }: YearSelectorProps) {
   return (
-    <div className="border-primary-200 flex items-center rounded-lg border shadow-lg">
+    <div className="flex items-center rounded-lg border border-primary-200 shadow-lg">
       <div
         className="group flex grow items-center justify-center p-2 pr-0 hover:cursor-pointer"
         onClick={() => setYear(`${parseInt(year) - 1}`)}
@@ -99,7 +99,7 @@ function MonthSelector({ month, setMonth }: MonthSelectorProps) {
           }}
           variant="outline"
           className={cn(
-            'hover:bg-primary-900 hover:text-primary-100 shadow-md transition hover:shadow-lg',
+            'shadow-md transition hover:bg-primary-900 hover:text-primary-100 hover:shadow-lg',
             month === m ? 'bg-primary-100' : '',
           )}
         >

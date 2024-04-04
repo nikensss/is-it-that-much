@@ -5,6 +5,7 @@ import { BarChart3 } from 'lucide-react';
 import tailwindConfig from 'tailwind.config';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import { Block, BlockBody, BlockTitle } from '~/app/_components/block';
+import MonthAndYearSelector from '~/app/_components/month-and-year-selector';
 import BarChart from '~/app/dashboard/charts/bar-chart.client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { api } from '~/trpc/server';
@@ -40,7 +41,9 @@ export default async function GroupCharts({
 
   return (
     <Block>
-      <BlockTitle>Charts</BlockTitle>
+      <BlockTitle>
+        Charts <MonthAndYearSelector {...{ month, year }} />
+      </BlockTitle>
       <BlockBody>
         <Tabs defaultValue="paid-by-day" className="mt-4 h-full w-full">
           <TabsList className="flex w-full justify-between md:grid md:grid-cols-4">
