@@ -232,7 +232,33 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
               split.owed = amount;
               form.setValue('splits', splits);
             }}
-          />
+          >
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                const splits = form.getValues('splits');
+                const total = form.getValues('amount') * 100;
+                const splitAmount = Math.floor(total / group.UserGroup.length) / 100;
+
+                for (const split of splits) {
+                  split.owed = splitAmount;
+                }
+
+                if (splitAmount * 100 * group.UserGroup.length < total) {
+                  const split = splits[Math.floor(Math.random() * group.UserGroup.length)];
+                  if (!split) throw new Error('Split not found');
+
+                  const remaining = total - splitAmount * 100 * group.UserGroup.length;
+                  split.owed = Math.floor(split.owed * 100 + remaining) / 100;
+                }
+
+                form.setValue('splits', splits);
+              }}
+            >
+              Split equally
+            </Button>
+          </SplitInput>
         </div>
         <div className={cn('mt-auto grid grid-rows-1 gap-2', expense ? 'grid-cols-2' : 'grid-cols-1')}>
           {expense ? (
@@ -283,6 +309,7 @@ type SplitInputProps = {
     value: number,
     user: Exclude<RouterOutputs['groups']['get'], null>['UserGroup'][number]['user'],
   ) => void;
+  children?: React.ReactNode;
 };
 
 function SplitInput({
@@ -295,6 +322,7 @@ function SplitInput({
   user,
   onPaidForEverything,
   onInputChange,
+  children,
 }: SplitInputProps) {
   return (
     <FormField
@@ -315,11 +343,11 @@ function SplitInput({
             </div>
           </CollapsibleTrigger>
           <FormMessage />
-          <CollapsibleContent className="">
+          <CollapsibleContent className="flex flex-col gap-2">
             {group.UserGroup.sort((a, b) => a.user.id.localeCompare(b.user.id)).map(({ user: u }) => (
               <div
                 key={u.id}
-                className="grid grid-cols-3 items-center gap-2 border-b border-b-primary-200 p-2 py-4 last:border-0"
+                className="grid grid-rows-2 items-center gap-2 border-b border-b-primary-200 p-2 py-4 last:border-0 lg:grid-cols-3 lg:grid-rows-1"
               >
                 <div className="flex items-center justify-start self-start text-sm">
                   <Avatar className="mr-2">
@@ -341,11 +369,16 @@ function SplitInput({
                   </div>
                 </div>
                 {onPaidForEverything ? (
-                  <Button type="button" variant="secondary" onClick={() => onPaidForEverything(u)}>
-                    Paid for everything
+                  <Button
+                    type="button"
+                    className="justify-self-end"
+                    variant="secondary"
+                    onClick={() => onPaidForEverything(u)}
+                  >
+                    Paid full amount
                   </Button>
                 ) : null}
-                <FormItem className="col-start-3">
+                <FormItem className="col-span-2 lg:col-span-1 lg:col-start-3">
                   <FormControl>
                     <InputWithCurrency
                       className="w-full"
@@ -359,6 +392,8 @@ function SplitInput({
                 </FormItem>
               </div>
             ))}
+
+            <div className="flex items-center justify-end">{children}</div>
           </CollapsibleContent>
         </Collapsible>
       )}
