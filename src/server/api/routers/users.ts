@@ -45,6 +45,11 @@ export const usersRouter = createTRPCRouter({
     if (!clerkUser) return;
 
     log.debug(`upserting user ${clerkUser.id} into db`);
+
+    const emailParts = clerkUser.emailAddresses[0]?.emailAddress?.split('@') ?? [];
+    emailParts.pop();
+    const emailLocalPart = emailParts.join('@').toLowerCase();
+
     const userData = {
       username: clerkUser.username,
       externalId: clerkUser.id,
@@ -52,6 +57,7 @@ export const usersRouter = createTRPCRouter({
       lastName: clerkUser.lastName,
       imageUrl: clerkUser.imageUrl,
       email: clerkUser.emailAddresses[0]?.emailAddress,
+      emailLocalPart,
     };
 
     const userInDb = await ctx.db.user.upsert({
