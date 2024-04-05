@@ -16,7 +16,7 @@ export default async function GroupExpenseOverview({ params }: { params: { group
   return (
     <BlockBody className="flex grow flex-col">
       <BlockTitle>Edit expense</BlockTitle>
-      <BlockBody>
+      <BlockBody className="flex grow flex-col">
         <GroupExpenseForm {...{ group, user, expense }} />
       </BlockBody>
     </BlockBody>
