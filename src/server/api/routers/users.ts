@@ -53,10 +53,11 @@ export const usersRouter = createTRPCRouter({
       imageUrl: clerkUser.imageUrl,
       email: clerkUser.emailAddresses[0]?.emailAddress,
     };
+
     const userInDb = await ctx.db.user.upsert({
       create: userData,
       update: userData,
-      where: { externalId: clerkUser.id },
+      where: { email: clerkUser.emailAddresses[0]?.emailAddress },
     });
 
     if (userInDb.id !== clerkUser.externalId) {
