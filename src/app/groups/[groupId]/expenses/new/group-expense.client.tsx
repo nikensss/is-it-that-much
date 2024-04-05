@@ -185,7 +185,7 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
             )}
           />
         </div>
-        <div className="flex flex-col gap-2 md:grid md:grid-cols-2">
+        <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2">
           <SplitInput
             form={form}
             open={isPaidOpen}
@@ -194,6 +194,13 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
             user={user}
             value={form.watch('splits').map((e) => ({ userId: e.userId, value: e.paid }))}
             title="How much did each member pay?"
+            onPaidForEverything={(user) => {
+              const splits = form.getValues('splits');
+              for (const split of splits) {
+                split.paid = user.id === split.userId ? form.getValues('amount') : 0;
+              }
+              form.setValue('splits', splits);
+            }}
             onInputChange={(amount, user) => {
               const splits = form.getValues('splits');
               const split = splits.find(({ userId }) => userId === user.id);
@@ -271,13 +278,24 @@ type SplitInputProps = {
   group: Exclude<RouterOutputs['groups']['get'], null>;
   user: RouterOutputs['users']['get'];
   value: { userId: string; value: number }[];
+  onPaidForEverything?: (user: Exclude<RouterOutputs['groups']['get'], null>['UserGroup'][number]['user']) => void;
   onInputChange: (
     value: number,
     user: Exclude<RouterOutputs['groups']['get'], null>['UserGroup'][number]['user'],
   ) => void;
 };
 
-function SplitInput({ value, form, open, onOpenChange, title, group, user, onInputChange }: SplitInputProps) {
+function SplitInput({
+  value,
+  form,
+  open,
+  onOpenChange,
+  title,
+  group,
+  user,
+  onPaidForEverything,
+  onInputChange,
+}: SplitInputProps) {
   return (
     <FormField
       control={form.control}
@@ -301,16 +319,16 @@ function SplitInput({ value, form, open, onOpenChange, title, group, user, onInp
             {group.UserGroup.sort((a, b) => a.user.id.localeCompare(b.user.id)).map(({ user: u }) => (
               <div
                 key={u.id}
-                className="flex items-center justify-between gap-2 border-b border-b-primary-200 p-2 py-4 last:border-0"
+                className="grid grid-cols-3 items-center gap-2 border-b border-b-primary-200 p-2 py-4 last:border-0"
               >
-                <div className="flex items-center justify-center text-sm md:text-lg">
+                <div className="flex items-center justify-start self-start text-sm">
                   <Avatar className="mr-2">
                     <AvatarImage src={u.imageUrl ?? ''} alt={`@${u.username}`} />
                     <AvatarFallback>
                       <AvatarIcon />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 text-sm">
                     <p className="overflow-hidden overflow-ellipsis whitespace-nowrap max-md:max-w-[20ch]">
                       {u.firstName} {u.lastName}
                     </p>
@@ -322,9 +340,15 @@ function SplitInput({ value, form, open, onOpenChange, title, group, user, onInp
                     >{`@${u.username}`}</p>
                   </div>
                 </div>
-                <FormItem>
+                {onPaidForEverything ? (
+                  <Button type="button" variant="secondary" onClick={() => onPaidForEverything(u)}>
+                    Paid for everything
+                  </Button>
+                ) : null}
+                <FormItem className="col-start-3">
                   <FormControl>
                     <InputWithCurrency
+                      className="w-full"
                       currency={currencySymbolMap[user.currency ?? 'EUR'] ?? '€'}
                       value={value.find((s) => s.userId === u.id)?.value ?? 0}
                       step={0.01}
