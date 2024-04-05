@@ -10,7 +10,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
     <input
       type={type}
       className={cn(
-        'border-primary-200 placeholder:text-primary-500 focus-visible:ring-primary-950 dark:border-primary-800 dark:placeholder:text-primary-400 dark:focus-visible:ring-primary-300 flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-[16px] shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50',
+        'flex h-9 w-full rounded-md border border-primary-200 bg-transparent px-3 py-1 text-[16px] shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-primary-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-primary-800 dark:placeholder:text-primary-400 dark:focus-visible:ring-primary-300',
         className,
       )}
       ref={ref}
@@ -30,7 +30,7 @@ const InputWithCurrency = React.forwardRef<HTMLInputElement, InputWithCurrencyPr
       <div className="flex items-center justify-end">
         <Input
           className={cn(
-            'peer rounded-r-none pr-1 text-right [appearance:textfield] max-md:max-w-24 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+            'peer rounded-r-none pr-1 text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
             className,
           )}
           type="number"
@@ -38,9 +38,9 @@ const InputWithCurrency = React.forwardRef<HTMLInputElement, InputWithCurrencyPr
           onFocus={(e) => e.target.select()}
           {...props}
         />
-        <div className="border-primary-200 bg-primary-200 peer-focus-visible:ring-primary-950 flex items-center justify-center self-stretch rounded-r-md border px-2 peer-focus-visible:ring-1 ">
-          <p>{currency}</p>
-        </div>
+        <p className="flex items-center justify-center self-stretch rounded-r-md border border-primary-200 bg-primary-200 px-2 peer-focus-visible:ring-1 peer-focus-visible:ring-primary-950 ">
+          {currency}
+        </p>
       </div>
     );
   },
