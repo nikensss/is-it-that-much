@@ -221,6 +221,24 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
             value={form.watch('splits').map((e) => ({ userId: e.userId, value: e.owed }))}
             user={user}
             title="How much should have each member paid?"
+            onPaidRemainingAmount={(user) => {
+              const total = Math.floor(form.getValues('amount') * 100);
+              const splits = form.getValues('splits');
+              const paid = Math.floor(
+                splits.reduce((acc, { owed, userId }) => {
+                  if (userId === user.id) return acc;
+                  if (typeof owed !== 'number' || isNaN(owed) || !isFinite(owed)) return acc;
+
+                  return acc + owed * 100;
+                }, 0),
+              );
+
+              const split = splits.find(({ userId }) => userId === user.id);
+              if (!split) throw new Error('Split not found');
+              split.owed = Math.floor(total - paid) / 100;
+
+              form.setValue('splits', splits);
+            }}
             onInputChange={(amount, user) => {
               const splits = form.getValues('splits');
               const split = splits.find(({ userId }) => userId === user.id);
@@ -305,6 +323,7 @@ type SplitInputProps = {
   user: RouterOutputs['users']['get'];
   value: { userId: string; value: number }[];
   onPaidForEverything?: (user: Exclude<RouterOutputs['groups']['get'], null>['UserGroup'][number]['user']) => void;
+  onPaidRemainingAmount?: (user: Exclude<RouterOutputs['groups']['get'], null>['UserGroup'][number]['user']) => void;
   onInputChange: (
     value: number,
     user: Exclude<RouterOutputs['groups']['get'], null>['UserGroup'][number]['user'],
@@ -321,6 +340,7 @@ function SplitInput({
   group,
   user,
   onPaidForEverything,
+  onPaidRemainingAmount,
   onInputChange,
   children,
 }: SplitInputProps) {
@@ -376,6 +396,16 @@ function SplitInput({
                     onClick={() => onPaidForEverything(u)}
                   >
                     Paid full amount
+                  </Button>
+                ) : null}
+                {onPaidRemainingAmount ? (
+                  <Button
+                    type="button"
+                    className="justify-self-end"
+                    variant="secondary"
+                    onClick={() => onPaidRemainingAmount(u)}
+                  >
+                    Paid the rest
                   </Button>
                 ) : null}
                 <FormItem className="col-span-2 lg:col-span-1 lg:col-start-3">
