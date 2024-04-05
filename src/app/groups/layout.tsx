@@ -5,7 +5,7 @@ export default function GroupsLayout({ children }: { children: React.ReactNode }
     <BlockContainer>
       <Block>
         <BlockTitle href="/groups">Groups</BlockTitle>
-        <BlockBody>{children}</BlockBody>
+        <BlockBody className="flex grow flex-col">{children}</BlockBody>
       </Block>
     </BlockContainer>
   );

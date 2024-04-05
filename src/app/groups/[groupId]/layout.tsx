@@ -13,7 +13,7 @@ export default async function GroupLayout({ params, children }: { children: Reac
   return (
     <>
       <BlockTitle href={`/groups/${group.id}`}>{group.name}</BlockTitle>
-      <BlockBody className="flex flex-col gap-2">{children}</BlockBody>
+      <BlockBody className="flex grow flex-col gap-2">{children}</BlockBody>
     </>
   );
 }
