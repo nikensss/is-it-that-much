@@ -12,7 +12,7 @@ export function NavBar() {
       <nav className="z-10 hidden items-center justify-center md:ml-auto md:mr-2 md:flex md:gap-2">
         <DesktopNavbar />
       </nav>
-      <h1 className="z-10 text-primary-100 md:hidden">
+      <h1 className="z-10 text-primary-900 dark:text-primary-200 md:hidden">
         <Link href="/">Is It That Much?</Link>
       </h1>
       <nav className="z-10 flex px-2 md:hidden">

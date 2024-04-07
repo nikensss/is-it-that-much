@@ -23,9 +23,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={cn('min-h-screen overflow-y-scroll scroll-smooth font-sans antialiased', inter.variable)}>
+        <body
+          className={cn(
+            'min-h-screen overflow-y-scroll scroll-smooth bg-white font-sans antialiased dark:bg-primary-900',
+            inter.variable,
+          )}
+        >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <div className="flex min-h-screen flex-col bg-white">
+            <div className="flex min-h-screen flex-col bg-white dark:bg-primary-800">
               <NavBar />
               <main className="flex flex-1 justify-center">
                 <TRPCReactProvider>{children}</TRPCReactProvider>
