@@ -6,6 +6,7 @@ import { Footer } from '~/app/_components/footer';
 import { NavBar } from '~/app/_components/navbar/navbar';
 import { Analytics } from '@vercel/analytics/react';
 import { cn } from '~/lib/utils';
+import { ThemeProvider } from '~/app/_components/theme-provider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -23,14 +24,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <ClerkProvider>
       <html lang="en">
         <body className={cn('min-h-screen overflow-y-scroll scroll-smooth font-sans antialiased', inter.variable)}>
-          <div className="flex min-h-screen flex-col bg-white">
-            <NavBar />
-            <main className="flex flex-1 justify-center">
-              <TRPCReactProvider>{children}</TRPCReactProvider>
-            </main>
-            <Footer />
-          </div>
-          <Analytics />
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <div className="flex min-h-screen flex-col bg-white">
+              <NavBar />
+              <main className="flex flex-1 justify-center">
+                <TRPCReactProvider>{children}</TRPCReactProvider>
+              </main>
+              <Footer />
+            </div>
+            <Analytics />
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

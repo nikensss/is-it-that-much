@@ -81,8 +81,8 @@ export default function UserBannerClient({
   return (
     <div
       className={cn(
-        'ry-2 border-primary-100 md:hover:border-primary-900 flex select-none items-center rounded-md border p-4 md:hover:shadow-md',
-        isSelf ? 'bg-primary-900/20 pointer-events-none' : '',
+        'ry-2 flex select-none items-center rounded-md border border-primary-200 p-4 dark:border-primary-500 lg:hover:shadow-md lg:hover:shadow-primary-600',
+        isSelf ? 'pointer-events-none bg-primary-900/20 dark:border-transparent dark:bg-primary-200/20' : '',
         className,
       )}
     >
@@ -156,7 +156,7 @@ export default function UserBannerClient({
               title="Reject friend request"
               description={`Are you sure you want to reject the friend request from ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
             >
-              <Button className="text-primary-900 hover:text-primary-100 bg-red-100 hover:bg-red-600">
+              <Button className="bg-red-100 text-primary-900 hover:bg-red-600 hover:text-primary-100">
                 <UserRoundX />
               </Button>
             </ButtonWithDialog>
@@ -171,7 +171,7 @@ export default function UserBannerClient({
             title="Remove friend"
             description={`Are you sure you want to remove ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''} from your friends list?`}
           >
-            <Button className="text-primary-900 hover:text-primary-100 bg-red-100 hover:bg-red-600">
+            <Button className="bg-red-100 text-primary-900 hover:bg-red-600 hover:text-primary-100">
               <UserRoundMinus />
             </Button>
           </ButtonWithDialog>
@@ -182,7 +182,7 @@ export default function UserBannerClient({
             title="Block user"
             description={`Are you sure you want to block ${user.firstName} ${user.lastName}${user.username ? ` (@${user.username})` : ''}?`}
           >
-            <Button disabled className="text-primary-900 hover:text-primary-100 bg-red-100 hover:bg-red-600">
+            <Button disabled className="bg-red-100 text-primary-900 hover:bg-red-600 hover:text-primary-100">
               <Ban />
             </Button>
           </ButtonWithDialog>

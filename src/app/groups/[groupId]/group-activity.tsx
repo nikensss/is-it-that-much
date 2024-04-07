@@ -146,7 +146,7 @@ export function RegisteredSettlementView({
               <p className="whitespace-nowrap text-nowrap text-sm">
                 {settlement.amount / 100} {currencySymbolMap[user.currency ?? 'EUR']}
               </p>
-              <MoveRight className="-mt-2 animate-bounce-sideways text-primary-900" />
+              <MoveRight className="-mt-2 animate-bounce-sideways text-primary-900 dark:text-primary-50" />
             </div>
             <Avatar>
               <AvatarImage src={settlement.to.imageUrl ?? ''} alt={`@${settlement.to.username}`} />

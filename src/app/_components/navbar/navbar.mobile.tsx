@@ -7,6 +7,7 @@ import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/server';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { AvatarIcon } from '@radix-ui/react-icons';
+import { ModeToggle } from '~/app/_components/mode-toggle';
 
 export default function MobileNavbar() {
   return (
@@ -16,12 +17,14 @@ export default function MobileNavbar() {
       </SheetTrigger>
       <SheetContent className="flex w-9/12 flex-col items-end pt-6 text-xl">
         <SignedOut>
+          <ModeToggle />
           <SheetLinkClose text={'Features'} href={'#'} />
           <SheetLinkClose text={'Pricing'} href={'#'} />
           <SheetLinkClose text={'About'} href={'#'} />
           <SheetLinkClose text={'Contact'} href={'#'} />
         </SignedOut>
         <SignedIn>
+          <ModeToggle />
           <SheetLinkClose text={'Dashboard'} href={'/dashboard'} />
           <SheetLinkClose text={'Groups'} href={'/groups'} />
           <SheetLinkClose text={'Friends'} href={'/friends'} />

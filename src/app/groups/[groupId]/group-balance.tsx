@@ -12,7 +12,7 @@ export type GroupBalanceProps = {
   group: Exclude<RouterOutputs['groups']['get'], null>;
 };
 
-export default async function GroupBalance({ group, balance, user }: GroupBalanceProps) {
+export default function GroupBalance({ group, balance, user }: GroupBalanceProps) {
   return (
     <Block>
       <BlockTitle>Balance</BlockTitle>
@@ -64,7 +64,7 @@ function SuggestedSettlement({ settlement, user, group }: SuggestedSettlementPro
               <p className="whitespace-nowrap text-nowrap text-sm">
                 {settlement.amount / 100} {currencySymbolMap[user.currency ?? 'EUR']}
               </p>
-              <MoveRight className="-mt-2 animate-bounce-sideways text-primary-900" />
+              <MoveRight className="-mt-2 animate-bounce-sideways text-primary-900 dark:text-primary-50" />
             </div>
             <Avatar>
               <AvatarImage src={settlement.to.imageUrl ?? ''} alt={`@${settlement.to.username}`} />

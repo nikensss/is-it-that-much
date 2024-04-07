@@ -28,21 +28,21 @@ export default async function DashboardTotals({ month, year }: { month: string; 
       </BlockTitle>
       <BlockBody>
         <div className="grid items-start gap-4 md:gap-10">
-          <div className="rounded-md bg-white p-4 shadow-md ">
+          <div className="rounded-md border border-transparent bg-white p-4 shadow-md dark:border-primary-400 dark:bg-primary-600">
             <h2 className="mb-2 text-lg font-bold">Total Expenses</h2>
             <p className="text-2xl font-semibold">
               {currencySymbol}
               {totalExpenses / 100}
             </p>
           </div>
-          <div className="rounded-md bg-white p-4 shadow-md ">
+          <div className="rounded-md border border-transparent bg-white p-4 shadow-md dark:border-primary-400 dark:bg-primary-600">
             <h2 className="mb-2 text-lg font-bold">Total Incomes</h2>
             <p className="text-2xl font-semibold">
               {currencySymbol}
               {totalIncomes / 100}
             </p>
           </div>
-          <div className="rounded-md bg-white p-4 shadow-md ">
+          <div className="rounded-md border border-transparent bg-white p-4 shadow-md dark:border-primary-400 dark:bg-primary-600">
             <h2 className="mb-2 text-lg font-bold">Income left</h2>
             <p className="text-2xl font-semibold">
               {currencySymbol}

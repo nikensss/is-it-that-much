@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import Link from 'next/link';
+import { BlockBody } from '~/app/_components/block';
 import Charts from '~/app/dashboard/charts/charts';
 import DashboardRecentTrasnsactions from '~/app/dashboard/recent-transactions';
 import DashboardRegisterPersonalExpense from '~/app/dashboard/register-transaction/register-personal-expense';
@@ -7,12 +8,12 @@ import DashboardRegisterPersonalIncome from '~/app/dashboard/register-transactio
 import DashboardTotals from '~/app/dashboard/totals';
 import { Button } from '~/components/ui/button';
 
-export default async function Dashboard({ searchParams }: { searchParams: Record<string, string | undefined> }) {
+export default function Dashboard({ searchParams }: { searchParams: Record<string, string | undefined> }) {
   const month = searchParams?.month ?? format(new Date(), 'LLLL');
   const year = searchParams?.year ?? format(new Date(), 'yyyy');
 
   return (
-    <main className="flex flex-1 flex-col gap-2 bg-white">
+    <BlockBody className="flex grow flex-col gap-2">
       <section className="grid grid-cols-2 gap-2">
         <DashboardRegisterPersonalExpense />
         <DashboardRegisterPersonalIncome />
@@ -30,7 +31,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Record
         </Button>
       </div>
       <DashboardRecentTrasnsactions />
-    </main>
+    </BlockBody>
   );
 }
 

@@ -3,11 +3,15 @@ import { Children } from 'react';
 import { Separator } from '~/components/ui/separator';
 
 export function Block({ children }: { children: React.ReactNode }) {
-  return <div className="flex grow flex-col rounded-md border border-primary-200 bg-white p-2">{children}</div>;
+  return (
+    <div className="flex grow flex-col rounded-md border border-primary-200 bg-white p-2 dark:border-primary-400 dark:bg-primary-700">
+      {children}
+    </div>
+  );
 }
 
 export function BlockContainer({ children }: { children: React.ReactNode }) {
-  return <section className="flex grow flex-col bg-primary-100 p-2">{children}</section>;
+  return <section className="flex grow flex-col bg-primary-100 p-2 dark:bg-primary-600">{children}</section>;
 }
 
 export function BlockTitle({ children, href }: { href?: string; children: React.ReactNode }) {
@@ -38,7 +42,7 @@ export function BlockList({ className, children }: { className?: string; childre
       {Children.map(children, (c) => (
         <>
           {c}
-          <Separator className="last:hidden" />
+          <Separator className="last:hidden dark:bg-primary-400" />
         </>
       ))}
     </div>
@@ -46,7 +50,7 @@ export function BlockList({ className, children }: { className?: string; childre
 }
 
 export function BlockListItem({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-md p-2 lg:hover:bg-primary-900/20">{children}</div>;
+  return <div className="rounded-md p-2 lg:hover:bg-primary-900/20 dark:lg:hover:bg-primary-200/20">{children}</div>;
 }
 
 export function BlockListItemTitle({ children }: { children: React.ReactNode }) {
