@@ -11,10 +11,10 @@ export default function DateDisplay({ date, timezone, distance = 'inline' }: Dat
   const formattedDate = formatInTimeZone(date, timezone ?? 'Europe/Amsterdam', 'LLLL d, yyyy');
 
   return (
-    <>
+    <span className="text-primary-600 dark:text-primary-300">
       {formattedDate} {distance === 'newline' ? <br /> : null}(
       <time dateTime={formattedDate}>{getDistanceTo(date, timezone ?? 'Europe/Amsterdam').toLowerCase()}</time>)
-    </>
+    </span>
   );
 }
 

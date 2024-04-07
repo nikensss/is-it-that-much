@@ -10,7 +10,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
     <input
       type={type}
       className={cn(
-        'flex h-9 w-full rounded-md border border-primary-200 bg-transparent px-3 py-1 text-[16px] shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-primary-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-primary-800 dark:placeholder:text-primary-400 dark:focus-visible:ring-primary-300',
+        'flex h-9 w-full rounded-md border border-primary-200 bg-transparent px-3 py-1 text-[16px] shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-primary-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-primary-800 dark:bg-primary-600 dark:placeholder:text-primary-400 dark:focus-visible:ring-primary-300',
         className,
       )}
       ref={ref}
@@ -38,7 +38,7 @@ const InputWithCurrency = React.forwardRef<HTMLInputElement, InputWithCurrencyPr
           onFocus={(e) => e.target.select()}
           {...props}
         />
-        <p className="flex items-center justify-center self-stretch rounded-r-md border border-primary-200 bg-primary-200 px-2 peer-focus-visible:ring-1 peer-focus-visible:ring-primary-950 ">
+        <p className="flex items-center justify-center self-stretch rounded-r-md border border-primary-200 bg-transparent px-2 py-1 transition-colors placeholder:text-primary-500 peer-focus-visible:ring-1 peer-focus-visible:ring-primary-950 dark:border-primary-800 dark:placeholder:text-primary-400 dark:peer-focus-visible:ring-primary-300">
           {currency}
         </p>
       </div>

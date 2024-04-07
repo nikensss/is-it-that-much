@@ -352,14 +352,14 @@ function SplitInput({
         <Collapsible open={open} onOpenChange={onOpenChange}>
           <CollapsibleTrigger
             asChild
-            className="my-2 select-none rounded-md py-0.5 transition-all md:hover:cursor-pointer md:hover:bg-primary-100"
+            className="my-2 cursor-pointer select-none rounded-md py-0.5 transition-all lg:hover:bg-primary-100 dark:lg:hover:bg-primary-600"
           >
             <div className="flex items-center justify-start">
               <Button className="max-md:pl-0" variant="ghost" disabled>
                 <ChevronRight className={cn(open ? 'rotate-90' : 'rotate-0', 'transition-all')} />
                 <span className="sr-only">Toggle</span>
               </Button>
-              <FormLabel>{title}</FormLabel>
+              <FormLabel className="cursor-pointer">{title}</FormLabel>
             </div>
           </CollapsibleTrigger>
           <FormMessage />

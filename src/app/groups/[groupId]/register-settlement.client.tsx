@@ -121,7 +121,7 @@ export default function RegisterSettlement({ group, user, children, settlement }
               )}
             />
 
-            <MoveDown className="self-center" />
+            <MoveDown className="mt-1 animate-bounce self-center" />
 
             <FormField
               control={form.control}
@@ -251,7 +251,7 @@ function UserSelect({
 }) {
   return (
     <Popover open={isPopoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger className="h-full w-full rounded-md border border-primary-200">
+      <PopoverTrigger className="h-full w-full rounded-md border border-primary-200 dark:border-primary-800 dark:bg-transparent">
         <User user={users.find(({ id }) => id === value)} />
       </PopoverTrigger>
       <PopoverContent className="p-2" align="center">
