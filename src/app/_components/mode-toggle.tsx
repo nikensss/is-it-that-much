@@ -44,12 +44,6 @@ export function ModeToggle() {
         >
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem
-          className="cursor-pointer hover:bg-primary-200 dark:hover:bg-gray-200/20"
-          onClick={() => setTheme('system')}
-        >
-          System
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
