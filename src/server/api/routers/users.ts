@@ -5,39 +5,6 @@ import { z } from 'zod';
 import { subMinutes } from 'date-fns';
 
 export const usersRouter = createTRPCRouter({
-  create: publicProcedure.mutation(async ({ ctx }) => {
-    try {
-      const clerkUser = await currentUser();
-      if (!clerkUser) return null;
-
-      log.debug(`creating user ${clerkUser.id} in db`);
-
-      const emailParts = clerkUser.emailAddresses[0]?.emailAddress?.split('@') ?? [];
-      emailParts.pop();
-      const emailLocalPart = emailParts.join('@').toLowerCase();
-
-      const userInDb = await ctx.db.user.create({
-        data: {
-          username: clerkUser.username,
-          externalId: clerkUser.id,
-          firstName: clerkUser.firstName,
-          lastName: clerkUser.lastName,
-          imageUrl: clerkUser.imageUrl,
-          email: clerkUser.emailAddresses[0]?.emailAddress?.toLowerCase(),
-          emailLocalPart,
-        },
-      });
-
-      await clerk.users.updateUser(clerkUser.id, { externalId: userInDb.id });
-      log.debug('updated user in clerk');
-
-      return userInDb;
-    } catch (e) {
-      log.error('error creating user', { e });
-      return null;
-    }
-  }),
-
   get: privateProcedure.query(({ ctx: { user } }) => user),
 
   sync: publicProcedure.mutation(async ({ ctx }) => {

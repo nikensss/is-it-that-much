@@ -15,21 +15,15 @@ export function BlockContainer({ children }: { children: React.ReactNode }) {
 }
 
 export function BlockTitle({ children, href }: { href?: string; children: React.ReactNode }) {
-  if (!href) {
-    return (
-      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-primary-900">
-        <h2 className="flex items-center justify-center text-lg font-bold capitalize text-primary-200">{children}</h2>
-      </header>
-    );
-  }
-
-  return (
-    <Link href={href}>
-      <header className="my-0.5 mb-1.5 flex h-12 items-center justify-center rounded-md bg-primary-900">
-        <h2 className="flex items-center justify-center text-lg font-bold text-primary-200">{children}</h2>
-      </header>
-    </Link>
+  const title = (
+    <header className="my-0.5 mb-1.5 flex min-h-12 items-center justify-center rounded-md border bg-primary-900 dark:border-primary-500">
+      <h2 className="flex items-center justify-center text-lg font-bold capitalize text-primary-200">{children}</h2>
+    </header>
   );
+
+  if (!href) return title;
+
+  return <Link href={href}>{title}</Link>;
 }
 
 export function BlockBody({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -50,7 +44,11 @@ export function BlockList({ className, children }: { className?: string; childre
 }
 
 export function BlockListItem({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-md p-2 lg:hover:bg-primary-900/20 dark:lg:hover:bg-primary-200/20">{children}</div>;
+  return (
+    <div className="rounded-md p-2 transition-all lg:hover:bg-primary-900/20 dark:lg:hover:bg-primary-200/20">
+      {children}
+    </div>
+  );
 }
 
 export function BlockListItemTitle({ children }: { children: React.ReactNode }) {

@@ -8,7 +8,6 @@ export default async function SettingsPage() {
   return (
     <BlockContainer>
       <Block>
-        <BlockTitle>Settings</BlockTitle>
         <BlockBody className="flex grow flex-col">
           <SettingsForm
             username={user?.username}

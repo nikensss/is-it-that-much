@@ -19,7 +19,7 @@ export default async function MyGroups({ groups }: MyGroupsProps) {
             <Link
               href={`/groups/${group.id}`}
               key={group.id}
-              className="ry-2 flex select-none items-center rounded-md border border-primary-100 p-4 md:hover:cursor-pointer md:hover:border-primary-900 md:hover:shadow-md"
+              className="flex select-none items-center rounded-md border border-primary-200 p-4 transition-all dark:border-primary-400 lg:hover:bg-primary-800/20 dark:lg:hover:bg-primary-300/20"
             >
               <div className="flex items-center justify-center">
                 <Avatar className="mr-2">

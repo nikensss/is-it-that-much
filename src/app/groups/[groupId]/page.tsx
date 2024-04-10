@@ -31,7 +31,7 @@ export default async function GroupPage({
 
   return (
     <>
-      <div className="grid grid-cols-2 grid-rows-1 gap-2">
+      <div className="grid grid-cols-2 grid-rows-2 gap-2 lg:grid-cols-4 lg:grid-rows-1">
         <Button variant="outline" asChild>
           <Link href={`${groupId}/expenses/new`}>Register expense</Link>
         </Button>
@@ -40,18 +40,16 @@ export default async function GroupPage({
             Register settlement
           </Button>
         </RegisterSettlement>
-      </div>
-      <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
-        <GroupDetails {...{ group, user }} />
-        <GroupCharts {...{ group, user, month, year }} />
-      </div>
-      <div className="grid grid-cols-1 grid-rows-2 gap-2 lg:grid-cols-2 lg:grid-rows-1">
         <Button variant="outline" asChild>
           <Link href={`${groupId}/expenses`}>Expenses</Link>
         </Button>
         <Button variant="outline" asChild>
           <Link href={`${groupId}/settlements`}>Settlements</Link>
         </Button>
+      </div>
+      <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
+        <GroupDetails {...{ group, user }} />
+        <GroupCharts {...{ group, user, month, year }} />
       </div>
       <div className="flex grow flex-col gap-2 lg:grid lg:grid-cols-2 lg:grid-rows-1">
         <RecentGroupActivity {...{ expenses, settlements, user, group, amountToShow: Math.max(5, balance.length) }} />

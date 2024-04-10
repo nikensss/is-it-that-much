@@ -6,16 +6,16 @@ export default function DesktopNavbar() {
   return (
     <>
       <SignedOut>
-        <NavBarLink text={'Features'} href={'#'} />
-        <NavBarLink text={'Pricing'} href={'#'} />
-        <NavBarLink text={'About'} href={'#'} />
-        <NavBarLink text={'Contact'} href={'#'} />
+        <NavBarLink href={'#'}>Features</NavBarLink>
+        <NavBarLink href={'#'}>Pricing</NavBarLink>
+        <NavBarLink href={'#'}>About</NavBarLink>
+        <NavBarLink href={'#'}>Contact</NavBarLink>
       </SignedOut>
       <SignedIn>
-        <NavBarLink text={'Dashboard'} href={'/dashboard'} />
-        <NavBarLink text={'Groups'} href={'/groups'} />
-        <NavBarLink text={'Friends'} href={'/friends'} />
-        <NavBarLink text={'Settings'} href={'/settings'} />
+        <NavBarLink href={'/dashboard'}>Dashboard</NavBarLink>
+        <NavBarLink href={'/groups'}>Groups</NavBarLink>
+        <NavBarLink href={'/friends'}>Friends</NavBarLink>
+        <NavBarLink href={'/settings'}>Settings</NavBarLink>
       </SignedIn>
       <SignedIn>
         <div className="px-2">

@@ -8,6 +8,7 @@ import { api } from '~/trpc/server';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { AvatarIcon } from '@radix-ui/react-icons';
 import { ModeToggle } from '~/app/_components/mode-toggle';
+import NavBarLink from '~/app/_components/navbar/navbar.link';
 
 export default function MobileNavbar() {
   return (
@@ -18,17 +19,17 @@ export default function MobileNavbar() {
       <SheetContent className="flex w-9/12 flex-col items-end pt-6 text-xl">
         <SignedOut>
           <ModeToggle />
-          <SheetLinkClose text={'Features'} href={'#'} />
-          <SheetLinkClose text={'Pricing'} href={'#'} />
-          <SheetLinkClose text={'About'} href={'#'} />
-          <SheetLinkClose text={'Contact'} href={'#'} />
+          <SheetLinkClose href={'#'}>Features</SheetLinkClose>
+          <SheetLinkClose href={'#'}>Pricing</SheetLinkClose>
+          <SheetLinkClose href={'#'}>About</SheetLinkClose>
+          <SheetLinkClose href={'#'}>Contact</SheetLinkClose>
         </SignedOut>
         <SignedIn>
           <ModeToggle />
-          <SheetLinkClose text={'Dashboard'} href={'/dashboard'} />
-          <SheetLinkClose text={'Groups'} href={'/groups'} />
-          <SheetLinkClose text={'Friends'} href={'/friends'} />
-          <SheetLinkClose text={'Settings'} href={'/settings'} />
+          <SheetLinkClose href={'/dashboard'}>Dashboard</SheetLinkClose>
+          <SheetLinkClose href={'/groups'}>Groups</SheetLinkClose>
+          <SheetLinkClose href={'/friends'}>Friends</SheetLinkClose>
+          <SheetLinkClose href={'/settings'}>Settings</SheetLinkClose>
           <AccordionUserButton />
         </SignedIn>
       </SheetContent>
@@ -38,15 +39,13 @@ export default function MobileNavbar() {
 
 type SheetLinkCloseProps = {
   href: string;
-  text: string;
+  children: React.ReactNode;
 };
 
-function SheetLinkClose({ href, text }: SheetLinkCloseProps) {
+function SheetLinkClose({ href, children }: SheetLinkCloseProps) {
   return (
     <SheetClose asChild>
-      <Link className="block p-2 pr-0 font-medium hover:underline" href={href}>
-        {text}
-      </Link>
+      <NavBarLink href={href}>{children}</NavBarLink>
     </SheetClose>
   );
 }

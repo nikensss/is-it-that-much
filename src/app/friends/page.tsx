@@ -1,5 +1,5 @@
 import { UserRoundCog, UserRoundSearchIcon, UsersRound } from 'lucide-react';
-import { Block, BlockBody, BlockContainer, BlockTitle } from '~/app/_components/block';
+import { Block, BlockBody, BlockContainer } from '~/app/_components/block';
 import FindFriends from '~/app/friends/find-friends.client';
 import MyFriends from '~/app/friends/my-friends.client';
 import PendingFriendRequests from '~/app/friends/pending-friend-requests.client';
@@ -9,7 +9,6 @@ export default async function FriendsPage() {
   return (
     <BlockContainer>
       <Block>
-        <BlockTitle>Friends</BlockTitle>
         <BlockBody>
           <Tabs defaultValue="find-friends" className="flex grow flex-col">
             <TabsList className="grid grid-cols-3 items-center justify-center">

@@ -116,17 +116,19 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
               <FormControl>
                 <div
                   className={cn(
-                    'flex items-stretch justify-start rounded-md border',
+                    'flex items-stretch justify-start rounded-md ring-1',
                     (() => {
-                      if (usernameLockQuery.isFetching) return 'border-primary-900';
+                      if (usernameLockQuery.isFetching) return 'ring-gray-500';
+
                       if (!isLockOwned || requestedUsername.length < 3 || requestedUsername.length > 120) {
-                        return 'border-red-500';
+                        return 'ring-red-500';
                       }
-                      if (isLockOwned) return 'border-green-500';
+
+                      if (isLockOwned) return 'ring-green-700';
                     })(),
                   )}
                 >
-                  <div className="flex w-9 items-center justify-center rounded-l-md bg-primary-100 px-1">
+                  <div className="flex w-9 items-center justify-center rounded-l-md bg-primary-100 px-1 dark:bg-primary-400">
                     <Dot
                       className={cn(
                         'animate-ping',
@@ -140,7 +142,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                     />
                     <Check
                       className={cn(
-                        'text-green-500',
+                        'text-green-500 dark:text-green-400',
                         (() => {
                           if (usernameLockQuery.isFetching) return 'hidden';
                           if (isLockOwned) return 'block';
@@ -151,7 +153,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                     />
                     <X
                       className={cn(
-                        'text-red-500',
+                        'text-red-500 dark:text-red-700',
                         (() => {
                           if (usernameLockQuery.isFetching) return 'hidden';
                           if (!isLockOwned || requestedUsername.length < 3 || requestedUsername.length > 120) {
@@ -164,7 +166,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                     />
                   </div>
                   <Input
-                    className="rounded-none border-l border-none focus-visible:ring-0"
+                    className="rounded-none rounded-r-md border-l border-none focus-visible:ring-0"
                     autoCapitalize="none"
                     {...field}
                     onChange={(e) => {
