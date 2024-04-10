@@ -264,11 +264,16 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
                 }
 
                 if (splitAmount * 100 * group.UserGroup.length < total) {
-                  const split = splits[Math.floor(Math.random() * group.UserGroup.length)];
-                  if (!split) throw new Error('Split not found');
+                  let remaining = total - splitAmount * 100 * group.UserGroup.length;
+                  let index = 0;
+                  while (remaining > 0) {
+                    const split = splits[index];
+                    if (!split) throw new Error('Split not found');
 
-                  const remaining = total - splitAmount * 100 * group.UserGroup.length;
-                  split.owed = Math.floor(split.owed * 100 + remaining) / 100;
+                    split.owed = Math.floor(split.owed * 100 + 1) / 100;
+                    remaining -= 1;
+                    index = (index + 1) % splits.length;
+                  }
                 }
 
                 form.setValue('splits', splits);
