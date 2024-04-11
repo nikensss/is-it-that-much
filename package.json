@@ -77,6 +77,7 @@
     "react-hook-form": "7.51.0",
     "server-only": "0.0.1",
     "superjson": "2.2.1",
+    "svix": "1.21.0",
     "tailwind-merge": "2.2.1",
     "tailwindcss-animate": "1.0.7",
     "tsx": "4.7.1",

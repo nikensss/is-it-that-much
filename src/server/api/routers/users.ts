@@ -1,43 +1,10 @@
-import { clerkClient as clerk, currentUser } from '@clerk/nextjs';
-import { createTRPCRouter, privateProcedure, publicProcedure } from '~/server/api/trpc';
-import { log } from 'next-axiom';
+import { clerkClient as clerk } from '@clerk/nextjs';
+import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
 import { z } from 'zod';
 import { subMinutes } from 'date-fns';
 
 export const usersRouter = createTRPCRouter({
   get: privateProcedure.query(({ ctx: { user } }) => user),
-
-  sync: publicProcedure.mutation(async ({ ctx }) => {
-    const clerkUser = await currentUser();
-    if (!clerkUser) return;
-
-    log.debug(`upserting user ${clerkUser.id} into db`);
-
-    const emailParts = clerkUser.emailAddresses[0]?.emailAddress?.split('@') ?? [];
-    emailParts.pop();
-    const emailLocalPart = emailParts.join('@').toLowerCase();
-
-    const userData = {
-      username: clerkUser.username,
-      externalId: clerkUser.id,
-      firstName: clerkUser.firstName,
-      lastName: clerkUser.lastName,
-      imageUrl: clerkUser.imageUrl,
-      email: clerkUser.emailAddresses[0]?.emailAddress,
-      emailLocalPart,
-    };
-
-    const userInDb = await ctx.db.user.upsert({
-      create: userData,
-      update: userData,
-      where: { email: clerkUser.emailAddresses[0]?.emailAddress },
-    });
-
-    if (userInDb.id !== clerkUser.externalId) {
-      await clerk.users.updateUser(clerkUser.id, { externalId: userInDb.id });
-      log.debug('updated user in clerk');
-    }
-  }),
 
   update: privateProcedure
     .input(

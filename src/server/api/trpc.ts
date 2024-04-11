@@ -6,11 +6,11 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { auth } from '@clerk/nextjs';
+import { auth, clerkClient as clerk } from '@clerk/nextjs';
 import { TRPCError, initTRPC } from '@trpc/server';
+import { log } from 'next-axiom';
 import superjson from 'superjson';
 import { ZodError, z } from 'zod';
-
 import { db } from '~/server/db';
 
 /**
@@ -80,9 +80,35 @@ export const privateProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!userId) throw new TRPCError({ code: 'FORBIDDEN' });
 
   const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
-  if (!user) throw new TRPCError({ code: 'FORBIDDEN' });
+  if (user) return next({ ctx: { user } });
 
-  return next({ ctx: { user } });
+  const userFromClerk = await clerk.users.getUser(userId);
+
+  const email = userFromClerk.emailAddresses[0]?.emailAddress;
+  const emailParts = email?.split('@') ?? [];
+  emailParts.pop();
+  const emailLocalPart = emailParts.join('@').toLowerCase();
+
+  const userData = {
+    username: userFromClerk.username,
+    externalId: userFromClerk.id,
+    firstName: userFromClerk.firstName,
+    lastName: userFromClerk.lastName,
+    imageUrl: userFromClerk.imageUrl,
+    email,
+    emailLocalPart,
+  };
+
+  const userInDb = await db.user.upsert({
+    create: userData,
+    update: userData,
+    where: { email },
+  });
+
+  await clerk.users.updateUser(userId, { externalId: userInDb.id });
+  log.debug('updated user in clerk');
+
+  return next({ ctx: { user: userInDb } });
 });
 
 export const groupProcedure = privateProcedure
