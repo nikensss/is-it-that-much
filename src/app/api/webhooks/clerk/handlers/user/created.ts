@@ -20,13 +20,16 @@ export async function processUserCreated(user: UserJSON): Promise<void> {
   };
 
   if (await db.user.findUnique({ where: { externalId: user.id } })) {
+    log.debug('user already exists in db');
     return;
   }
 
+  log.debug('creating user in db');
   const userInDb = await db.user.create({
     data: userData,
   });
 
-  await clerk.users.updateUser(user.id, { externalId: userInDb.id });
-  log.debug('updated user in clerk');
+  log.debug('updating user in clerk');
+  const userUpdate = await clerk.users.updateUser(user.id, { externalId: userInDb.id });
+  log.debug('updated user in clerk', { userUpdate });
 }

@@ -36,14 +36,16 @@ export async function POST(req: Request) {
 
   switch (event.type) {
     case 'user.created':
+      log.debug('processing user.created event');
       await processUserCreated(event.data);
       break;
     case 'user.updated':
+      log.debug('processing user.updated event');
       await processUserUpdated(event.data);
       break;
     default:
       log.warn('Unknown event type:', { evt: event });
   }
 
-  return new Response('', { status: 200 });
+  return new Response('ok', { status: 200 });
 }

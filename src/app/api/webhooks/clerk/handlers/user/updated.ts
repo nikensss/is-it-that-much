@@ -1,4 +1,5 @@
 import type { UserJSON } from '@clerk/nextjs/server';
+import { log } from 'next-axiom';
 import { db } from '~/server/db';
 
 export async function processUserUpdated(user: UserJSON) {
@@ -17,5 +18,7 @@ export async function processUserUpdated(user: UserJSON) {
     emailLocalPart,
   };
 
-  return db.user.update({ where: { email: userData.email }, data: userData });
+  log.debug('updating user in db');
+  await db.user.update({ where: { email: userData.email }, data: userData });
+  log.debug('user updated in db');
 }
