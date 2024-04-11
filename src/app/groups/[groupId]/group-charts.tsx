@@ -6,7 +6,7 @@ import tailwindConfig from 'tailwind.config';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import { Block, BlockBody, BlockTitle } from '~/app/_components/block';
 import MonthAndYearSelector from '~/app/_components/month-and-year-selector';
-import BarChart from '~/app/dashboard/charts/bar-chart.client';
+import { BarChart } from '~/app/dashboard/charts/chart.client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { api } from '~/trpc/server';
 import type { RouterOutputs } from '~/trpc/shared';

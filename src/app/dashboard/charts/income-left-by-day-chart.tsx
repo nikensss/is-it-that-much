@@ -1,6 +1,6 @@
 import { isAfter, startOfDay } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
-import LineChart from '~/app/dashboard/charts/line-chart.client';
+import { LineChart } from '~/app/dashboard/charts/chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type IncomeLeftByDayProps = {

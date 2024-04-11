@@ -1,4 +1,4 @@
-import BarChart from '~/app/dashboard/charts/bar-chart.client';
+import { BarChart } from '~/app/dashboard/charts/chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type ExpensesByTagChartProps = {

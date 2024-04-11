@@ -1,5 +1,5 @@
 import { utcToZonedTime } from 'date-fns-tz';
-import BarChart from '~/app/dashboard/charts/bar-chart.client';
+import { BarChart } from '~/app/dashboard/charts/chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type IncomesByDayChartProps = {
