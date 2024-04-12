@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover
 import { addDays, subMilliseconds, endOfMonth, format, startOfMonth } from 'date-fns';
 import { cn } from '~/lib/utils.client';
 import { usePathname, useRouter } from 'next/navigation';
-import { zonedTimeToUtc } from 'date-fns-tz';
+import { fromZonedTime } from 'date-fns-tz';
 
 export type DateRangePickerProps = {
   timezone: string;
@@ -29,12 +29,12 @@ export default function DateRangePicker({ timezone }: DateRangePickerProps) {
   function onClick() {
     const params = new URLSearchParams();
     if (period?.from) {
-      const from = zonedTimeToUtc(format(period.from, 'yyyy-MM-dd'), timezone);
+      const from = fromZonedTime(format(period.from, 'yyyy-MM-dd'), timezone);
       params.set('from', from.toISOString());
     }
 
     if (period?.to) {
-      const to = subMilliseconds(zonedTimeToUtc(format(addDays(period.to, 1), 'yyyy-MM-dd'), timezone), 1);
+      const to = subMilliseconds(fromZonedTime(format(addDays(period.to, 1), 'yyyy-MM-dd'), timezone), 1);
       params.set('to', to.toISOString());
     }
 

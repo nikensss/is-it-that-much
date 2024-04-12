@@ -1,5 +1,5 @@
 import { formatDistanceToNowStrict, isBefore, isToday, isTomorrow, isYesterday, startOfDay } from 'date-fns';
-import { formatInTimeZone, utcToZonedTime } from 'date-fns-tz';
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
 
 export type DateDisplayProps = {
   timezone: string | null | undefined;
@@ -19,7 +19,7 @@ export default function DateDisplay({ date, timezone, distance = 'inline' }: Dat
 }
 
 function getDistanceTo(date: Date, timezone: string) {
-  const timezoned = utcToZonedTime(date.getTime(), timezone);
+  const timezoned = toZonedTime(date.getTime(), timezone);
   if (isToday(timezoned)) {
     return 'today';
   }

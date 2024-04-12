@@ -1,6 +1,6 @@
 import { TransactionType } from '@prisma/client';
 import { endOfMonth, startOfMonth } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { z } from 'zod';
 import { createTRPCRouter, groupProcedure } from '~/server/api/trpc';
 import { groupExpenseFormSchema } from '~/trpc/shared';
@@ -97,9 +97,9 @@ export const groupExpensesRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx: { db, user, group }, input }) => {
-      const t = utcToZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
-      const from = zonedTimeToUtc(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-      const to = zonedTimeToUtc(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+      const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
+      const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+      const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
 
       return db.sharedTransaction.findMany({
         where: {

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AvatarIcon, CalendarIcon, CheckIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { format } from 'date-fns';
-import { zonedTimeToUtc } from 'date-fns-tz';
+import { fromZonedTime } from 'date-fns-tz';
 import { Loader2, MoveDown, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
@@ -48,7 +48,7 @@ export default function RegisterSettlement({ group, user, children, settlement }
     form.setValue('amount', (settlement?.amount ?? 0) / 100);
     form.setValue(
       'date',
-      settlement?.date ? zonedTimeToUtc(settlement.date, user.timezone ?? 'Europe/Amsterdam') : new Date(),
+      settlement?.date ? fromZonedTime(settlement.date, user.timezone ?? 'Europe/Amsterdam') : new Date(),
     );
   };
 
@@ -68,7 +68,7 @@ export default function RegisterSettlement({ group, user, children, settlement }
     defaultValues: {
       settlementId: settlement?.id ?? null,
       amount: (settlement?.amount ?? 0) / 100,
-      date: settlement?.date ? zonedTimeToUtc(settlement.date, user.timezone ?? 'Europe/Amsterdam') : new Date(),
+      date: settlement?.date ? fromZonedTime(settlement.date, user.timezone ?? 'Europe/Amsterdam') : new Date(),
       groupId: group.id,
       fromId: settlement?.from?.id ?? user.id,
       toId: settlement?.to?.id ?? group.UserGroup.find(({ userId }) => userId !== user.id)?.userId ?? '',
@@ -79,7 +79,7 @@ export default function RegisterSettlement({ group, user, children, settlement }
     if (user.timezone) {
       // little hack to make sure the date used is timezoned to the user's preference
       // the calendar component cannot be timezoned
-      data.date = zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), user.timezone);
+      data.date = fromZonedTime(format(data.date, 'yyyy-MM-dd'), user.timezone);
     }
 
     return upsert.mutateAsync(data);

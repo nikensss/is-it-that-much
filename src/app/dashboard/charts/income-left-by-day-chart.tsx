@@ -1,5 +1,5 @@
 import { isAfter, startOfDay } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 import { LineChart } from '~/app/dashboard/charts/chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
@@ -13,13 +13,13 @@ export type IncomeLeftByDayProps = {
 export default async function IncomeLeftByDay({ timezone, incomes, expenses, labels }: IncomeLeftByDayProps) {
   const expensesByDay = new Map<number, number>();
   for (const expense of expenses) {
-    const day = utcToZonedTime(expense.date.getTime(), timezone).getDate();
+    const day = toZonedTime(expense.date.getTime(), timezone).getDate();
     expensesByDay.set(day, (expensesByDay.get(day) ?? 0) + expense.amount);
   }
 
   const incomesByDay = new Map<number, number>();
   for (const income of incomes) {
-    const day = utcToZonedTime(income.date, timezone).getDate();
+    const day = toZonedTime(income.date, timezone).getDate();
     incomesByDay.set(day, (incomesByDay.get(day) ?? 0) + income.amount);
   }
 
@@ -30,10 +30,10 @@ export default async function IncomeLeftByDay({ timezone, incomes, expenses, lab
     incomeLeftByDay.set(label, incomeLeft);
   }
 
-  const now = startOfDay(utcToZonedTime(Date.now(), timezone));
+  const now = startOfDay(toZonedTime(Date.now(), timezone));
   const mostRecentTransaction = [...expenses, ...incomes].sort((a, b) => b.date.getTime() - a.date.getTime())[0];
   const nowIsMostRecent = mostRecentTransaction
-    ? isAfter(now, utcToZonedTime(mostRecentTransaction.date, timezone))
+    ? isAfter(now, toZonedTime(mostRecentTransaction.date, timezone))
     : false;
   const lastDayWithTransactions = nowIsMostRecent
     ? Math.max(...labels)

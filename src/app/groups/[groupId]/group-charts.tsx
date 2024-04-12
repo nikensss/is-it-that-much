@@ -1,6 +1,6 @@
 import type { ChartDataset } from 'chart.js';
 import { endOfMonth, parse } from 'date-fns';
-import { formatInTimeZone, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { formatInTimeZone, toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { BarChart3 } from 'lucide-react';
 import tailwindConfig from 'tailwind.config';
 import resolveConfig from 'tailwindcss/resolveConfig';
@@ -26,8 +26,8 @@ export default async function GroupCharts({
   const users = group.UserGroup.map((e) => e.user);
 
   const time = parse(`${month}, ${year}`, 'LLLL, yyyy', Date.now());
-  const from = zonedTimeToUtc(time, timezone);
-  const to = zonedTimeToUtc(endOfMonth(time), timezone);
+  const from = fromZonedTime(time, timezone);
+  const to = fromZonedTime(endOfMonth(time), timezone);
 
   const [expenses, settlements] = await Promise.all([
     api.groups.expenses.period.query({ groupId: group.id, from, to }),
@@ -96,7 +96,7 @@ type GetDatasetsOutput = {
 };
 
 function getDatasets({ users, timezone, expenses, settlements, to }: GetDatasetsProps): GetDatasetsOutput {
-  const labels = Array.from({ length: utcToZonedTime(to, timezone).getDate() }, (_, i) => i + 1);
+  const labels = Array.from({ length: toZonedTime(to, timezone).getDate() }, (_, i) => i + 1);
 
   const paymentsByUser = new Map<string, Map<number, number>>();
   const debtsByUser = new Map<string, Map<number, number>>();

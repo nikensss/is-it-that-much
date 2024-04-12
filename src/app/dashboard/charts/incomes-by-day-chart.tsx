@@ -1,4 +1,4 @@
-import { utcToZonedTime } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 import { BarChart } from '~/app/dashboard/charts/chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
@@ -11,7 +11,7 @@ export type IncomesByDayChartProps = {
 export default async function IncomesByDay({ timezone, incomes, labels }: IncomesByDayChartProps) {
   const incomesByDay = new Map<number, number>();
   for (const income of incomes) {
-    const day = utcToZonedTime(income.date.getTime(), timezone).getDate();
+    const day = toZonedTime(income.date.getTime(), timezone).getDate();
     const current = incomesByDay.get(day) ?? 0;
     incomesByDay.set(day, current + income.amount / 100);
   }

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { format } from 'date-fns';
-import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz';
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 import { Loader2, Save, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
@@ -97,7 +97,7 @@ export default function UpdateTransaction({
     if (timezone) {
       // little hack to make sure the date used is timezoned to the user's preference
       // the calendar component cannot be timezoned
-      data.date = new Date(zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), timezone));
+      data.date = new Date(fromZonedTime(format(data.date, 'yyyy-MM-dd'), timezone));
     }
 
     return update.mutate({

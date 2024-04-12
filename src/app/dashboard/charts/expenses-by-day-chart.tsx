@@ -1,4 +1,4 @@
-import { utcToZonedTime } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 import { BarChart } from '~/app/dashboard/charts/chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
@@ -11,7 +11,7 @@ export type ExpensesByDayChartProps = {
 export default async function ExpensesByDayChart({ timezone, expenses, labels }: ExpensesByDayChartProps) {
   const expensesByDay = new Map<number, number>();
   for (const expense of expenses) {
-    const day = utcToZonedTime(expense.date.getTime(), timezone).getDate();
+    const day = toZonedTime(expense.date.getTime(), timezone).getDate();
     const current = expensesByDay.get(day) ?? 0;
     expensesByDay.set(day, current + expense.amount / 100);
   }

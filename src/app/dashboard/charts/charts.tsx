@@ -1,6 +1,6 @@
 import { TransactionType } from '@prisma/client';
 import { endOfMonth, parse } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { BarChart3 } from 'lucide-react';
 import { Block, BlockBody, BlockTitle } from '~/app/_components/block';
 import ExpensesByDayChart from '~/app/dashboard/charts/expenses-by-day-chart';
@@ -15,10 +15,10 @@ export default async function Charts({ month, year }: { month: string; year: str
 
   const timezone = user.timezone ?? 'Europe/Amsterdam';
   const time = parse(`${month}, ${year}`, 'LLLL, yyyy', Date.now());
-  const from = zonedTimeToUtc(time, timezone);
-  const to = zonedTimeToUtc(endOfMonth(time), timezone);
+  const from = fromZonedTime(time, timezone);
+  const to = fromZonedTime(endOfMonth(time), timezone);
 
-  const labels = Array.from({ length: utcToZonedTime(to, timezone).getDate() }, (_, i) => i + 1);
+  const labels = Array.from({ length: toZonedTime(to, timezone).getDate() }, (_, i) => i + 1);
 
   const [expenses, incomes] = await Promise.all([
     api.transactions.personal.period.query({ type: TransactionType.EXPENSE, from, to }),

@@ -5,7 +5,7 @@ import type { TransactionType } from '@prisma/client';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { format } from 'date-fns';
-import { zonedTimeToUtc } from 'date-fns-tz';
+import { fromZonedTime } from 'date-fns-tz';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
@@ -84,7 +84,7 @@ export default function RegisterTransaction({
     if (timezone) {
       // little hack to make sure the date used is timezoned to the user's preference
       // the calendar component cannot be timezoned
-      data.date = zonedTimeToUtc(format(data.date, 'yyyy-MM-dd'), timezone);
+      data.date = fromZonedTime(format(data.date, 'yyyy-MM-dd'), timezone);
     }
 
     return register.mutate({

@@ -1,6 +1,6 @@
 import { TransactionType } from '@prisma/client';
 import { endOfMonth, startOfMonth } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
@@ -44,9 +44,9 @@ export const personalTransactionsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx: { db, user }, input }) => {
-      const t = utcToZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
-      const from = zonedTimeToUtc(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-      const to = zonedTimeToUtc(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+      const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
+      const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+      const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
 
       return db.transaction.findMany({
         where: {
@@ -80,9 +80,9 @@ export const personalTransactionsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx: { db, user }, input: { type, date } }) => {
-      const t = utcToZonedTime(date?.getTime() ?? Date.now(), user.timezone ?? 'Europe/Amsterdam');
-      const from = zonedTimeToUtc(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-      const to = zonedTimeToUtc(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+      const t = toZonedTime(date?.getTime() ?? Date.now(), user.timezone ?? 'Europe/Amsterdam');
+      const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+      const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
 
       return db.transaction.aggregate({
         where: {
