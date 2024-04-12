@@ -3,7 +3,7 @@ import DateDisplay from '~/app/_components/date-display';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { TableCell, TableRow } from '~/components/ui/table';
-import { cn } from '~/lib/utils';
+import { cn } from '~/lib/utils.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export default function GroupSettlementTableRow({

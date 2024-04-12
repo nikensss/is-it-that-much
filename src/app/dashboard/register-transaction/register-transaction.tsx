@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input, InputWithCurrency } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
-import { getRandomElement } from '~/lib/utils';
+import { getRandomElement } from '~/lib/utils.client';
 import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
 

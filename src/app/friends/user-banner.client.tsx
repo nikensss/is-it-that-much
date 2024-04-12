@@ -7,7 +7,7 @@ import { useMemo, useState } from 'react';
 import ButtonWithDialog from '~/app/_components/button-with-dialog.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
-import { cn } from '~/lib/utils';
+import { cn } from '~/lib/utils.client';
 import { api } from '~/trpc/react';
 import type { RouterOutputs } from '~/trpc/shared';
 

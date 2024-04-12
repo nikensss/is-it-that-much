@@ -7,7 +7,7 @@ import { Button } from '~/components/ui/button';
 import { Calendar } from '~/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { addDays, subMilliseconds, endOfMonth, format, startOfMonth } from 'date-fns';
-import { cn } from '~/lib/utils';
+import { cn } from '~/lib/utils.client';
 import { usePathname, useRouter } from 'next/navigation';
 import { zonedTimeToUtc } from 'date-fns-tz';
 
@@ -51,7 +51,7 @@ export default function DateRangePicker({ timezone }: DateRangePickerProps) {
             id="date"
             variant={'outline'}
             className={cn(
-              'shadow-primary-400 w-full justify-center gap-2 text-left font-normal',
+              'w-full justify-center gap-2 text-left font-normal shadow-primary-400',
               !period && 'text-muted-foreground',
             )}
           >

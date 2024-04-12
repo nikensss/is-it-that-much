@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
-import { cn } from '~/lib/utils';
+import { cn } from '~/lib/utils.client';
 
 export default function MonthAndYearSelector(input: { month: string; year: string }) {
   const router = useRouter();

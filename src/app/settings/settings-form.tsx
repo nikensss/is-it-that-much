@@ -14,7 +14,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
-import { cn, displayCurrency, displayTimezone } from '~/lib/utils';
+import { cn, displayCurrency, displayTimezone } from '~/lib/utils.client';
 import { api } from '~/trpc/react';
 
 export type SettingsFormProps = {

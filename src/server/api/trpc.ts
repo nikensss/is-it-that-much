@@ -10,7 +10,7 @@ import { auth } from '@clerk/nextjs';
 import { TRPCError, initTRPC } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError, z } from 'zod';
-import { createUserInDatabase } from '~/lib/utils';
+import { createUserInDatabase } from '~/lib/utils.server';
 import { db } from '~/server/db';
 
 /**

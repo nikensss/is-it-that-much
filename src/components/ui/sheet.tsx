@@ -5,7 +5,7 @@ import * as SheetPrimitive from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-import { cn } from '~/lib/utils';
+import { cn } from '~/lib/utils.client';
 
 const Sheet = SheetPrimitive.Root;
 
@@ -58,7 +58,7 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
     <SheetPortal>
       <SheetOverlay />
       <SheetPrimitive.Content ref={ref} className={cn(sheetVariants({ side }), className)} {...props}>
-        <SheetPrimitive.Close className="data-[state=open]:bg-primary-100 dark:data-[state=open]:bg-primary-800 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none">
+        <SheetPrimitive.Close className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-primary-100 dark:data-[state=open]:bg-primary-800">
           <Cross2Icon className="h-6 w-6" />
           <span className="sr-only">Close</span>
         </SheetPrimitive.Close>
@@ -85,7 +85,7 @@ const SheetTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Title
     ref={ref}
-    className={cn('text-primary-950 dark:text-primary-50 text-lg font-semibold', className)}
+    className={cn('text-lg font-semibold text-primary-950 dark:text-primary-50', className)}
     {...props}
   />
 ));
@@ -97,7 +97,7 @@ const SheetDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Description
     ref={ref}
-    className={cn('text-primary-500 dark:text-primary-400 text-sm', className)}
+    className={cn('text-sm text-primary-500 dark:text-primary-400', className)}
     {...props}
   />
 ));
