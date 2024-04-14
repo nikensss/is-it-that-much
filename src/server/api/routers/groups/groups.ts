@@ -132,24 +132,24 @@ export const groupsRouter = createTRPCRouter({
       const settleTo = payer[0];
       let paid = payer[1];
 
-      while (paid > 0) {
-        for (const [settleBy, owed] of owers.entries()) {
-          if (paid <= 0) break;
-          if (owed >= 0) continue;
+      for (const [settleBy, owed] of owers.entries()) {
+        if (paid <= 0) break;
+        if (owed >= 0) continue;
 
-          const amount = Math.min(paid, Math.abs(owed));
+        const amount = Math.min(paid, Math.abs(owed));
 
-          const suggestedSettlement = suggestedSettlements.find((e) => e.from === settleBy && e.to === settleTo);
-          if (suggestedSettlement) {
-            suggestedSettlement.amount += amount;
-          } else {
-            suggestedSettlements.push({ from: settleBy, to: settleTo, amount: amount });
-          }
-
-          paid -= amount;
-          owers.set(settleBy, owed + amount);
+        const suggestedSettlement = suggestedSettlements.find((e) => e.from === settleBy && e.to === settleTo);
+        if (suggestedSettlement) {
+          suggestedSettlement.amount += amount;
+        } else {
+          suggestedSettlements.push({ from: settleBy, to: settleTo, amount: amount });
         }
+
+        paid -= amount;
+        owers.set(settleBy, owed + amount);
       }
+
+      if (paid > 0) log.warn('Could not settle all debts', { groupId: group.id });
     }
 
     return suggestedSettlements.map((s) => {
