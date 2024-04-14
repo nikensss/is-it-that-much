@@ -6,13 +6,12 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { getAuth } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
 import { TRPCError, initTRPC } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError, z } from 'zod';
 import { createUserInDatabase } from '~/lib/utils.server';
 import { db } from '~/server/db';
-import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
 
 /**
  * 1. CONTEXT
@@ -26,8 +25,8 @@ import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  return { db, userId: getAuth(opts.req).userId };
+export const createTRPCContext = async (opts: { headers: Headers }) => {
+  return { db, ...opts };
 };
 
 /**
@@ -73,11 +72,12 @@ export const createTRPCRouter = t.router;
  */
 export const publicProcedure = t.procedure;
 
-export const privateProcedure = t.procedure.use(async ({ ctx: { db, userId }, next }) => {
-  if (!userId) throw new TRPCError({ code: 'UNAUTHORIZED' });
+export const privateProcedure = t.procedure.use(async ({ ctx, next }) => {
+  const { userId } = auth();
+  if (!userId) throw new TRPCError({ code: 'FORBIDDEN' });
 
-  const user = await db.user.findUnique({ where: { externalId: userId } });
-  if (user) return next({ ctx: { user: user } });
+  const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
+  if (user) return next({ ctx: { user } });
 
   return next({ ctx: { user: await createUserInDatabase(userId) } });
 });
