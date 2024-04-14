@@ -3,6 +3,7 @@ import { endOfMonth, startOfMonth } from 'date-fns';
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { log } from 'next-axiom';
 import { z } from 'zod';
+import { toCents } from '~/lib/utils.client';
 import { createTRPCRouter, groupProcedure } from '~/server/api/trpc';
 import { groupSettlementFormSchema } from '~/trpc/shared';
 
@@ -22,14 +23,14 @@ export const groupSettlementsRouter = createTRPCRouter({
         id: input.settlementId ?? '',
       },
       create: {
-        amount: parseInt(`${input.amount * 100}`),
+        amount: toCents(input.amount),
         date: input.date,
         groupId: input.groupId,
         fromId: input.fromId,
         toId: input.toId,
       },
       update: {
-        amount: parseInt(`${input.amount * 100}`),
+        amount: toCents(input.amount),
         date: input.date,
         groupId: input.groupId,
         fromId: input.fromId,

@@ -3,6 +3,7 @@ import { endOfMonth, startOfMonth } from 'date-fns';
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { log } from 'next-axiom';
 import { z } from 'zod';
+import { toCents } from '~/lib/utils.client';
 import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
 
 export const personalTransactionsRouter = createTRPCRouter({
@@ -130,7 +131,7 @@ export const personalTransactionsRouter = createTRPCRouter({
             user: { connect: { id: user.id } },
             transaction: {
               create: {
-                amount: parseInt(amount.toFixed(2)) * 100,
+                amount: toCents(amount),
                 date,
                 description,
                 type,
@@ -192,7 +193,7 @@ export const personalTransactionsRouter = createTRPCRouter({
           data: {
             transaction: {
               update: {
-                amount: parseInt(amount.toFixed(2)) * 100,
+                amount: toCents(amount),
                 date,
                 description,
               },

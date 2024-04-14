@@ -1,5 +1,6 @@
 import { TransactionType } from '@prisma/client';
 import { db } from '../src/server/db';
+import { toCents } from '~/lib/utils.client';
 
 async function main() {
   await db.transactionsTags.deleteMany({});
@@ -89,7 +90,7 @@ async function main() {
     const { group } = user.UserGroup[groupIndex] ?? {};
     if (!group) throw new Error(`group ${i % user.UserGroup.length} undefined for user ${user.username}`);
 
-    const amount = (100 - i * Math.PI) * 100; // amount in cents
+    const amount = toCents(100 - i * Math.PI); // amount in cents
     const transaction = await db.transaction.create({
       data: {
         date: new Date(),

@@ -1,6 +1,7 @@
 import { TransactionType, type User } from '@prisma/client';
 import { db } from '../src/server/db';
 import { addDays, startOfMonth } from 'date-fns';
+import { toCents } from '~/lib/utils.client';
 
 async function main() {
   console.log({ email: process.env.EMAIL });
@@ -189,7 +190,7 @@ async function createExpense({ user, tags, amount, date, description }: CreateEx
       user: { connect: { id: user.id } },
       transaction: {
         create: {
-          amount: parseInt(amount.toFixed(2)) * 100,
+          amount: toCents(amount),
           date,
           description,
           type: TransactionType.EXPENSE,

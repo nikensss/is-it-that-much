@@ -41,12 +41,5 @@ export function displayCurrency(currency: string): string {
 }
 
 export function toCents(value: number): number {
-  const str = `${value}`;
-  const parts = str.split('');
-  const dotIndex = parts.indexOf('.');
-  const reparts = parts
-    .slice(0, dotIndex + 3)
-    .filter((v) => v !== '.')
-    .join('');
-  return parseInt(reparts);
+  return parseInt(value.toFixed(2).replace('.', ''));
 }
