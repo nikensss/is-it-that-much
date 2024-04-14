@@ -2,6 +2,7 @@ import { TransactionType } from '@prisma/client';
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { z } from 'zod';
+import { toCents } from '~/lib/utils.client';
 import { createTRPCRouter, groupProcedure } from '~/server/api/trpc';
 import { groupExpenseFormSchema } from '~/trpc/shared';
 
@@ -45,13 +46,13 @@ export const groupExpensesRouter = createTRPCRouter({
     const transaction = await db.transaction.upsert({
       where: { id: expense?.transactionId ?? '' },
       create: {
-        amount: parseInt(`${input.amount * 100}`),
+        amount: toCents(input.amount),
         date: input.date,
         description: input.description,
         type: TransactionType.EXPENSE,
       },
       update: {
-        amount: parseInt(`${input.amount * 100}`),
+        amount: toCents(input.amount),
         date: input.date,
         description: input.description,
         type: TransactionType.EXPENSE,
@@ -76,14 +77,14 @@ export const groupExpensesRouter = createTRPCRouter({
           sharedTransactionId_userId: { sharedTransactionId: sharedTransaction.id ?? '', userId: split.userId ?? '' },
         },
         create: {
-          owed: parseInt(`${split.owed * 100}`),
-          paid: parseInt(`${split.paid * 100}`),
+          owed: toCents(split.owed),
+          paid: toCents(split.paid),
           sharedTransactionId: sharedTransaction.id,
           userId: split.userId,
         },
         update: {
-          owed: parseInt(`${split.owed * 100}`),
-          paid: parseInt(`${split.paid * 100}`),
+          owed: toCents(split.owed),
+          paid: toCents(split.paid),
         },
       });
     }

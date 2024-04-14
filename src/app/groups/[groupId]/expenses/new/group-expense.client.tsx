@@ -18,7 +18,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '~/component
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { Input, InputWithCurrency } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
-import { cn } from '~/lib/utils.client';
+import { cn, toCents } from '~/lib/utils.client';
 import { api } from '~/trpc/react';
 import { groupExpenseFormSchema, type RouterOutputs } from '~/trpc/shared';
 
@@ -222,14 +222,14 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
             user={user}
             title="How much should have each member paid?"
             onPaidRemainingAmount={(user) => {
-              const total = Math.floor(form.getValues('amount') * 100);
+              const total = toCents(form.getValues('amount'));
               const splits = form.getValues('splits');
-              const paid = Math.floor(
+              const paid = toCents(
                 splits.reduce((acc, { owed, userId }) => {
                   if (userId === user.id) return acc;
                   if (typeof owed !== 'number' || isNaN(owed) || !isFinite(owed)) return acc;
 
-                  return acc + owed * 100;
+                  return acc + owed;
                 }, 0),
               );
 
@@ -256,21 +256,21 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
               variant="secondary"
               onClick={() => {
                 const splits = form.getValues('splits');
-                const total = form.getValues('amount') * 100;
+                const total = toCents(form.getValues('amount'));
                 const splitAmount = Math.floor(total / group.UserGroup.length) / 100;
 
                 for (const split of splits) {
                   split.owed = splitAmount;
                 }
 
-                if (splitAmount * 100 * group.UserGroup.length < total) {
-                  let remaining = total - splitAmount * 100 * group.UserGroup.length;
+                if (toCents(splitAmount) * group.UserGroup.length < total) {
+                  let remaining = total - toCents(splitAmount) * group.UserGroup.length;
                   let index = 0;
                   while (remaining > 0) {
                     const split = splits[index];
                     if (!split) throw new Error('Split not found');
 
-                    split.owed = Math.floor(split.owed * 100 + 1) / 100;
+                    split.owed = Math.floor(toCents(split.owed) + 1) / 100;
                     remaining -= 1;
                     index = (index + 1) % splits.length;
                   }

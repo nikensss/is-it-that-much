@@ -20,7 +20,7 @@ export function getRandomElement<T>(arr: T[]): T {
   return el;
 }
 
-export function displayTimezone(timezone: ReturnType<(typeof Intl)['supportedValuesOf']>[number]) {
+export function displayTimezone(timezone: ReturnType<(typeof Intl)['supportedValuesOf']>[number]): string {
   function timeZoneOffset(timezone: string): string {
     return timeOffsetToString(getTimezoneOffset(timezone));
   }
@@ -36,6 +36,17 @@ export function displayTimezone(timezone: ReturnType<(typeof Intl)['supportedVal
   return `${timezone.replace(/_/g, ' ')} (${timeZoneOffset(timezone)})`;
 }
 
-export function displayCurrency(currency: string) {
+export function displayCurrency(currency: string): string {
   return `${currency} (${currencySymbolMap[currency]})`;
+}
+
+export function toCents(value: number): number {
+  const str = `${value}`;
+  const parts = str.split('');
+  const dotIndex = parts.indexOf('.');
+  const reparts = parts
+    .slice(0, dotIndex + 3)
+    .filter((v) => v !== '.')
+    .join('');
+  return parseInt(reparts);
 }
