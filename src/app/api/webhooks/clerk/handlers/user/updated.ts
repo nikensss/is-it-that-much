@@ -18,6 +18,11 @@ export async function processUserUpdated(user: UserJSON) {
     emailLocalPart,
   };
 
+  if ((await db.user.count({ where: { email: userData.email } })) > 0) {
+    log.debug('user does not exist in db, waiting for "user.created" hook');
+    return;
+  }
+
   log.debug('updating user in db');
   await db.user.update({ where: { email: userData.email }, data: userData });
   log.debug('user updated in db');

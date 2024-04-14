@@ -10,28 +10,21 @@ export async function createUserInDatabase(userId: string): Promise<User> {
   emailParts.pop();
   const emailLocalPart = emailParts.join('@').toLowerCase();
 
-  const existingUser = await db.user.findUnique({ where: { email } });
-  if (existingUser) {
-    log.debug('user already exists in db');
-    return existingUser;
-  }
-
   log.debug('creating user in db');
-  const userInDb = await db.user.create({
-    data: {
-      username: user.username,
-      externalId: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      imageUrl: user.imageUrl,
-      email,
-      emailLocalPart,
-    },
-  });
+  const userData = {
+    username: user.username,
+    externalId: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    imageUrl: user.imageUrl,
+    email,
+    emailLocalPart,
+  };
+  const userInDb = await db.user.upsert({ where: { email }, create: userData, update: userData });
 
   log.debug('updating user in clerk');
-  const userUpdate = await clerk.users.updateUser(user.id, { externalId: userInDb.id });
-  log.debug('updated user in clerk', { userUpdate });
+  await clerk.users.updateUser(user.id, { externalId: userInDb.id });
+  log.debug('updated user in clerk');
 
   return userInDb;
 }
