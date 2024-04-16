@@ -7,7 +7,7 @@ import type { RouterOutputs } from '~/trpc/shared';
 export default function AvatarStack({
   users,
 }: {
-  users: RouterOutputs['groups']['expenses']['period'][number]['TransactionSplit'][number]['user'][];
+  users: RouterOutputs['groups']['expenses']['period']['list'][number]['TransactionSplit'][number]['user'][];
 }) {
   return (
     <div className="flex flex-col-reverse items-center justify-end lg:flex-row-reverse">

@@ -1,6 +1,6 @@
 import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
-import { parse } from 'date-fns';
+import { endOfMonth, parse } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
 import { Block, BlockBody, BlockTitle } from '~/app/_components/block';
 import MonthAndYearSelector from '~/app/_components/month-and-year-selector';
@@ -11,11 +11,12 @@ export default async function DashboardTotals({ month, year }: { month: string; 
 
   const timezone = user.timezone ?? 'Europe/Amsterdam';
   const time = parse(`${month}, ${year}`, 'LLLL, yyyy', Date.now());
-  const date = fromZonedTime(time, timezone);
+  const from = fromZonedTime(time, timezone);
+  const to = fromZonedTime(endOfMonth(time), timezone);
 
   const [expenses, incomes] = await Promise.all([
-    api.transactions.personal.totalAmountInMonth.query({ type: TransactionType.EXPENSE, date }),
-    api.transactions.personal.totalAmountInMonth.query({ type: TransactionType.INCOME, date }),
+    api.transactions.personal.period.sum.query({ type: TransactionType.EXPENSE, from, to }),
+    api.transactions.personal.period.sum.query({ type: TransactionType.INCOME, from, to }),
   ]);
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];
 

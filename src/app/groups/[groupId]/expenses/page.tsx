@@ -21,7 +21,7 @@ export default async function GroupExpensesList({
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'] ?? '€';
 
   const { from, to } = searchParams;
-  const expenses = await api.groups.expenses.period.query({
+  const expenses = await api.groups.expenses.period.list.query({
     groupId,
     from: from ? new Date(from) : null,
     to: to ? new Date(to) : null,

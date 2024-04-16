@@ -36,71 +36,74 @@ export const personalTransactionsRouter = createTRPCRouter({
       });
     }),
 
-  period: privateProcedure
-    .input(
-      z.object({
-        type: z.nativeEnum(TransactionType),
-        from: z.date().nullish(),
-        to: z.date().nullish(),
-      }),
-    )
-    .query(async ({ ctx: { db, user }, input }) => {
-      const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
-      const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-      const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+  period: createTRPCRouter({
+    list: privateProcedure
+      .input(
+        z.object({
+          type: z.nativeEnum(TransactionType),
+          from: z.date().nullish(),
+          to: z.date().nullish(),
+        }),
+      )
+      .query(async ({ ctx: { db, user }, input }) => {
+        const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
+        const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+        const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
 
-      return db.transaction.findMany({
-        where: {
-          date: {
-            gte: input.from ?? from,
-            lte: input.to ?? to,
-          },
-          type: input.type,
-          PersonalTransaction: {
-            userId: user.id,
-          },
-        },
-        orderBy: {
-          date: 'desc',
-        },
-        include: {
-          TransactionsTags: {
-            include: {
-              tag: true,
+        return db.transaction.findMany({
+          where: {
+            date: {
+              gte: input.from ?? from,
+              lte: input.to ?? to,
+            },
+            type: input.type,
+            PersonalTransaction: {
+              userId: user.id,
             },
           },
-        },
-      });
-    }),
-
-  totalAmountInMonth: privateProcedure
-    .input(
-      z.object({
-        type: z.nativeEnum(TransactionType),
-        date: z.date().nullish(),
+          orderBy: {
+            date: 'desc',
+          },
+          include: {
+            TransactionsTags: {
+              include: {
+                tag: true,
+              },
+            },
+          },
+        });
       }),
-    )
-    .query(async ({ ctx: { db, user }, input: { type, date } }) => {
-      const t = toZonedTime(date?.getTime() ?? Date.now(), user.timezone ?? 'Europe/Amsterdam');
-      const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-      const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
 
-      return db.transaction.aggregate({
-        where: {
-          date: {
-            gte: from,
-            lte: to,
+    sum: privateProcedure
+      .input(
+        z.object({
+          type: z.nativeEnum(TransactionType),
+          from: z.date().nullish(),
+          to: z.date().nullish(),
+        }),
+      )
+      .query(async ({ ctx: { db, user }, input }) => {
+        const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
+        const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+        const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+
+        return db.transaction.aggregate({
+          where: {
+            date: {
+              gte: input.from ?? from,
+              lte: input.to ?? to,
+            },
+            type: input.type,
+            PersonalTransaction: {
+              userId: user.id,
+            },
           },
-          type,
-          PersonalTransaction: {
-            userId: user.id,
+          _sum: {
+            amount: true,
           },
-        },
-        _sum: {
-          amount: true,
-        },
-      });
-    }),
+        });
+      }),
+  }),
 
   create: privateProcedure
     .input(

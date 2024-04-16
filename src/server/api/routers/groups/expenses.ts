@@ -90,51 +90,53 @@ export const groupExpensesRouter = createTRPCRouter({
     }
   }),
 
-  period: groupProcedure
-    .input(
-      z.object({
-        from: z.date().nullish(),
-        to: z.date().nullish(),
-      }),
-    )
-    .query(async ({ ctx: { db, user, group }, input }) => {
-      const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
-      const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-      const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+  period: createTRPCRouter({
+    list: groupProcedure
+      .input(
+        z.object({
+          from: z.date().nullish(),
+          to: z.date().nullish(),
+        }),
+      )
+      .query(async ({ ctx: { db, user, group }, input }) => {
+        const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
+        const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+        const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
 
-      return db.sharedTransaction.findMany({
-        where: {
-          groupId: group.id,
-          transaction: {
-            date: {
-              gte: input.from ?? from,
-              lte: input.to ?? to,
+        return db.sharedTransaction.findMany({
+          where: {
+            groupId: group.id,
+            transaction: {
+              date: {
+                gte: input.from ?? from,
+                lte: input.to ?? to,
+              },
             },
           },
-        },
-        include: {
-          transaction: true,
-          TransactionSplit: {
-            include: {
-              user: {
-                select: {
-                  firstName: true,
-                  id: true,
-                  imageUrl: true,
-                  lastName: true,
-                  username: true,
+          include: {
+            transaction: true,
+            TransactionSplit: {
+              include: {
+                user: {
+                  select: {
+                    firstName: true,
+                    id: true,
+                    imageUrl: true,
+                    lastName: true,
+                    username: true,
+                  },
                 },
               },
             },
           },
-        },
-        orderBy: {
-          transaction: {
-            date: 'desc',
+          orderBy: {
+            transaction: {
+              date: 'desc',
+            },
           },
-        },
-      });
-    }),
+        });
+      }),
+  }),
 
   recent: groupProcedure
     .input(z.object({ take: z.number().default(5) }))

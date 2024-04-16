@@ -13,7 +13,7 @@ export default function GroupSettlementTableRow({
 }: {
   group: Exclude<RouterOutputs['groups']['get'], null>;
   user: RouterOutputs['users']['get'];
-  settlement: RouterOutputs['groups']['settlements']['period'][number];
+  settlement: RouterOutputs['groups']['settlements']['period']['list'][number];
 }) {
   return (
     <RegisterSettlement {...{ settlement, user, group }}>
@@ -37,7 +37,7 @@ function UserSettlementBanner({
   user,
   isSelf,
 }: {
-  user: RouterOutputs['groups']['settlements']['period'][number]['from' | 'to'];
+  user: RouterOutputs['groups']['settlements']['period']['list'][number]['from' | 'to'];
   isSelf?: boolean;
 }) {
   return (

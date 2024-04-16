@@ -30,8 +30,8 @@ export default async function GroupCharts({
   const to = fromZonedTime(endOfMonth(time), timezone);
 
   const [expenses, settlements] = await Promise.all([
-    api.groups.expenses.period.query({ groupId: group.id, from, to }),
-    api.groups.settlements.period.query({ groupId: group.id, from, to }),
+    api.groups.expenses.period.list.query({ groupId: group.id, from, to }),
+    api.groups.settlements.period.list.query({ groupId: group.id, from, to }),
   ]);
 
   const {
@@ -85,8 +85,8 @@ function getTabsTrigger(value: string) {
 type GetDatasetsProps = {
   users: Exclude<RouterOutputs['groups']['get'], null>['UserGroup'][number]['user'][];
   timezone: string;
-  expenses: RouterOutputs['groups']['expenses']['period'];
-  settlements: RouterOutputs['groups']['settlements']['period'];
+  expenses: RouterOutputs['groups']['expenses']['period']['list'];
+  settlements: RouterOutputs['groups']['settlements']['period']['list'];
   to: Date;
 };
 

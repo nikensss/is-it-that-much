@@ -11,7 +11,7 @@ export default function GroupExpenseTableRow({
   user,
 }: {
   user: RouterOutputs['users']['get'];
-  expense: RouterOutputs['groups']['expenses']['period'][number];
+  expense: RouterOutputs['groups']['expenses']['period']['list'][number];
 }) {
   const router = useRouter();
 

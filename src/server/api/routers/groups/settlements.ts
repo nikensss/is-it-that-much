@@ -45,46 +45,48 @@ export const groupSettlementsRouter = createTRPCRouter({
       return db.settlement.delete({ where: { id: settlementId, groupId: group.id } });
     }),
 
-  period: groupProcedure
-    .input(z.object({ from: z.date().nullish(), to: z.date().nullish() }))
-    .query(async ({ ctx: { db, user, group }, input }) => {
-      const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
-      const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-      const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+  period: createTRPCRouter({
+    list: groupProcedure
+      .input(z.object({ from: z.date().nullish(), to: z.date().nullish() }))
+      .query(async ({ ctx: { db, user, group }, input }) => {
+        const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
+        const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+        const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
 
-      return db.settlement.findMany({
-        where: {
-          groupId: group.id,
-          date: {
-            gte: input.from ?? from,
-            lte: input.to ?? to,
-          },
-        },
-        include: {
-          from: {
-            select: {
-              firstName: true,
-              id: true,
-              imageUrl: true,
-              lastName: true,
-              username: true,
+        return db.settlement.findMany({
+          where: {
+            groupId: group.id,
+            date: {
+              gte: input.from ?? from,
+              lte: input.to ?? to,
             },
           },
-          to: {
-            select: {
-              firstName: true,
-              id: true,
-              imageUrl: true,
-              lastName: true,
-              username: true,
+          include: {
+            from: {
+              select: {
+                firstName: true,
+                id: true,
+                imageUrl: true,
+                lastName: true,
+                username: true,
+              },
+            },
+            to: {
+              select: {
+                firstName: true,
+                id: true,
+                imageUrl: true,
+                lastName: true,
+                username: true,
+              },
             },
           },
-        },
-        orderBy: {
-          date: 'desc',
-        },
-      });
-    }),
+          orderBy: {
+            date: 'desc',
+          },
+        });
+      }),
+  }),
 
   recent: groupProcedure
     .input(z.object({ take: z.number().default(5) }))

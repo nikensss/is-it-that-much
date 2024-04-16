@@ -25,7 +25,7 @@ export default async function GroupSettlementsList({
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'] ?? '€';
 
   const { from, to } = searchParams;
-  const settlements = await api.groups.settlements.period.query({
+  const settlements = await api.groups.settlements.period.list.query({
     groupId,
     from: from ? new Date(from) : null,
     to: to ? new Date(to) : null,

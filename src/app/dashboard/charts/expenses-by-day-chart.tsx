@@ -4,7 +4,7 @@ import type { RouterOutputs } from '~/trpc/shared';
 
 export type ExpensesByDayChartProps = {
   timezone: string;
-  expenses: RouterOutputs['transactions']['personal']['period'];
+  expenses: RouterOutputs['transactions']['personal']['period']['list'];
   labels: number[];
 };
 

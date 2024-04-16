@@ -2,7 +2,7 @@ import { BarChart } from '~/app/dashboard/charts/chart.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export type ExpensesByTagChartProps = {
-  expenses: RouterOutputs['transactions']['personal']['period'];
+  expenses: RouterOutputs['transactions']['personal']['period']['list'];
 };
 
 export default async function ExpensesByTagChart({ expenses }: ExpensesByTagChartProps) {

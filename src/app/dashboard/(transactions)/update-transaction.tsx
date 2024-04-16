@@ -35,7 +35,7 @@ export type UpdateTransactionProps = {
   currency: string | null;
   timezone: string;
   weekStartsOn: number;
-  transaction: RouterOutputs['transactions']['personal']['period'][number];
+  transaction: RouterOutputs['transactions']['personal']['period']['list'][number];
   tags: RouterOutputs['tags']['all'];
 };
 

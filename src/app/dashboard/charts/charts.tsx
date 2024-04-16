@@ -21,8 +21,8 @@ export default async function Charts({ month, year }: { month: string; year: str
   const labels = Array.from({ length: toZonedTime(to, timezone).getDate() }, (_, i) => i + 1);
 
   const [expenses, incomes] = await Promise.all([
-    api.transactions.personal.period.query({ type: TransactionType.EXPENSE, from, to }),
-    api.transactions.personal.period.query({ type: TransactionType.INCOME, from, to }),
+    api.transactions.personal.period.list.query({ type: TransactionType.EXPENSE, from, to }),
+    api.transactions.personal.period.list.query({ type: TransactionType.INCOME, from, to }),
   ]);
 
   return (
