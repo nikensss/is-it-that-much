@@ -278,6 +278,7 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
 
                 form.setValue('splits', splits);
               }}
+              className="justify-self-end bg-primary-300 hover:bg-primary-800 hover:text-primary-200 dark:bg-primary-800 dark:hover:bg-primary-300 hover:dark:text-primary-800"
             >
               Split equally
             </Button>
@@ -396,7 +397,7 @@ function SplitInput({
                 {onPaidForEverything ? (
                   <Button
                     type="button"
-                    className="justify-self-end"
+                    className="justify-self-end bg-primary-300 hover:bg-primary-800 hover:text-primary-200 dark:bg-primary-800 dark:hover:bg-primary-300 hover:dark:text-primary-800"
                     variant="secondary"
                     onClick={() => onPaidForEverything(u)}
                   >
@@ -406,7 +407,7 @@ function SplitInput({
                 {onPaidRemainingAmount ? (
                   <Button
                     type="button"
-                    className="justify-self-end"
+                    className="justify-self-end bg-primary-300 hover:bg-primary-800 hover:text-primary-200 dark:bg-primary-800 dark:hover:bg-primary-300 hover:dark:text-primary-800"
                     variant="secondary"
                     onClick={() => onPaidRemainingAmount(u)}
                   >

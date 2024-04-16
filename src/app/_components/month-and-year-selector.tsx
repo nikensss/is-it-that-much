@@ -20,7 +20,10 @@ export default function MonthAndYearSelector(input: { month: string; year: strin
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button className="ml-2 w-36 bg-primary-900" variant="outline">
+        <Button
+          className="ml-2 w-36 bg-primary-800 text-primary-200 hover:bg-primary-600 hover:text-primary-100"
+          variant="outline"
+        >
           {format(parse(`${month}, ${year}`, 'LLLL, yyyy', new Date()), 'MMMM, yyyy')}
         </Button>
       </PopoverTrigger>

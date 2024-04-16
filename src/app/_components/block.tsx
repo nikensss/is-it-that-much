@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Children } from 'react';
 import { Separator } from '~/components/ui/separator';
+import { cn } from '~/lib/utils.client';
 
 export function Block({ children }: { children: React.ReactNode }) {
   return (
@@ -16,8 +17,20 @@ export function BlockContainer({ children }: { children: React.ReactNode }) {
 
 export function BlockTitle({ children, href }: { href?: string; children: React.ReactNode }) {
   const title = (
-    <header className="my-0.5 mb-1.5 flex min-h-12 items-center justify-center rounded-md border bg-primary-900 dark:border-primary-500">
-      <h2 className="flex items-center justify-center text-lg font-bold capitalize text-primary-200">{children}</h2>
+    <header
+      className={cn(
+        href ? 'border bg-primary-900 dark:border-primary-500' : 'bg-primary-300/50 dark:bg-primary-500/60',
+        'my-0.5 mb-1.5 flex min-h-12 items-center justify-center rounded-md',
+      )}
+    >
+      <h2
+        className={cn(
+          href ? 'text-primary-200 ' : 'text-primary-700 dark:text-primary-200',
+          'flex items-center justify-center text-lg font-bold capitalize ',
+        )}
+      >
+        {children}
+      </h2>
     </header>
   );
 
