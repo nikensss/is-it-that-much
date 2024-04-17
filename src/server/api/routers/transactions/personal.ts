@@ -1,69 +1,29 @@
-import { TransactionType } from '@prisma/client';
-import { endOfMonth, startOfMonth } from 'date-fns';
-import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 import { toCents } from '~/lib/utils.client';
-import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
+import {
+  createTRPCRouter,
+  personalTransactionPeriodProcedure,
+  personalTransactionProcedure,
+  privateProcedure,
+} from '~/server/api/trpc';
 
 export const personalTransactionsRouter = createTRPCRouter({
-  all: privateProcedure
-    .input(z.object({ type: z.nativeEnum(TransactionType) }))
-    .query(({ ctx: { db, user }, input: { type } }) => {
-      return db.personalTransaction.findMany({
-        where: {
-          userId: user.id,
-          transaction: {
-            type,
-          },
+  all: personalTransactionProcedure.query(({ ctx: { db, user, type } }) => {
+    return db.personalTransaction.findMany({
+      where: {
+        userId: user.id,
+        transaction: {
+          type,
         },
-        orderBy: {
-          transaction: {
-            date: 'desc',
-          },
+      },
+      orderBy: {
+        transaction: {
+          date: 'desc',
         },
-        include: {
-          transaction: {
-            include: {
-              TransactionsTags: {
-                include: {
-                  tag: true,
-                },
-              },
-            },
-          },
-        },
-      });
-    }),
-
-  period: createTRPCRouter({
-    list: privateProcedure
-      .input(
-        z.object({
-          type: z.nativeEnum(TransactionType),
-          from: z.date().nullish(),
-          to: z.date().nullish(),
-        }),
-      )
-      .query(async ({ ctx: { db, user }, input }) => {
-        const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
-        const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-        const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-
-        return db.transaction.findMany({
-          where: {
-            date: {
-              gte: input.from ?? from,
-              lte: input.to ?? to,
-            },
-            type: input.type,
-            PersonalTransaction: {
-              userId: user.id,
-            },
-          },
-          orderBy: {
-            date: 'desc',
-          },
+      },
+      include: {
+        transaction: {
           include: {
             TransactionsTags: {
               include: {
@@ -71,44 +31,59 @@ export const personalTransactionsRouter = createTRPCRouter({
               },
             },
           },
-        });
-      }),
-
-    sum: privateProcedure
-      .input(
-        z.object({
-          type: z.nativeEnum(TransactionType),
-          from: z.date().nullish(),
-          to: z.date().nullish(),
-        }),
-      )
-      .query(async ({ ctx: { db, user }, input }) => {
-        const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
-        const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-        const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-
-        return db.transaction.aggregate({
-          where: {
-            date: {
-              gte: input.from ?? from,
-              lte: input.to ?? to,
-            },
-            type: input.type,
-            PersonalTransaction: {
-              userId: user.id,
-            },
-          },
-          _sum: {
-            amount: true,
-          },
-        });
-      }),
+        },
+      },
+    });
   }),
 
-  create: privateProcedure
+  period: createTRPCRouter({
+    list: personalTransactionPeriodProcedure.query(async ({ ctx: { db, user, from, to, type } }) => {
+      return db.transaction.findMany({
+        where: {
+          date: {
+            gte: from,
+            lte: to,
+          },
+          type,
+          PersonalTransaction: {
+            userId: user.id,
+          },
+        },
+        orderBy: {
+          date: 'desc',
+        },
+        include: {
+          TransactionsTags: {
+            include: {
+              tag: true,
+            },
+          },
+        },
+      });
+    }),
+
+    sum: personalTransactionPeriodProcedure.query(async ({ ctx: { db, user, from, to, type } }) => {
+      return db.transaction.aggregate({
+        where: {
+          date: {
+            gte: from,
+            lte: to,
+          },
+          type,
+          PersonalTransaction: {
+            userId: user.id,
+          },
+        },
+        _sum: {
+          amount: true,
+        },
+      });
+    }),
+  }),
+
+  create: personalTransactionProcedure
     .input(
       z.object({
-        type: z.nativeEnum(TransactionType),
         amount: z.number().positive(),
         date: z.date().default(() => new Date()),
         description: z.string().min(1),
@@ -216,39 +191,33 @@ export const personalTransactionsRouter = createTRPCRouter({
       }
     }),
 
-  recent: privateProcedure
-    .input(
-      z.object({
-        type: z.nativeEnum(TransactionType),
-      }),
-    )
-    .query(async ({ ctx: { db, user }, input: { type } }) => {
-      return db.personalTransaction.findMany({
-        where: {
-          user,
-          transaction: {
-            type,
-          },
+  recent: personalTransactionProcedure.query(async ({ ctx: { db, user, type } }) => {
+    return db.personalTransaction.findMany({
+      where: {
+        user,
+        transaction: {
+          type,
         },
-        take: 3,
-        orderBy: {
-          transaction: {
-            date: 'desc',
-          },
+      },
+      take: 3,
+      orderBy: {
+        transaction: {
+          date: 'desc',
         },
-        include: {
-          transaction: {
-            include: {
-              TransactionsTags: {
-                include: {
-                  tag: true,
-                },
+      },
+      include: {
+        transaction: {
+          include: {
+            TransactionsTags: {
+              include: {
+                tag: true,
               },
             },
           },
         },
-      });
-    }),
+      },
+    });
+  }),
 
   delete: privateProcedure
     .input(z.object({ id: z.string() }))

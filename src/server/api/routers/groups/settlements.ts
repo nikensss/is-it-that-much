@@ -1,10 +1,8 @@
 import { TRPCError } from '@trpc/server';
-import { endOfMonth, startOfMonth } from 'date-fns';
-import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 import { toCents } from '~/lib/utils.client';
-import { createTRPCRouter, groupProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, groupPeriodProcedure, groupProcedure } from '~/server/api/trpc';
 import { groupSettlementFormSchema } from '~/trpc/shared';
 
 export const groupSettlementsRouter = createTRPCRouter({
@@ -46,46 +44,40 @@ export const groupSettlementsRouter = createTRPCRouter({
     }),
 
   period: createTRPCRouter({
-    list: groupProcedure
-      .input(z.object({ from: z.date().nullish(), to: z.date().nullish() }))
-      .query(async ({ ctx: { db, user, group }, input }) => {
-        const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
-        const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-        const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-
-        return db.settlement.findMany({
-          where: {
-            groupId: group.id,
-            date: {
-              gte: input.from ?? from,
-              lte: input.to ?? to,
+    list: groupPeriodProcedure.query(async ({ ctx: { db, from, to, group } }) => {
+      return db.settlement.findMany({
+        where: {
+          groupId: group.id,
+          date: {
+            gte: from,
+            lte: to,
+          },
+        },
+        include: {
+          from: {
+            select: {
+              firstName: true,
+              id: true,
+              imageUrl: true,
+              lastName: true,
+              username: true,
             },
           },
-          include: {
-            from: {
-              select: {
-                firstName: true,
-                id: true,
-                imageUrl: true,
-                lastName: true,
-                username: true,
-              },
-            },
-            to: {
-              select: {
-                firstName: true,
-                id: true,
-                imageUrl: true,
-                lastName: true,
-                username: true,
-              },
+          to: {
+            select: {
+              firstName: true,
+              id: true,
+              imageUrl: true,
+              lastName: true,
+              username: true,
             },
           },
-          orderBy: {
-            date: 'desc',
-          },
-        });
-      }),
+        },
+        orderBy: {
+          date: 'desc',
+        },
+      });
+    }),
   }),
 
   recent: groupProcedure

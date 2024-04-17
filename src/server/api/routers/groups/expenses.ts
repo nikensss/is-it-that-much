@@ -1,9 +1,7 @@
 import { TransactionType } from '@prisma/client';
-import { endOfMonth, startOfMonth } from 'date-fns';
-import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { z } from 'zod';
 import { toCents } from '~/lib/utils.client';
-import { createTRPCRouter, groupProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, groupPeriodProcedure, groupProcedure } from '~/server/api/trpc';
 import { groupExpenseFormSchema } from '~/trpc/shared';
 
 export const groupExpensesRouter = createTRPCRouter({
@@ -91,51 +89,40 @@ export const groupExpensesRouter = createTRPCRouter({
   }),
 
   period: createTRPCRouter({
-    list: groupProcedure
-      .input(
-        z.object({
-          from: z.date().nullish(),
-          to: z.date().nullish(),
-        }),
-      )
-      .query(async ({ ctx: { db, user, group }, input }) => {
-        const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
-        const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-        const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
-
-        return db.sharedTransaction.findMany({
-          where: {
-            groupId: group.id,
-            transaction: {
-              date: {
-                gte: input.from ?? from,
-                lte: input.to ?? to,
-              },
+    list: groupPeriodProcedure.query(async ({ ctx: { db, from, to, group } }) => {
+      return db.sharedTransaction.findMany({
+        where: {
+          groupId: group.id,
+          transaction: {
+            date: {
+              gte: from,
+              lte: to,
             },
           },
-          include: {
-            transaction: true,
-            TransactionSplit: {
-              include: {
-                user: {
-                  select: {
-                    firstName: true,
-                    id: true,
-                    imageUrl: true,
-                    lastName: true,
-                    username: true,
-                  },
+        },
+        include: {
+          transaction: true,
+          TransactionSplit: {
+            include: {
+              user: {
+                select: {
+                  firstName: true,
+                  id: true,
+                  imageUrl: true,
+                  lastName: true,
+                  username: true,
                 },
               },
             },
           },
-          orderBy: {
-            transaction: {
-              date: 'desc',
-            },
+        },
+        orderBy: {
+          transaction: {
+            date: 'desc',
           },
-        });
-      }),
+        },
+      });
+    }),
   }),
 
   recent: groupProcedure

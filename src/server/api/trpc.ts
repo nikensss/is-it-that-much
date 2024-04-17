@@ -7,7 +7,10 @@
  * need to use are documented accordingly near the end.
  */
 import { auth } from '@clerk/nextjs/server';
+import { TransactionType, type User } from '@prisma/client';
 import { TRPCError, initTRPC } from '@trpc/server';
+import { endOfMonth, startOfMonth } from 'date-fns';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import superjson from 'superjson';
 import { ZodError, z } from 'zod';
 import { createUserInDatabase } from '~/lib/utils.server';
@@ -82,6 +85,27 @@ export const privateProcedure = t.procedure.use(async ({ ctx, next }) => {
   return next({ ctx: { user: await createUserInDatabase(userId) } });
 });
 
+export const personalTransactionProcedure = privateProcedure
+  .input(z.object({ type: z.nativeEnum(TransactionType) }))
+  .use(({ next, input: { type } }) => next({ ctx: { type } }));
+
+const periodSchema = z.object({
+  from: z.date().nullish(),
+  to: z.date().nullish(),
+});
+
+function getPeriod(user: User, period: z.infer<typeof periodSchema>) {
+  const t = toZonedTime(Date.now(), user.timezone ?? 'Europe/Amsterdam');
+  const from = fromZonedTime(startOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+  const to = fromZonedTime(endOfMonth(t), user.timezone ?? 'Europe/Amsterdam');
+
+  return { from: period.from ?? from, to: period.to ?? to };
+}
+
+export const personalTransactionPeriodProcedure = personalTransactionProcedure
+  .input(periodSchema)
+  .use(async ({ ctx: { user }, input, next }) => next({ ctx: getPeriod(user, input) }));
+
 export const groupProcedure = privateProcedure
   .input(z.object({ groupId: z.string().cuid() }))
   .use(async ({ ctx: { db, user }, input: { groupId: id }, next }) => {
@@ -112,3 +136,7 @@ export const groupProcedure = privateProcedure
 
     return next({ ctx: { group } });
   });
+
+export const groupPeriodProcedure = groupProcedure
+  .input(periodSchema)
+  .use(async ({ ctx: { user }, input, next }) => next({ ctx: getPeriod(user, input) }));
