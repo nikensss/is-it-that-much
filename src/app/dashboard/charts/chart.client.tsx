@@ -51,8 +51,6 @@ export default function Chart({ labels, datasets, type }: ChartProps) {
     const data = { labels, datasets: datasets.map((d) => ({ borderColor: color, backgroundColor: color, ...d })) };
     return <Line options={options} data={data} />;
   }
-
-  return null;
 }
 
 export function BarChart({ labels, datasets }: BarChartProps) {
