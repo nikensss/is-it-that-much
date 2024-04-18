@@ -102,6 +102,10 @@ function getPeriod(user: User, period: z.infer<typeof periodSchema>) {
   return { from: period.from ?? from, to: period.to ?? to };
 }
 
+export const periodProcedure = privateProcedure
+  .input(periodSchema)
+  .use(async ({ ctx: { user }, input, next }) => next({ ctx: getPeriod(user, input) }));
+
 export const personalTransactionPeriodProcedure = personalTransactionProcedure
   .input(periodSchema)
   .use(async ({ ctx: { user }, input, next }) => next({ ctx: getPeriod(user, input) }));

@@ -20,9 +20,12 @@ export default async function Charts({ month, year }: { month: string; year: str
 
   const labels = Array.from({ length: toZonedTime(to, timezone).getDate() }, (_, i) => i + 1);
 
-  const [expenses, incomes] = await Promise.all([
+  const [expenses, shared, sentSettlements, incomes, receivedSettlements] = await Promise.all([
     api.transactions.personal.period.list.query({ type: TransactionType.EXPENSE, from, to }),
+    api.groups.all.expenses.period.list.query({ from, to, onlyWhereUserPaid: true }),
+    api.groups.all.settlements.period.list.query({ from, to, type: 'sentByCurrentUser' }),
     api.transactions.personal.period.list.query({ type: TransactionType.INCOME, from, to }),
+    api.groups.all.settlements.period.list.query({ from, to, type: 'receivedByCurrentUser' }),
   ]);
 
   return (
@@ -35,19 +38,21 @@ export default async function Charts({ month, year }: { month: string; year: str
           </TabsList>
 
           <TabsContent value="expenses-by-day">
-            <ExpensesByDayChart {...{ timezone, expenses, labels }} />
+            <ExpensesByDayChart {...{ timezone, expenses, shared, settlements: sentSettlements, user, labels }} />
           </TabsContent>
 
           <TabsContent value="expenses-by-tag">
-            <ExpensesByTagChart expenses={expenses} />
+            <ExpensesByTagChart {...{ expenses, shared, settlements: sentSettlements, user }} />
           </TabsContent>
 
           <TabsContent value="incomes-by-day">
-            <IncomesByDay {...{ timezone, incomes, labels }} />
+            <IncomesByDay {...{ timezone, incomes, settlements: receivedSettlements, labels }} />
           </TabsContent>
 
           <TabsContent value="income-left">
-            <IncomeLeftByDay {...{ timezone, incomes, expenses, labels }} />
+            <IncomeLeftByDay
+              {...{ timezone, expenses, shared, sentSettlements, incomes, receivedSettlements, labels, user }}
+            />
           </TabsContent>
         </Tabs>
       </BlockBody>

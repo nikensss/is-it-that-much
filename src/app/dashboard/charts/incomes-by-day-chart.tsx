@@ -5,12 +5,13 @@ import type { RouterOutputs } from '~/trpc/shared';
 export type IncomesByDayChartProps = {
   timezone: string;
   incomes: RouterOutputs['transactions']['personal']['period']['list'];
+  settlements: RouterOutputs['groups']['all']['settlements']['period']['list'];
   labels: number[];
 };
 
-export default async function IncomesByDay({ timezone, incomes, labels }: IncomesByDayChartProps) {
+export default async function IncomesByDay({ timezone, incomes, settlements, labels }: IncomesByDayChartProps) {
   const incomesByDay = new Map<number, number>();
-  for (const income of incomes) {
+  for (const income of [...incomes, ...settlements]) {
     const day = toZonedTime(income.date.getTime(), timezone).getDate();
     const current = incomesByDay.get(day) ?? 0;
     incomesByDay.set(day, current + income.amount / 100);
