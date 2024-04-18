@@ -14,15 +14,20 @@ export default async function DashboardTotals({ month, year }: { month: string; 
   const from = fromZonedTime(time, timezone);
   const to = fromZonedTime(endOfMonth(time), timezone);
 
-  const [expenses, incomes, sharedExpenses] = await Promise.all([
+  const [expenses, shared, sentSettlements, incomes, receivedSettlements] = await Promise.all([
     api.transactions.personal.period.sum.query({ type: TransactionType.EXPENSE, from, to }),
+    api.groups.all.expenses.period.sum.query({ from, to, onlyWhereUserPaid: true }),
+    api.groups.all.settlements.period.sum.query({ from, to, type: 'sentByCurrentUser' }),
     api.transactions.personal.period.sum.query({ type: TransactionType.INCOME, from, to }),
-    api.groups.all.expenses.period.list.query({ from, to, onlyWhereUserPaid: true }),
+    api.groups.all.settlements.period.sum.query({ from, to, type: 'receivedByCurrentUser' }),
   ]);
 
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'];
 
-  const [totalExpenses, totalIncomes] = [expenses._sum?.amount ?? 0, incomes._sum?.amount ?? 0];
+  const [totalExpenses, totalIncomes] = [
+    (expenses._sum?.amount ?? 0) + (shared._sum?.paid ?? 0) + (sentSettlements._sum?.amount ?? 0),
+    (incomes._sum?.amount ?? 0) + (receivedSettlements._sum?.amount ?? 0),
+  ];
 
   return (
     <Block>

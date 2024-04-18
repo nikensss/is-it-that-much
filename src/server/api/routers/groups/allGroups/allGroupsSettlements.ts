@@ -3,6 +3,24 @@ import { createTRPCRouter, periodProcedure, privateProcedure } from '~/server/ap
 
 export const allGroupsSettlementsRouter = createTRPCRouter({
   period: createTRPCRouter({
+    sum: periodProcedure
+      .input(z.object({ type: z.enum(['sentByCurrentUser', 'receivedByCurrentUser', 'all']) }))
+      .query(async ({ ctx: { db, user, from, to }, input }) => {
+        return db.settlement.aggregate({
+          where: {
+            date: {
+              gte: from,
+              lte: to,
+            },
+            ...(input.type === 'sentByCurrentUser' ? { fromId: user.id } : {}),
+            ...(input.type === 'receivedByCurrentUser' ? { toId: user.id } : {}),
+          },
+          _sum: {
+            amount: true,
+          },
+        });
+      }),
+
     list: periodProcedure
       .input(z.object({ type: z.enum(['sentByCurrentUser', 'receivedByCurrentUser', 'all']) }))
       .query(async ({ ctx: { db, user, from, to }, input: { type } }) => {

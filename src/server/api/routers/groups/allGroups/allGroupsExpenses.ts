@@ -3,6 +3,42 @@ import { createTRPCRouter, periodProcedure, privateProcedure } from '~/server/ap
 
 export const allGroupsExpensesRouter = createTRPCRouter({
   period: createTRPCRouter({
+    sum: periodProcedure
+      .input(z.object({ onlyWhereUserPaid: z.boolean() }))
+      .query(async ({ ctx: { db, user, from, to }, input }) => {
+        return db.transactionSplit.aggregate({
+          where: {
+            SharedTransaction: {
+              transaction: {
+                date: {
+                  gte: from,
+                  lte: to,
+                },
+              },
+            },
+            ...(input.onlyWhereUserPaid
+              ? {
+                  userId: user.id,
+                  paid: {
+                    gt: 0,
+                  },
+                }
+              : {
+                  group: {
+                    UserGroup: {
+                      some: {
+                        user,
+                      },
+                    },
+                  },
+                }),
+          },
+          _sum: {
+            paid: true,
+          },
+        });
+      }),
+
     list: periodProcedure
       .input(z.object({ onlyWhereUserPaid: z.boolean() }))
       .query(async ({ ctx: { db, user, from, to }, input }) => {
