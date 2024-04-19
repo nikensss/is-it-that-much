@@ -1,10 +1,10 @@
 import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { BlockBody, BlockTitle } from '~/app/_components/block';
-import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker';
+import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker.client';
 import SharedExpense from '~/app/dashboard/(transactions)/shared-expense.client';
 import UpdateSettlement from '~/app/dashboard/(transactions)/update-settlement';
-import UpdateTransaction from '~/app/dashboard/(transactions)/update-transaction';
+import UpdateTransaction from '~/app/dashboard/(transactions)/update-transaction.client';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { api } from '~/trpc/server';
 

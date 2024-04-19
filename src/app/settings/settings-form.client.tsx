@@ -15,7 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { cn, displayCurrency, displayTimezone } from '~/lib/utils.client';
-import { api } from '~/trpc/react';
+import { api } from '~/trpc/react.client';
 
 export type SettingsFormProps = {
   username: string | null | undefined;

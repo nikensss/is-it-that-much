@@ -1,7 +1,7 @@
 import currencySymbolMap from 'currency-symbol-map/map';
 import { notFound } from 'next/navigation';
 import { BlockBody, BlockTitle } from '~/app/_components/block';
-import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker';
+import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker.client';
 import GroupExpenseTableRow from '~/app/groups/[groupId]/expenses/group-expense-table-row.client';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { api } from '~/trpc/server';

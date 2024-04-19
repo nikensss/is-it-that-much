@@ -1,5 +1,5 @@
 import { Block, BlockBody, BlockContainer } from '~/app/_components/block';
-import SettingsForm from '~/app/settings/settings-form';
+import SettingsForm from '~/app/settings/settings-form.client';
 import { api } from '~/trpc/server';
 
 export default async function SettingsPage() {

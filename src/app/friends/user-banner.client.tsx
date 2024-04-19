@@ -8,7 +8,7 @@ import ButtonWithDialog from '~/app/_components/button-with-dialog.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { cn } from '~/lib/utils.client';
-import { api } from '~/trpc/react';
+import { api } from '~/trpc/react.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export default function UserBannerClient({

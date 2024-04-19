@@ -1,7 +1,7 @@
 import currencySymbolMap from 'currency-symbol-map/map';
 import { notFound } from 'next/navigation';
 import { BlockBody, BlockTitle } from '~/app/_components/block';
-import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker';
+import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker.client';
 import GroupSettlementTableRow from '~/app/groups/[groupId]/settlements/group-settlement-table-row.client';
 import { ScrollArea, ScrollBar } from '~/components/ui/scroll-area';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '~/components/ui/table';

@@ -1,12 +1,12 @@
 import '~/styles/globals.css';
 import { Inter } from 'next/font/google';
-import { TRPCReactProvider } from '~/trpc/react';
+import { TRPCReactProvider } from '~/trpc/react.client';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Footer } from '~/app/_components/footer';
 import { NavBar } from '~/app/_components/navbar/navbar';
 import { Analytics } from '@vercel/analytics/react';
 import { cn } from '~/lib/utils.client';
-import { ThemeProvider } from '~/app/_components/theme-provider';
+import { ThemeProvider } from '~/app/_components/theme-provider.client';
 
 const inter = Inter({
   subsets: ['latin'],

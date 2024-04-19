@@ -7,8 +7,8 @@ import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/server';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { AvatarIcon } from '@radix-ui/react-icons';
-import { ModeToggle } from '~/app/_components/mode-toggle';
-import NavBarLink from '~/app/_components/navbar/navbar.link';
+import { ModeToggle } from '~/app/_components/mode-toggle.client';
+import NavBarLink from '~/app/_components/navbar/navbar-link.client';
 
 export default function MobileNavbar() {
   return (

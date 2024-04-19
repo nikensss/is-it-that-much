@@ -13,7 +13,7 @@ import { Button } from '~/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 import { cn } from '~/lib/utils.client';
-import { api } from '~/trpc/react';
+import { api } from '~/trpc/react.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 const formSchema = z.object({

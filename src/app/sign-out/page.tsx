@@ -1,12 +1,5 @@
-'use client';
-import { useClerk } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
+import { SignOut } from '~/app/sign-out/sign-out.client';
 
 export default function SignOutPage() {
-  const { signOut } = useClerk();
-  const router = useRouter();
-
-  signOut()
-    .then(() => router.push('/'))
-    .catch(() => router.push('/'));
+  return <SignOut />;
 }

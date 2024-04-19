@@ -5,7 +5,7 @@ import { BarChart3 } from 'lucide-react';
 import tailwindConfig from 'tailwind.config';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import { Block, BlockBody, BlockTitle } from '~/app/_components/block';
-import MonthAndYearSelector from '~/app/_components/month-and-year-selector';
+import MonthAndYearSelector from '~/app/_components/month-and-year-selector.client';
 import { BarChart } from '~/app/dashboard/charts/chart.client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { api } from '~/trpc/server';

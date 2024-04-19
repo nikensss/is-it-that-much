@@ -1,6 +1,6 @@
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
-import { ModeToggle } from '~/app/_components/mode-toggle';
-import NavBarLink from '~/app/_components/navbar/navbar.link';
+import { ModeToggle } from '~/app/_components/mode-toggle.client';
+import NavBarLink from '~/app/_components/navbar/navbar-link.client';
 
 export default function DesktopNavbar() {
   return (

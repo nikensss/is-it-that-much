@@ -1,6 +1,6 @@
 import { TransactionType } from '@prisma/client';
 import { BlockBody, BlockTitle } from '~/app/_components/block';
-import UpdateTag from '~/app/dashboard/tags/update-tag';
+import UpdateTag from '~/app/dashboard/tags/update-tag.client';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { api } from '~/trpc/server';
 

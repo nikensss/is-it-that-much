@@ -3,7 +3,7 @@ import currencySymbolMap from 'currency-symbol-map/map';
 import { endOfMonth, parse } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
 import { Block, BlockBody, BlockTitle } from '~/app/_components/block';
-import MonthAndYearSelector from '~/app/_components/month-and-year-selector';
+import MonthAndYearSelector from '~/app/_components/month-and-year-selector.client';
 import { api } from '~/trpc/server';
 
 export default async function DashboardTotals({ month, year }: { month: string; year: string }) {

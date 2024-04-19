@@ -9,7 +9,7 @@ import { z } from 'zod';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { TableCell, TableRow } from '~/components/ui/table';
-import { api } from '~/trpc/react';
+import { api } from '~/trpc/react.client';
 import type { RouterOutputs } from '~/trpc/shared';
 import {
   Dialog,

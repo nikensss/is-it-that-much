@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import UserBannerClient from '~/app/friends/user-banner.client';
 import UserBannerLoading from '~/app/friends/user-banner.loading';
-import { api } from '~/trpc/react';
+import { api } from '~/trpc/react.client';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export default function PendingFriendRequests() {

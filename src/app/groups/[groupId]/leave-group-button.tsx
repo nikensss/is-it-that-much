@@ -4,7 +4,7 @@ import { LogOutIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import ButtonWithDialog from '~/app/_components/button-with-dialog.client';
 import { Button } from '~/components/ui/button';
-import { api } from '~/trpc/react';
+import { api } from '~/trpc/react.client';
 
 export default function LeaveGroupButton({ groupId }: { groupId: string }) {
   const router = useRouter();

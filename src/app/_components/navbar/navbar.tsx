@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import DesktopNavbar from '~/app/_components/navbar/navbar.desktop';
-import MobileNavbar from '~/app/_components/navbar/navbar.mobile';
+import DesktopNavbar from '~/app/_components/navbar/navbar-desktop';
+import MobileNavbar from '~/app/_components/navbar/navbar-mobile';
 
 export function NavBar() {
   return (

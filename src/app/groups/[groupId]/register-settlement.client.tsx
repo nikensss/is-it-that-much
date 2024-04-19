@@ -20,7 +20,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { InputWithCurrency } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { cn } from '~/lib/utils.client';
-import { api } from '~/trpc/react';
+import { api } from '~/trpc/react.client';
 import { groupSettlementFormSchema, type RouterOutputs } from '~/trpc/shared';
 
 export type RegisterSettlementProps = {
