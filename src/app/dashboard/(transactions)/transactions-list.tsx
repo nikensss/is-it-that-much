@@ -18,42 +18,39 @@ export async function TransactionList({ type, searchParams }: TransactionOvervie
   const weekStartsOn = user?.weekStartsOn ?? 1;
   const timezone = user?.timezone ?? 'Europe/Amsterdam';
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'] ?? '€';
+  const currency = user.currency;
 
   const tags = await api.tags.all.query({ type });
   const { from, to } = searchParams;
-  const personal = (
-    await api.transactions.personal.period.list.query({
-      type,
-      from: from ? new Date(from) : null,
-      to: to ? new Date(to) : null,
-    })
-  ).map((t) => ({
-    date: t.date,
-    element: (
-      <PersonalTransactionRow
-        currency={user.currency}
-        key={t.id}
-        transaction={t}
-        weekStartsOn={weekStartsOn}
-        timezone={timezone}
-        tags={tags}
-      />
-    ),
-  }));
+  const transactions: { date: Date; element: JSX.Element }[] = [];
 
-  const shared = (
-    type === TransactionType.EXPENSE ? await api.groups.all.expenses.period.list.query({ onlyWhereUserPaid: true }) : []
-  ).map((s) => ({ date: s.transaction.date, element: <SharedExpenseRow {...{ shared: s, user }} /> }));
+  const personal = await api.transactions.personal.period.list.query({
+    type,
+    from: from ? new Date(from) : null,
+    to: to ? new Date(to) : null,
+  });
+  transactions.push(
+    ...personal.map((t) => ({
+      date: t.date,
+      element: <PersonalTransactionRow {...{ currency, key: t.id, transaction: t, weekStartsOn, timezone, tags }} />,
+    })),
+  );
 
-  const settlements = (
-    await api.groups.all.settlements.period.list.query({
-      type: type === TransactionType.EXPENSE ? 'sentByCurrentUser' : 'receivedByCurrentUser',
-    })
-  ).map((s) => ({ date: s.date, element: <SettlementRow key={s.id} group={s.group} settlement={s} user={user} /> }));
+  const isExpense = type === TransactionType.EXPENSE;
+  const shared = isExpense ? await api.groups.all.expenses.period.list.query({ onlyWhereUserPaid: true }) : [];
+  transactions.push(
+    ...shared.map((s) => ({ date: s.transaction.date, element: <SharedExpenseRow {...{ shared: s, user }} /> })),
+  );
 
-  const transactions = [...personal, ...shared, ...settlements]
-    .sort((a, b) => b.date.getTime() - a.date.getTime())
-    .map(({ element }) => element);
+  const settlements = await api.groups.all.settlements.period.list.query({
+    type: isExpense ? 'sentByCurrentUser' : 'receivedByCurrentUser',
+  });
+  transactions.push(
+    ...settlements.map((s) => ({
+      date: s.date,
+      element: <SettlementRow key={s.id} group={s.group} settlement={s} user={user} />,
+    })),
+  );
 
   return (
     <BlockBody>
@@ -71,7 +68,9 @@ export async function TransactionList({ type, searchParams }: TransactionOvervie
               <TableHead className="font-bold text-primary-900">Tags</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>{transactions}</TableBody>
+          <TableBody>
+            {transactions.sort((a, b) => b.date.getTime() - a.date.getTime()).map(({ element }) => element)}
+          </TableBody>
         </Table>
       </BlockBody>
     </BlockBody>
