@@ -13,7 +13,7 @@ export type TransactionOverviewProps = {
   searchParams: Record<string, string | undefined>;
 };
 
-export default async function TransactionsOverview({ type, searchParams }: TransactionOverviewProps) {
+export default async function TransactionList({ type, searchParams }: TransactionOverviewProps) {
   const user = await api.users.get.query();
   const weekStartsOn = user?.weekStartsOn ?? 1;
   const timezone = user?.timezone ?? 'Europe/Amsterdam';

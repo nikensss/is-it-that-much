@@ -127,7 +127,6 @@ export const groupProcedure = privateProcedure
                 username: true,
                 firstName: true,
                 lastName: true,
-                email: true,
                 imageUrl: true,
               },
             },

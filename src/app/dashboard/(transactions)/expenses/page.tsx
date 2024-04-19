@@ -1,8 +1,8 @@
 import { TransactionType } from '@prisma/client';
-import TransactionsOverview from '~/app/dashboard/(transactions)/transactions';
+import TransactionList from '~/app/dashboard/(transactions)/transactions-list';
 
 export default async function ExpensesOverview({ searchParams }: { searchParams: Record<string, string | undefined> }) {
-  return <TransactionsOverview type={TransactionType.EXPENSE} searchParams={searchParams} />;
+  return <TransactionList type={TransactionType.EXPENSE} searchParams={searchParams} />;
 }
 
 export const dynamic = 'force-dynamic';
