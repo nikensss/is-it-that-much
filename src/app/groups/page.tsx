@@ -8,8 +8,8 @@ export default async function GroupsPage() {
   const [user, groups, expenses, settlements] = await Promise.all([
     api.users.get.query(),
     api.groups.all.get.query(),
-    api.groups.all.expenses.recent.query(),
-    api.groups.all.settlements.recent.query(),
+    api.groups.all.expenses.recent.query({ onlyWhereUserPaid: false }),
+    api.groups.all.settlements.recent.query({ type: 'all' }),
   ]);
 
   return (

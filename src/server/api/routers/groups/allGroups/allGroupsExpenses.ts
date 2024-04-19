@@ -18,7 +18,7 @@ export const allGroupsExpensesRouter = createTRPCRouter({
             },
             ...(input.onlyWhereUserPaid
               ? {
-                  userId: user.id,
+                  user,
                   paid: {
                     gt: 0,
                   },
@@ -113,42 +113,67 @@ export const allGroupsExpensesRouter = createTRPCRouter({
       }),
   }),
 
-  recent: privateProcedure.query(async ({ ctx: { db, user } }) => {
-    return db.sharedTransaction.findMany({
-      where: {
-        group: {
-          UserGroup: {
-            some: {
-              user,
+  recent: privateProcedure
+    .input(z.object({ onlyWhereUserPaid: z.boolean() }))
+    .query(async ({ ctx: { db, user }, input }) => {
+      return db.sharedTransaction.findMany({
+        where: {
+          ...(input.onlyWhereUserPaid
+            ? {
+                TransactionSplit: {
+                  some: {
+                    user,
+                    paid: {
+                      gt: 0,
+                    },
+                  },
+                },
+              }
+            : {
+                group: {
+                  UserGroup: {
+                    some: {
+                      user,
+                    },
+                  },
+                },
+              }),
+        },
+        include: {
+          group: {
+            select: {
+              id: true,
+              name: true,
             },
           },
-        },
-      },
-      select: {
-        id: true,
-        groupId: true,
-        createdById: true,
-        transactionId: true,
-        transaction: true,
-        TransactionSplit: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                username: true,
-                firstName: true,
-                lastName: true,
-                imageUrl: true,
+          transaction: {
+            include: {
+              TransactionsTags: {
+                include: {
+                  tag: true,
+                },
+              },
+            },
+          },
+          TransactionSplit: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  firstName: true,
+                  lastName: true,
+                  imageUrl: true,
+                },
               },
             },
           },
         },
-      },
-      orderBy: {
-        transaction: {
-          date: 'desc',
+        orderBy: {
+          transaction: {
+            date: 'desc',
+          },
         },
-      },
-    });
-  }),
+      });
+    }),
 });

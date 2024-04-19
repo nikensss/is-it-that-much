@@ -5,15 +5,16 @@ export const allGroupsSettlementsRouter = createTRPCRouter({
   period: createTRPCRouter({
     sum: periodProcedure
       .input(z.object({ type: z.enum(['sentByCurrentUser', 'receivedByCurrentUser', 'all']) }))
-      .query(async ({ ctx: { db, user, from, to }, input }) => {
+      .query(async ({ ctx: { db, user, from, to }, input: { type } }) => {
         return db.settlement.aggregate({
           where: {
             date: {
               gte: from,
               lte: to,
             },
-            ...(input.type === 'sentByCurrentUser' ? { fromId: user.id } : {}),
-            ...(input.type === 'receivedByCurrentUser' ? { toId: user.id } : {}),
+            ...(type === 'sentByCurrentUser' ? { fromId: user.id } : {}),
+            ...(type === 'receivedByCurrentUser' ? { toId: user.id } : {}),
+            ...(type === 'all' ? { group: { UserGroup: { some: { user } } } } : {}),
           },
           _sum: {
             amount: true,
@@ -32,11 +33,27 @@ export const allGroupsSettlementsRouter = createTRPCRouter({
             },
             ...(type === 'sentByCurrentUser' ? { fromId: user.id } : {}),
             ...(type === 'receivedByCurrentUser' ? { toId: user.id } : {}),
-          },
-          orderBy: {
-            date: 'desc',
+            ...(type === 'all' ? { group: { UserGroup: { some: { user } } } } : {}),
           },
           include: {
+            from: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+                imageUrl: true,
+              },
+            },
+            to: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+                imageUrl: true,
+              },
+            },
             group: {
               select: {
                 id: true,
@@ -44,50 +61,57 @@ export const allGroupsSettlementsRouter = createTRPCRouter({
               },
             },
           },
+          orderBy: {
+            date: 'desc',
+          },
         });
       }),
   }),
 
-  recent: privateProcedure.query(async ({ ctx: { db, user } }) => {
-    return db.settlement.findMany({
-      where: {
-        group: {
-          UserGroup: {
-            some: {
-              user,
+  recent: privateProcedure
+    .input(
+      z.object({
+        take: z.number().min(1).default(10),
+        type: z.enum(['sentByCurrentUser', 'receivedByCurrentUser', 'all']),
+      }),
+    )
+    .query(async ({ ctx: { db, user }, input: { take, type } }) => {
+      return db.settlement.findMany({
+        where: {
+          ...(type === 'sentByCurrentUser' ? { fromId: user.id } : {}),
+          ...(type === 'receivedByCurrentUser' ? { toId: user.id } : {}),
+          ...(type === 'all' ? { group: { UserGroup: { some: { user } } } } : {}),
+        },
+        include: {
+          from: {
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
+              imageUrl: true,
+            },
+          },
+          to: {
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
+              imageUrl: true,
+            },
+          },
+          group: {
+            select: {
+              id: true,
+              name: true,
             },
           },
         },
-      },
-      include: {
-        from: {
-          select: {
-            id: true,
-            username: true,
-            firstName: true,
-            lastName: true,
-            imageUrl: true,
-          },
+        orderBy: {
+          date: 'desc',
         },
-        to: {
-          select: {
-            id: true,
-            username: true,
-            firstName: true,
-            lastName: true,
-            imageUrl: true,
-          },
-        },
-        group: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-      orderBy: {
-        date: 'desc',
-      },
-    });
-  }),
+        take,
+      });
+    }),
 });

@@ -134,6 +134,12 @@ export const groupExpensesRouter = createTRPCRouter({
         },
         include: {
           transaction: true,
+          group: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
           TransactionSplit: {
             include: {
               user: {

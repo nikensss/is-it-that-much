@@ -88,6 +88,12 @@ export const groupSettlementsRouter = createTRPCRouter({
           groupId: group.id,
         },
         include: {
+          group: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
           from: {
             select: {
               id: true,

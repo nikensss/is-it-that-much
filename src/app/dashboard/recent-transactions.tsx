@@ -1,4 +1,4 @@
-import { TransactionType } from '@prisma/client';
+import { TransactionType, type Tag, type Transaction } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { Block, BlockBody, BlockTitle } from '~/app/_components/block';
 import DateDisplay, { type DateDisplayProps } from '~/app/_components/date-display';
@@ -7,9 +7,12 @@ import { api } from '~/trpc/server';
 import type { RouterOutputs } from '~/trpc/shared';
 
 export default async function DashboardRecentTrasnsactions() {
-  const [expenses, incomes, user] = await Promise.all([
+  const [expenses, shared, sentSettlements, incomes, receivedSettlements, user] = await Promise.all([
     api.transactions.personal.recent.query({ type: TransactionType.EXPENSE }),
+    api.groups.all.expenses.recent.query({ onlyWhereUserPaid: true }),
+    api.groups.all.settlements.recent.query({ take: 3, type: 'sentByCurrentUser' }),
     api.transactions.personal.recent.query({ type: TransactionType.INCOME }),
+    api.groups.all.settlements.recent.query({ take: 3, type: 'receivedByCurrentUser' }),
     api.users.get.query(),
   ]);
 
@@ -25,6 +28,8 @@ export default async function DashboardRecentTrasnsactions() {
           href="/dashboard/expenses"
           title={'Expenses'}
           transactions={expenses}
+          shared={shared}
+          settlements={sentSettlements}
         />
         <div className="hidden self-stretch border-b border-r border-gray-400 md:block"></div>
         <DashboardRecentTransactionsList
@@ -33,6 +38,7 @@ export default async function DashboardRecentTrasnsactions() {
           href="/dashboard/incomes"
           title={'Incomes'}
           transactions={incomes}
+          settlements={receivedSettlements}
         />
       </BlockBody>
     </Block>
@@ -45,6 +51,8 @@ type DashboardRecentTransactionCardParams = {
   href: string;
   timezone: DateDisplayProps['timezone'];
   transactions: RouterOutputs['transactions']['personal']['recent'];
+  shared?: RouterOutputs['groups']['all']['expenses']['recent'];
+  settlements: RouterOutputs['groups']['all']['settlements']['recent'];
 };
 
 function DashboardRecentTransactionsList({
@@ -53,17 +61,42 @@ function DashboardRecentTransactionsList({
   title,
   timezone,
   transactions,
+  shared = [],
+  settlements,
 }: DashboardRecentTransactionCardParams) {
-  const transactionElements = transactions.map((e) => Transaction({ ...e, timezone, currencySymbol }));
-  while (transactionElements.length < 3) {
-    transactionElements.push(PlaceholderTransaction(transactionElements.length + 1));
+  const elements = transactions.map((e) => ({
+    date: e.transaction.date.getTime(),
+    element: PersonalTransaction({ personal: e, timezone, currencySymbol }),
+  }));
+
+  for (const e of shared) {
+    elements.push({
+      date: e.transaction.date.getTime(),
+      element: SharedTransaction({ shared: e, timezone, currencySymbol }),
+    });
+  }
+
+  for (const s of settlements) {
+    elements.push({
+      date: s.date.getTime(),
+      element: Settlement({ settlement: s, timezone, currencySymbol }),
+    });
+  }
+
+  while (elements.length < 3) {
+    elements.push({ date: 0, element: PlaceholderTransaction(elements.length + 1) });
   }
 
   return (
     <BlockBody className="flex-1">
       <BlockTitle href={href}>{title}</BlockTitle>
       <BlockBody>
-        <div className="divide-y divide-gray-200">{transactionElements}</div>
+        <div className="divide-y divide-gray-200">
+          {elements
+            .sort((a, b) => b.date - a.date)
+            .slice(0, 5)
+            .map((e) => e.element)}
+        </div>
       </BlockBody>
     </BlockBody>
   );
@@ -82,11 +115,79 @@ function PlaceholderTransaction(id: number) {
   );
 }
 
+function SharedTransaction({
+  shared,
+  currencySymbol,
+  timezone,
+}: {
+  shared: RouterOutputs['groups']['all']['expenses']['recent'][number];
+  currencySymbol: string;
+  timezone: DateDisplayProps['timezone'];
+}) {
+  return Transaction({
+    transaction: {
+      id: `shared-${shared.transaction.id}`,
+      description: `${shared.transaction.description} (${shared.group.name})`,
+      amount: shared.TransactionSplit.reduce((acc, { paid }) => acc + paid, 0),
+      date: shared.transaction.date,
+    },
+    tags: shared.transaction.TransactionsTags.map(({ tag }) => tag),
+    currencySymbol,
+    timezone,
+  });
+}
+
+function Settlement({
+  settlement,
+  currencySymbol,
+  timezone,
+}: {
+  settlement: RouterOutputs['groups']['all']['settlements']['recent'][number];
+  currencySymbol: string;
+  timezone: DateDisplayProps['timezone'];
+}) {
+  return Transaction({
+    transaction: {
+      id: `settlements-${settlement.id}`,
+      description: `Settlements in ${settlement.group.name}`,
+      amount: settlement.amount,
+      date: settlement.date,
+    },
+    currencySymbol,
+    timezone,
+  });
+}
+
+function PersonalTransaction({
+  personal,
+  currencySymbol,
+  timezone,
+}: {
+  personal: RouterOutputs['transactions']['personal']['recent'][number];
+  currencySymbol: string;
+  timezone: DateDisplayProps['timezone'];
+}) {
+  return Transaction({
+    transaction: {
+      id: `personal-${personal.transaction.id}`,
+      description: personal.transaction.description,
+      amount: personal.transaction.amount,
+      date: personal.transaction.date,
+    },
+    tags: personal.transaction.TransactionsTags.map(({ tag }) => tag),
+    currencySymbol,
+    timezone,
+  });
+}
+
 function Transaction({
   transaction,
   currencySymbol,
   timezone,
-}: RouterOutputs['transactions']['personal']['recent'][number] & {
+  tags = [],
+}: {
+  transaction: Pick<Transaction, 'id' | 'description' | 'amount' | 'date'>;
+  tags?: Tag[];
   currencySymbol: string;
   timezone: DateDisplayProps['timezone'];
 }) {
@@ -105,7 +206,7 @@ function Transaction({
         </div>
       </div>
       <div className="ml-6 h-full overflow-hidden">
-        {transaction.TransactionsTags.map(({ tag }) => {
+        {tags.map((tag) => {
           return (
             <Badge key={tag.id} className="pointer-events-none mx-0.5 mt-1.5 inline-block" variant="secondary">
               {tag.name}

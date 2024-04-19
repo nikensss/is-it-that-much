@@ -26,7 +26,7 @@ export default function RecentGroupsActivity({ user, groups, expenses, settlemen
     id: `expense-${e.id}`,
     component: (
       <SharedTransactionView
-        title={groups.find((g) => g.id === e.groupId)?.name}
+        title={groups.find((g) => g.id === e.group.id)?.name}
         key={e.id}
         {...{ sharedTransaction: e, user }}
       />
