@@ -55,9 +55,20 @@ export const allGroupsSettlementsRouter = createTRPCRouter({
               },
             },
             group: {
-              select: {
-                id: true,
-                name: true,
+              include: {
+                UserGroup: {
+                  select: {
+                    user: {
+                      select: {
+                        id: true,
+                        username: true,
+                        firstName: true,
+                        lastName: true,
+                        imageUrl: true,
+                      },
+                    },
+                  },
+                },
               },
             },
           },
