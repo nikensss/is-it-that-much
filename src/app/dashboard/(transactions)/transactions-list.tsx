@@ -2,9 +2,9 @@ import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { BlockBody, BlockTitle } from '~/app/_components/block';
 import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker.client';
-import { SharedExpense } from '~/app/dashboard/(transactions)/shared-expense.client';
-import { UpdateSettlement } from '~/app/dashboard/(transactions)/update-settlement';
-import { UpdateTransaction } from '~/app/dashboard/(transactions)/update-transaction.client';
+import { SharedExpenseRow } from '~/app/dashboard/(transactions)/shared-expense-row.client';
+import { SettlementRow } from '~/app/dashboard/(transactions)/settlement-row';
+import { PersonalTransactionRow } from '~/app/dashboard/(transactions)/personal-transaction-row.client';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { api } from '~/trpc/server';
 
@@ -30,7 +30,7 @@ export async function TransactionList({ type, searchParams }: TransactionOvervie
   ).map((t) => ({
     date: t.date,
     element: (
-      <UpdateTransaction
+      <PersonalTransactionRow
         currency={user.currency}
         key={t.id}
         transaction={t}
@@ -43,13 +43,13 @@ export async function TransactionList({ type, searchParams }: TransactionOvervie
 
   const shared = (
     type === TransactionType.EXPENSE ? await api.groups.all.expenses.period.list.query({ onlyWhereUserPaid: true }) : []
-  ).map((s) => ({ date: s.transaction.date, element: <SharedExpense {...{ shared: s, user }} /> }));
+  ).map((s) => ({ date: s.transaction.date, element: <SharedExpenseRow {...{ shared: s, user }} /> }));
 
   const settlements = (
     await api.groups.all.settlements.period.list.query({
       type: type === TransactionType.EXPENSE ? 'sentByCurrentUser' : 'receivedByCurrentUser',
     })
-  ).map((s) => ({ date: s.date, element: <UpdateSettlement key={s.id} group={s.group} settlement={s} user={user} /> }));
+  ).map((s) => ({ date: s.date, element: <SettlementRow key={s.id} group={s.group} settlement={s} user={user} /> }));
 
   const transactions = [...personal, ...shared, ...settlements]
     .sort((a, b) => b.date.getTime() - a.date.getTime())

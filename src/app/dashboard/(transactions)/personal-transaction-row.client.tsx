@@ -39,7 +39,13 @@ export type UpdateTransactionProps = {
   tags: RouterOutputs['tags']['all'];
 };
 
-export function UpdateTransaction({ currency, timezone, weekStartsOn, transaction, tags }: UpdateTransactionProps) {
+export function PersonalTransactionRow({
+  currency,
+  timezone,
+  weekStartsOn,
+  transaction,
+  tags,
+}: UpdateTransactionProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);

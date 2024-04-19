@@ -3,7 +3,7 @@ import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.clien
 import { TableCell, TableRow } from '~/components/ui/table';
 import type { RouterOutputs } from '~/trpc/shared';
 
-export function UpdateSettlement({
+export function SettlementRow({
   settlement,
   user,
   group,

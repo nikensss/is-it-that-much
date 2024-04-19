@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { TableCell, TableRow } from '~/components/ui/table';
 import type { RouterOutputs } from '~/trpc/shared';
 
-export function SharedExpense({
+export function SharedExpenseRow({
   shared,
   user,
 }: {
