@@ -2,9 +2,9 @@ import { TransactionType } from '@prisma/client';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { BlockBody, BlockTitle } from '~/app/_components/block';
 import DateRangePicker from '~/app/dashboard/(transactions)/date-range-picker.client';
-import SharedExpense from '~/app/dashboard/(transactions)/shared-expense.client';
-import UpdateSettlement from '~/app/dashboard/(transactions)/update-settlement';
-import UpdateTransaction from '~/app/dashboard/(transactions)/update-transaction.client';
+import { SharedExpense } from '~/app/dashboard/(transactions)/shared-expense.client';
+import { UpdateSettlement } from '~/app/dashboard/(transactions)/update-settlement';
+import { UpdateTransaction } from '~/app/dashboard/(transactions)/update-transaction.client';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { api } from '~/trpc/server';
 
@@ -13,7 +13,7 @@ export type TransactionOverviewProps = {
   searchParams: Record<string, string | undefined>;
 };
 
-export default async function TransactionList({ type, searchParams }: TransactionOverviewProps) {
+export async function TransactionList({ type, searchParams }: TransactionOverviewProps) {
   const user = await api.users.get.query();
   const weekStartsOn = user?.weekStartsOn ?? 1;
   const timezone = user?.timezone ?? 'Europe/Amsterdam';

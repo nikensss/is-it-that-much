@@ -27,7 +27,7 @@ type UpdateTagProps = {
   tag: RouterOutputs['tags']['all'][number];
 };
 
-export default function UpdateTag({ tag }: UpdateTagProps) {
+export function UpdateTag({ tag }: UpdateTagProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
