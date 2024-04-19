@@ -21,7 +21,7 @@ export default function Dashboard({ searchParams }: { searchParams: Record<strin
           <Link href="/dashboard/tags">Tags</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href="#">Categories</Link>
+          <Link href="/dashboard/file">From CSV file</Link>
         </Button>
       </section>
       <div className="grid gap-2 md:grid-cols-2">
