@@ -189,7 +189,7 @@ export default function FilePage() {
                       {transaction.checked ? <CheckSquareIcon /> : <SquareIcon />}
                     </TableCell>
                     <TableCell className="select-none">{format(transaction.date, 'yyyy-MM-dd')}</TableCell>
-                    <TableCell className="select-none">{transaction.amount}</TableCell>
+                    <TableCell className="select-none text-right">{transaction.amount}</TableCell>
                     <TableCell
                       className="cursor-pointer select-none text-center hover:bg-primary-100 hover:text-primary-900 dark:hover:bg-primary-800 dark:hover:text-primary-50"
                       onClick={() => {
@@ -212,6 +212,7 @@ export default function FilePage() {
                     </TableCell>
                     <TableCell>
                       <Input
+                        onFocus={(e) => e.target.select()}
                         defaultValue={transaction.description}
                         onChange={(event) => {
                           setTransactions((transactions) => {
@@ -225,13 +226,27 @@ export default function FilePage() {
                       />
                     </TableCell>
                     <TableCell>
-                      <Input />
+                      <Input
+                        onFocus={(e) => e.target.select()}
+                        defaultValue={transaction.tags}
+                        onChange={(event) => {
+                          setTransactions((transactions) => {
+                            const res = [...transactions];
+                            const t = res[i];
+                            if (!t) return res;
+                            res[i] = { ...t, tags: event.target.value };
+                            return res;
+                          });
+                        }}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-            <Button className="mt-auto self-stretch">Save</Button>
+            <Button className="mt-auto self-stretch" onClick={() => console.log(transactions)}>
+              Save
+            </Button>
           </>
         ) : null}
       </BlockBody>
