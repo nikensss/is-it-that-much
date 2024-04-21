@@ -254,17 +254,21 @@ export const personalTransactionsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx: { db, user }, input: { data } }) => {
       for (const { date, amount, description, type, tags } of data) {
-        await db.tag.createMany({
-          data: tags.map((name) => ({ name, createdById: user.id })),
-          skipDuplicates: true,
-        });
+        const dbTags = await (async (tags: string[]) => {
+          if (tags.length === 0) return [];
 
-        const dbTags = await db.tag.findMany({
-          where: {
-            createdById: user.id,
-            name: { in: tags },
-          },
-        });
+          await db.tag.createMany({
+            data: tags.map((name) => ({ name, createdById: user.id })),
+            skipDuplicates: true,
+          });
+
+          return db.tag.findMany({
+            where: {
+              createdById: user.id,
+              name: { in: tags },
+            },
+          });
+        })(tags.filter((tag) => tag.length > 0));
 
         await db.personalTransaction.create({
           data: {
@@ -275,11 +279,15 @@ export const personalTransactionsRouter = createTRPCRouter({
                 date,
                 description,
                 type,
-                TransactionsTags: {
-                  createMany: {
-                    data: dbTags.map((tag) => ({ tagId: tag.id })),
-                  },
-                },
+                ...(dbTags.length > 0
+                  ? {
+                      TransactionsTags: {
+                        createMany: {
+                          data: dbTags.map((tag) => ({ tagId: tag.id })),
+                        },
+                      },
+                    }
+                  : {}),
               },
             },
           },
