@@ -4,7 +4,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <BlockContainer>
       <Block>
-        <BlockBody>{children}</BlockBody>
+        <BlockBody className="flex grow flex-col">{children}</BlockBody>
       </Block>
     </BlockContainer>
   );

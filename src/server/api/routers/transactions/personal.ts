@@ -1,3 +1,4 @@
+import { TransactionType } from '@prisma/client';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 import { toCents } from '~/lib/utils.client';
@@ -234,6 +235,55 @@ export const personalTransactionsRouter = createTRPCRouter({
       } catch (error) {
         log.error('could not delete personal transaction', { id, error, userId: user.id });
         return null;
+      }
+    }),
+
+  bulk: privateProcedure
+    .input(
+      z.object({
+        data: z.array(
+          z.object({
+            date: z.date(),
+            description: z.string(),
+            amount: z.number(),
+            type: z.nativeEnum(TransactionType),
+            tags: z.array(z.string()),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx: { db, user }, input: { data } }) => {
+      for (const { date, amount, description, type, tags } of data) {
+        await db.tag.createMany({
+          data: tags.map((name) => ({ name, createdById: user.id })),
+          skipDuplicates: true,
+        });
+
+        const dbTags = await db.tag.findMany({
+          where: {
+            createdById: user.id,
+            name: { in: tags },
+          },
+        });
+
+        await db.personalTransaction.create({
+          data: {
+            user: { connect: { id: user.id } },
+            transaction: {
+              create: {
+                amount: toCents(amount),
+                date,
+                description,
+                type,
+                TransactionsTags: {
+                  createMany: {
+                    data: dbTags.map((tag) => ({ tagId: tag.id })),
+                  },
+                },
+              },
+            },
+          },
+        });
       }
     }),
 });
