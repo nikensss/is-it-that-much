@@ -41,7 +41,13 @@ export async function TransactionList({ type, searchParams }: TransactionOvervie
   );
 
   const isExpense = type === TransactionType.EXPENSE;
-  const shared = isExpense ? await api.groups.all.expenses.period.list.query({ onlyWhereUserPaid: true }) : [];
+  const shared = isExpense
+    ? await api.groups.all.expenses.period.list.query({
+        onlyWhereUserPaid: true,
+        from: from ? new Date(from) : null,
+        to: to ? new Date(to) : null,
+      })
+    : [];
   transactions.push(
     ...shared.map((s) => ({
       date: s.transaction.date,
@@ -51,6 +57,8 @@ export async function TransactionList({ type, searchParams }: TransactionOvervie
 
   const settlements = await api.groups.all.settlements.period.list.query({
     type: isExpense ? 'sentByCurrentUser' : 'receivedByCurrentUser',
+    from: from ? new Date(from) : null,
+    to: to ? new Date(to) : null,
   });
   transactions.push(
     ...settlements.map((s) => ({
