@@ -26,15 +26,19 @@ type Transaction = {
   type: TransactionType;
 };
 
+type Stage = 'select-file' | 'select-separator' | 'select-columns' | 'edit-rows';
+
 export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }) {
   const router = useRouter();
 
   const fileInput = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [stage, setStage] = useState<'select-file' | 'select-columns' | 'edit-rows'>('select-file'); // 'select-file' | 'select-columns
+  const [stage, setStage] = useState<Stage>('select-file'); // 'select-file' | 'select-columns
+  const [file, setFile] = useState<File | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
   const [records, setRecords] = useState<Record<string, string | undefined>[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [delimiter, setDelimiter] = useState<string>(';');
   const [dateColumn, setDateColumn] = useState<string>();
   const [amountColumn, setAmountColumn] = useState<string>();
   const [descriptionColumn, setDescriptionColumn] = useState<string>();
@@ -89,13 +93,44 @@ export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }
                   return;
                 }
 
-                const records = await getRecords(await file.text());
+                setFile(file);
+                setStage('select-separator');
+              }}
+            />
+          </>
+        ) : null}
+        {stage === 'select-separator' ? (
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <p>Delimiter:</p>
+              <Select onValueChange={setDelimiter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select a delimiter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {[';', ','].map((delimiter) => (
+                      <SelectItem key={delimiter} value={delimiter}>
+                        {delimiter}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              onClick={async () => {
+                if (!file) return setStage('select-file');
+
+                const records = await getRecords(await file.text(), delimiter);
                 setRecords(records);
                 setColumns(getColumns(records));
                 setStage('select-columns');
               }}
-            />
-          </>
+            >
+              Continue
+            </Button>
+          </div>
         ) : null}
         {stage === 'select-columns' ? (
           <div className="flex flex-col gap-2">
@@ -283,9 +318,9 @@ export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }
   );
 }
 
-function getRecords(text: string): Promise<Record<string, string | undefined>[]> {
+function getRecords(text: string, separator: string): Promise<Record<string, string | undefined>[]> {
   return new Promise((res, rej) => {
-    parseCSV(text, { delimiter: ';', columns: true }, (err, records) => {
+    parseCSV(text, { delimiter: separator, columns: true }, (err, records) => {
       if (err) return rej(err);
       res(records as Record<string, string | undefined>[]);
     });
