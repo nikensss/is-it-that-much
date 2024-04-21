@@ -40,17 +40,11 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
   const [weekStartsOnWidth, setWeekStartsOnWidth] = useState<number>(0);
 
   useLayoutEffect(() => {
-    if (timezoneTrigger.current) {
-      setTimezoneWidth(timezoneTrigger.current.offsetWidth);
-    }
+    if (timezoneTrigger.current) setTimezoneWidth(timezoneTrigger.current.offsetWidth);
 
-    if (currencyTrigger.current) {
-      setCurrencyWidth(currencyTrigger.current.offsetWidth);
-    }
+    if (currencyTrigger.current) setCurrencyWidth(currencyTrigger.current.offsetWidth);
 
-    if (weekStartsOnTrigger.current) {
-      setWeekStartsOnWidth(weekStartsOnTrigger.current.offsetWidth);
-    }
+    if (weekStartsOnTrigger.current) setWeekStartsOnWidth(weekStartsOnTrigger.current.offsetWidth);
   }, [timezoneTrigger, currencyTrigger, weekStartsOnTrigger]);
 
   const timezones = Intl.supportedValuesOf('timeZone');

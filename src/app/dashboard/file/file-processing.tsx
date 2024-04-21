@@ -26,7 +26,14 @@ type Transaction = {
   type: TransactionType;
 };
 
-type Stage = 'select-file' | 'select-separator' | 'select-columns' | 'edit-rows';
+const stages = ['select-file', 'select-separator', 'select-columns', 'edit-rows'] as const;
+type Stage = (typeof stages)[number];
+
+const delimiters = [';', ','] as const;
+type Delimiter = (typeof delimiters)[number];
+
+const dateFormats = ['yyyyMMdd', 'yyyy-MM-dd', 'dd/MM/yyyy', 'MM/dd/yyyy'] as const;
+type DateFormat = (typeof dateFormats)[number];
 
 export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }) {
   const router = useRouter();
@@ -34,15 +41,16 @@ export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }
   const fileInput = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [stage, setStage] = useState<Stage>('select-file'); // 'select-file' | 'select-columns
+  const [delimiter, setDelimiter] = useState<Delimiter>(delimiters[0]);
+  const [dateFormat, setDateFormat] = useState<DateFormat>(dateFormats[0]);
   const [file, setFile] = useState<File | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
   const [records, setRecords] = useState<Record<string, string | undefined>[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [delimiter, setDelimiter] = useState<string>(';');
   const [dateColumn, setDateColumn] = useState<string>();
   const [amountColumn, setAmountColumn] = useState<string>();
   const [descriptionColumn, setDescriptionColumn] = useState<string>();
   const [globalChecked, setGlobalChecked] = useState<boolean>(true);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const currencyFormatter = new Intl.NumberFormat('es-ES', { style: 'currency', currency: user.currency ?? 'EUR' });
 
@@ -103,13 +111,13 @@ export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between gap-2">
               <p>Delimiter:</p>
-              <Select onValueChange={setDelimiter}>
+              <Select onValueChange={(delimiter: Delimiter) => setDelimiter(delimiter)} defaultValue={delimiter}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select a delimiter" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {[';', ','].map((delimiter) => (
+                    {delimiters.map((delimiter) => (
                       <SelectItem key={delimiter} value={delimiter}>
                         {delimiter}
                       </SelectItem>
@@ -135,7 +143,7 @@ export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }
         {stage === 'select-columns' ? (
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between gap-2">
-              <p>The date is at:</p>
+              <p>Date column:</p>
               <Select onValueChange={setDateColumn}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select a column" />
@@ -152,7 +160,24 @@ export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }
               </Select>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <p>The amount is at:</p>
+              <p>Date format:</p>
+              <Select onValueChange={(dateFormat: DateFormat) => setDateFormat(dateFormat)} defaultValue={dateFormat}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select a date format" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {dateFormats.map((dateFormat) => (
+                      <SelectItem key={dateFormat} value={dateFormat}>
+                        {dateFormat}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <p>Amount column:</p>
               <Select onValueChange={setAmountColumn}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select a column" />
@@ -169,7 +194,7 @@ export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }
               </Select>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <p>The description is at:</p>
+              <p>Description column:</p>
               <Select onValueChange={setDescriptionColumn}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select a column" />
@@ -192,7 +217,7 @@ export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }
                   transactions.push({
                     amount: Math.abs(amount),
                     checked: true,
-                    date: parseDate(record[`${dateColumn}`] ?? '', 'yyyyMMdd', new Date()),
+                    date: parseDate(record[`${dateColumn}`] ?? '', dateFormat, new Date()),
                     description: record[`${descriptionColumn}`] ?? '',
                     tags: '',
                     type: amount > 0 ? TransactionType.INCOME : TransactionType.EXPENSE,
