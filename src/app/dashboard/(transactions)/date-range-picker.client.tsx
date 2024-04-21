@@ -25,7 +25,10 @@ export default function DateRangePicker({ timezone, from, to, weekStartsOn = 1 }
 
   const calendarTrigger = useRef<HTMLButtonElement>(null);
 
-  const weekStart: CalendarProps['weekStartsOn'] = weekStartsOn >= 0 && weekStartsOn <= 6 ? weekStartsOn : 1;
+  const weekStart = (weekStartsOn >= 0 && weekStartsOn <= 6 ? weekStartsOn : 1) as Exclude<
+    CalendarProps['weekStartsOn'],
+    undefined
+  >;
 
   const [period, setPeriod] = useState<DateRange | undefined>({
     from: startOfMonth(from ?? new Date()),

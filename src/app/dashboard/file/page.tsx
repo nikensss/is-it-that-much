@@ -5,3 +5,5 @@ export default async function FilePage() {
   const user = await api.users.get.query();
   return <FileProcessing user={user} />;
 }
+
+export const dynamic = 'force-dynamic';
