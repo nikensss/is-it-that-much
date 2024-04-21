@@ -57,7 +57,7 @@ export async function TransactionList({ type, searchParams }: TransactionOvervie
       <BlockTitle>{type.toLowerCase() + 's'}</BlockTitle>
       <BlockBody>
         <div className="items-center justify-center gap-2 md:flex">
-          <DateRangePicker timezone={timezone} />
+          <DateRangePicker timezone={timezone} from={from ? new Date(from) : null} to={to ? new Date(to) : null} />
         </div>
         <Table>
           <TableHeader>

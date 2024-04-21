@@ -13,17 +13,19 @@ import { fromZonedTime } from 'date-fns-tz';
 
 export type DateRangePickerProps = {
   timezone: string;
+  from?: Date | null;
+  to?: Date | null;
 };
 
-export default function DateRangePicker({ timezone }: DateRangePickerProps) {
+export default function DateRangePicker({ timezone, from, to }: DateRangePickerProps) {
   const router = useRouter();
   const pathname = usePathname();
 
   const calendarTrigger = useRef<HTMLButtonElement>(null);
 
   const [period, setPeriod] = useState<DateRange | undefined>({
-    from: startOfMonth(new Date()),
-    to: endOfMonth(new Date()),
+    from: startOfMonth(from ?? new Date()),
+    to: endOfMonth(to ?? new Date()),
   });
 
   function onClick() {

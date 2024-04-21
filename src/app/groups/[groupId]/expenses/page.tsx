@@ -32,7 +32,7 @@ export default async function GroupExpensesList({
       <BlockTitle>Expenses</BlockTitle>
       <BlockBody>
         <div className="items-center justify-center md:flex">
-          <DateRangePicker timezone={timezone} />
+          <DateRangePicker timezone={timezone} from={from ? new Date(from) : null} to={to ? new Date(to) : null} />
         </div>
         <Table>
           <TableHeader>
