@@ -32,14 +32,21 @@ export async function TransactionList({ type, searchParams }: TransactionOvervie
   transactions.push(
     ...personal.map((t) => ({
       date: t.date,
-      element: <PersonalTransactionRow {...{ currency, key: t.id, transaction: t, weekStartsOn, timezone, tags }} />,
+      element: (
+        <PersonalTransactionRow
+          {...{ currency, key: `personal-${t.id}`, transaction: t, weekStartsOn, timezone, tags }}
+        />
+      ),
     })),
   );
 
   const isExpense = type === TransactionType.EXPENSE;
   const shared = isExpense ? await api.groups.all.expenses.period.list.query({ onlyWhereUserPaid: true }) : [];
   transactions.push(
-    ...shared.map((s) => ({ date: s.transaction.date, element: <SharedExpenseRow {...{ shared: s, user }} /> })),
+    ...shared.map((s) => ({
+      date: s.transaction.date,
+      element: <SharedExpenseRow {...{ shared: s, user, id: `shared-${s.id}` }} />,
+    })),
   );
 
   const settlements = await api.groups.all.settlements.period.list.query({
@@ -48,7 +55,7 @@ export async function TransactionList({ type, searchParams }: TransactionOvervie
   transactions.push(
     ...settlements.map((s) => ({
       date: s.date,
-      element: <SettlementRow key={s.id} group={s.group} settlement={s} user={user} />,
+      element: <SettlementRow key={`settlements-${s.id}`} group={s.group} settlement={s} user={user} />,
     })),
   );
 
