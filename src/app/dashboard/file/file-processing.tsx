@@ -13,7 +13,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~
 import { TransactionType } from '@prisma/client';
 import { CheckSquareIcon, SquareIcon } from 'lucide-react';
 import type { RouterOutputs } from '~/trpc/shared';
-import currencySymbolMap from 'currency-symbol-map/map';
+import { api } from '~/trpc/react.client';
+import { useRouter } from 'next/navigation';
+import { fromZonedTime } from 'date-fns-tz';
 
 type Transaction = {
   amount: number;
@@ -25,7 +27,10 @@ type Transaction = {
 };
 
 export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }) {
+  const router = useRouter();
+
   const fileInput = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [stage, setStage] = useState<'select-file' | 'select-columns' | 'edit-rows'>('select-file'); // 'select-file' | 'select-columns
   const [columns, setColumns] = useState<string[]>([]);
   const [records, setRecords] = useState<Record<string, string | undefined>[]>([]);
@@ -36,6 +41,24 @@ export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }
   const [globalChecked, setGlobalChecked] = useState<boolean>(true);
 
   const currencyFormatter = new Intl.NumberFormat('es-ES', { style: 'currency', currency: user.currency ?? 'EUR' });
+
+  const bulk = api.transactions.personal.bulk.useMutation({
+    onMutate: () => setIsLoading(true),
+    onSettled: () => setIsLoading(false),
+    onSuccess: () => router.push('/dashboard'),
+  });
+
+  function submit() {
+    const data = transactions.map((t) => ({
+      type: t.type,
+      amount: t.amount,
+      description: t.description,
+      tags: t.tags.split(',').map((tag) => tag.trim()),
+      date: user.timezone ? fromZonedTime(format(t.date, 'yyyy-MM-dd'), user.timezone) : t.date,
+    }));
+
+    bulk.mutate({ data });
+  }
 
   return (
     <>
@@ -250,7 +273,9 @@ export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }
                 ))}
               </TableBody>
             </Table>
-            <Button className="mt-auto self-stretch">Save</Button>
+            <Button onClick={submit} disabled={isLoading} className="mt-auto self-stretch">
+              Save
+            </Button>
           </>
         ) : null}
       </BlockBody>
