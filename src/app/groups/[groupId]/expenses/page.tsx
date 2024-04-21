@@ -32,7 +32,12 @@ export default async function GroupExpensesList({
       <BlockTitle>Expenses</BlockTitle>
       <BlockBody>
         <div className="items-center justify-center md:flex">
-          <DateRangePicker timezone={timezone} from={from ? new Date(from) : null} to={to ? new Date(to) : null} />
+          <DateRangePicker
+            weekStartsOn={user.weekStartsOn}
+            timezone={timezone}
+            from={from ? new Date(from) : null}
+            to={to ? new Date(to) : null}
+          />
         </div>
         <Table>
           <TableHeader>

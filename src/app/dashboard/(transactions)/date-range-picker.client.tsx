@@ -4,24 +4,28 @@ import { useRef, useState } from 'react';
 import type { DateRange } from 'react-day-picker';
 import { CalendarIcon } from 'lucide-react';
 import { Button } from '~/components/ui/button';
-import { Calendar } from '~/components/ui/calendar';
+import { Calendar, type CalendarProps } from '~/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { addDays, subMilliseconds, endOfMonth, format, startOfMonth } from 'date-fns';
 import { cn } from '~/lib/utils.client';
 import { usePathname, useRouter } from 'next/navigation';
 import { fromZonedTime } from 'date-fns-tz';
+import type { User } from '@prisma/client';
 
 export type DateRangePickerProps = {
   timezone: string;
+  weekStartsOn?: User['weekStartsOn'];
   from?: Date | null;
   to?: Date | null;
 };
 
-export default function DateRangePicker({ timezone, from, to }: DateRangePickerProps) {
+export default function DateRangePicker({ timezone, from, to, weekStartsOn = 1 }: DateRangePickerProps) {
   const router = useRouter();
   const pathname = usePathname();
 
   const calendarTrigger = useRef<HTMLButtonElement>(null);
+
+  const weekStart: CalendarProps['weekStartsOn'] = weekStartsOn >= 0 && weekStartsOn <= 6 ? weekStartsOn : 1;
 
   const [period, setPeriod] = useState<DateRange | undefined>({
     from: startOfMonth(from ?? new Date()),
@@ -81,6 +85,7 @@ export default function DateRangePicker({ timezone, from, to }: DateRangePickerP
               setPeriod(p);
             }}
             numberOfMonths={1}
+            weekStartsOn={weekStart}
           />
           <div className="w-full p-2">
             <Button type="submit" className="w-full" onClick={onClick}>

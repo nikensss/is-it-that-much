@@ -36,7 +36,12 @@ export default async function GroupSettlementsList({
       <BlockTitle>Settlements</BlockTitle>
       <BlockBody className="flex grow flex-col">
         <div className="items-center justify-center gap-2 md:flex">
-          <DateRangePicker timezone={timezone} />
+          <DateRangePicker
+            weekStartsOn={user.weekStartsOn}
+            timezone={timezone}
+            from={from ? new Date(from) : null}
+            to={to ? new Date(to) : null}
+          />
         </div>
         <ScrollArea className="max-w-[92vw] grow">
           <Table>
