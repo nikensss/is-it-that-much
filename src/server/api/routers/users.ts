@@ -1,4 +1,4 @@
-import { clerkClient as clerk } from '@clerk/nextjs';
+import { clerkClient as clerk } from '@clerk/nextjs/server';
 import { createTRPCRouter, privateProcedure } from '~/server/api/trpc';
 import { z } from 'zod';
 import { subMinutes } from 'date-fns';

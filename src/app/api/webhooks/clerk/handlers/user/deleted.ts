@@ -1,4 +1,4 @@
-import type { DeletedObjectJSON } from '@clerk/nextjs/server';
+import type { DeletedObjectJSON } from '@clerk/backend';
 import { log } from 'next-axiom';
 import { db } from '~/server/db';
 

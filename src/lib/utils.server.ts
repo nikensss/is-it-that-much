@@ -1,4 +1,4 @@
-import { clerkClient as clerk } from '@clerk/nextjs';
+import { clerkClient as clerk } from '@clerk/nextjs/server';
 import { db } from '~/server/db';
 import { log } from 'next-axiom';
 import type { User } from '@prisma/client';

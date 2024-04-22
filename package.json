@@ -33,7 +33,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
-    "@clerk/nextjs": "4.29.12",
+    "@clerk/nextjs": "5.0.1",
     "@clerk/themes": "1.7.12",
     "@hookform/resolvers": "3.3.4",
     "@prisma/client": "5.12.1",

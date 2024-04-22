@@ -5,6 +5,7 @@ import { env } from '~/env';
 import { processUserCreated } from '~/app/api/webhooks/clerk/handlers/user/created';
 import { processUserUpdated } from '~/app/api/webhooks/clerk/handlers/user/updated';
 import { log } from 'next-axiom';
+import { processUserDeleted } from '~/app/api/webhooks/clerk/handlers/user/deleted';
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = env.CLERK_WEBHOOKS_SECRET;
@@ -42,6 +43,10 @@ export async function POST(req: Request) {
     case 'user.updated':
       log.debug('processing user.updated event');
       await processUserUpdated(event.data);
+      break;
+    case 'user.deleted':
+      log.debug('processing user.updated event');
+      await processUserDeleted(event.data);
       break;
     default:
       log.warn('Unknown event type:', { evt: event });

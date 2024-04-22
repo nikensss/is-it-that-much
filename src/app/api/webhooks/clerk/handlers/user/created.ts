@@ -1,4 +1,4 @@
-import type { UserJSON } from '@clerk/nextjs/server';
+import type { UserJSON } from '@clerk/backend';
 import { log } from 'next-axiom';
 import { createUserInDatabase } from '~/lib/utils.server';
 
