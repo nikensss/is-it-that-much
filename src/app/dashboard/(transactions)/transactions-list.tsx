@@ -34,7 +34,8 @@ export async function TransactionList({ type, searchParams }: TransactionOvervie
       date: t.date,
       element: (
         <PersonalTransactionRow
-          {...{ currency, key: `personal-${t.id}`, transaction: t, weekStartsOn, timezone, tags, groups }}
+          key={`personal-${t.id}`}
+          {...{ currency, transaction: t, weekStartsOn, timezone, tags, groups }}
         />
       ),
     })),
@@ -51,7 +52,7 @@ export async function TransactionList({ type, searchParams }: TransactionOvervie
   transactions.push(
     ...shared.map((s) => ({
       date: s.transaction.date,
-      element: <SharedExpenseRow {...{ shared: s, user, id: `shared-${s.id}` }} />,
+      element: <SharedExpenseRow {...{ shared: s, user }} key={`shared-${s.id}`} />,
     })),
   );
 
