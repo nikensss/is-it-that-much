@@ -77,7 +77,15 @@ export const allGroupsExpensesRouter = createTRPCRouter({
             },
           },
           include: {
-            transaction: true,
+            transaction: {
+              include: {
+                TransactionsTags: {
+                  include: {
+                    tag: true,
+                  },
+                },
+              },
+            },
             group: {
               select: {
                 id: true,

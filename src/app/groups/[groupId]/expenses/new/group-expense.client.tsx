@@ -18,6 +18,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '~/component
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { Input, InputWithCurrency } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
+import { TagInput, type Tag } from '~/components/ui/tag-input/tag-input';
 import { cn, toCents } from '~/lib/utils.client';
 import { api } from '~/trpc/react.client';
 import { groupExpenseFormSchema, type RouterOutputs } from '~/trpc/shared';
@@ -26,14 +27,15 @@ export type GroupExpenseFormProps = {
   group: Exclude<RouterOutputs['groups']['get'], null>;
   user: RouterOutputs['users']['get'];
   expense?: RouterOutputs['groups']['expenses']['get'];
+  tags: RouterOutputs['groups']['tags'];
 };
 
-export default function GroupExpenseForm({ group, user, expense }: GroupExpenseFormProps) {
+export default function GroupExpenseForm({ group, user, expense, tags }: GroupExpenseFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [isPaidOpen, setIsPaidOpen] = useState(true);
-  const [isOwedOpen, setIsOwedOpen] = useState(true);
+  const [isPaidOpen, setIsPaidOpen] = useState(false);
+  const [isOwedOpen, setIsOwedOpen] = useState(false);
 
   const form = useForm<z.infer<typeof groupExpenseFormSchema>>({
     resolver: zodResolver(groupExpenseFormSchema),
@@ -44,6 +46,7 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
       groupId: group.id,
       createdById: expense?.createdById ?? user.id,
       date: expense?.transaction.date ?? new Date(),
+      tags: expense?.transaction.TransactionsTags.map(({ tag }) => ({ id: tag.id, text: tag.name })) ?? [],
       splits: group.UserGroup.map(({ user }) => ({
         userId: user.id,
         paid: (expense?.TransactionSplit.find((s) => s.user.id === user.id)?.paid ?? 0) / 100,
@@ -127,7 +130,7 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
             </FormItem>
           )}
         />
-        <div className="flex flex-col gap-2 md:grid md:grid-cols-2">
+        <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:items-end">
           <FormField
             control={form.control}
             name="amount"
@@ -143,7 +146,6 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
                     onChange={(e) => form.setValue('amount', parseFloat(e.target.value) || 0)}
                   />
                 </FormControl>
-                <FormDescription>How much was it?</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -185,6 +187,42 @@ export default function GroupExpenseForm({ group, user, expense }: GroupExpenseF
             )}
           />
         </div>
+        <FormField
+          control={form.control}
+          name="tags"
+          render={({ field }) => (
+            <FormItem className="flex flex-col items-start">
+              <FormLabel className="text-left">Tags</FormLabel>
+              <FormControl>
+                <TagInput
+                  // enable autocomplete if there are unselected suggestions
+                  enableAutocomplete={
+                    !tags.every((t) => {
+                      return form.getValues('tags').some((tag) => tag.text === t.name);
+                    })
+                  }
+                  autocompleteFilter={(tag) => {
+                    // only shows tags that are not already selected
+                    return !form.getValues('tags').some(({ text }) => text === tag);
+                  }}
+                  autocompleteOptions={tags.map((t) => ({ id: t.id, text: t.name }))}
+                  maxTags={10}
+                  shape={'rounded'}
+                  textCase={'lowercase'}
+                  animation={'fadeIn'}
+                  {...field}
+                  placeholder="Enter a tag"
+                  tags={form.getValues('tags').map((t) => ({ id: `${t.id}`, text: t.text }))}
+                  className="max-w-[100%]"
+                  setTags={(tags) => {
+                    form.setValue('tags', tags as Tag[]);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2">
           <SplitInput
             form={form}

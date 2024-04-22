@@ -21,7 +21,7 @@ export function SharedExpenseRow({
       </TableCell>
       <TableCell>{`${shared.transaction.description} (${shared.group.name})`}</TableCell>
       <TableCell>{shared.transaction.amount / 100}</TableCell>
-      <TableCell></TableCell>
+      <TableCell>{shared.transaction.TransactionsTags.map((e) => e.tag.name).join(', ')}</TableCell>
     </TableRow>
   );
 }

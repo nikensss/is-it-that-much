@@ -7,13 +7,13 @@ export default async function GroupExpense({ params }: { params: { groupId: stri
   const group = await api.groups.get.query({ groupId: params.groupId });
   if (!group) return notFound();
 
-  const user = await api.users.get.query();
+  const [user, tags] = await Promise.all([api.users.get.query(), api.groups.tags.query({ groupId: group.id })]);
 
   return (
     <BlockBody className="flex grow flex-col">
       <BlockTitle>New expense</BlockTitle>
       <BlockBody className="flex grow flex-col">
-        <GroupExpenseForm {...{ group, user }} />
+        <GroupExpenseForm {...{ group, user, tags }} />
       </BlockBody>
     </BlockBody>
   );

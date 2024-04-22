@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import GroupBalance from '~/app/groups/[groupId]/group-balance';
 import GroupDetails from '~/app/groups/[groupId]/group-details';
-import RecentGroupActivity from '~/app/groups/[groupId]/group-activity';
+import { RecentGroupActivity } from '~/app/groups/[groupId]/group-activity';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/server';

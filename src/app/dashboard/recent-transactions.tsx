@@ -194,8 +194,8 @@ function Transaction({
   return (
     <div key={transaction.id} className="flex h-12 items-center py-2">
       <div className="flex-shrink-0">
-        <p className="text-sm">
-          {transaction.description}:
+        <p className="text-lg first-letter:uppercase">
+          <span className="font-bold">{transaction.description}</span>:
           <span className="ml-4 text-xs text-gray-500 dark:text-gray-400">
             {currencySymbol}
             {transaction.amount / 100}

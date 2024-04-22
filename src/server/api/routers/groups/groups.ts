@@ -9,6 +9,26 @@ import { createTRPCRouter, groupProcedure, privateProcedure } from '~/server/api
 export const groupsRouter = createTRPCRouter({
   get: groupProcedure.query(async ({ ctx: { group } }) => group),
 
+  tags: groupProcedure.query(async ({ ctx: { db, group } }) => {
+    return db.tag.findMany({
+      where: {
+        TransactionsTags: {
+          some: {
+            transaction: {
+              SharedTransaction: {
+                groupId: group.id,
+              },
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  }),
+
   leave: groupProcedure.mutation(async ({ ctx: { db, user, group } }) => {
     return db.usersGroups.deleteMany({ where: { user, groupId: group.id } });
   }),

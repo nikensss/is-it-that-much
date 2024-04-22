@@ -31,7 +31,7 @@ export type RegisterTransactionProps = {
   tags: RouterOutputs['tags']['all'];
 };
 
-export default function RegisterTransaction({
+export function RegisterTransaction({
   currency,
   timezone,
   weekStartsOn,
@@ -65,7 +65,7 @@ export default function RegisterTransaction({
     tags: z.array(
       z.object({
         id: z.string(),
-        text: z.string().min(3).max(50),
+        text: z.string().min(3).max(25),
       }),
     ),
   });

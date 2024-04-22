@@ -55,6 +55,12 @@ export const groupExpenseFormSchema = z.object({
   date: z.date(),
   groupId: z.string().cuid(),
   createdById: z.string().cuid(),
+  tags: z.array(
+    z.object({
+      id: z.string(),
+      text: z.string().min(3, 'Tag must be at least 3 characters').max(20, 'Tag must be at most 20 characters'),
+    }),
+  ),
   splits: z.array(
     z.object({
       userId: z.string().cuid(),

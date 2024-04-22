@@ -14,9 +14,10 @@ import {
 import DateDisplay from '~/app/_components/date-display';
 import RegisterSettlement from '~/app/groups/[groupId]/register-settlement.client';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { Badge } from '~/components/ui/badge';
 import type { RouterOutputs } from '~/trpc/shared';
 
-export default function RecentGroupActivity({
+export function RecentGroupActivity({
   expenses,
   settlements,
   user,
@@ -99,6 +100,16 @@ export function SharedTransactionView({
             <div className="text-xs text-gray-500">
               <DateDisplay timezone={user.timezone} date={sharedTransaction.transaction.date} />
             </div>
+          </div>
+
+          <div className="ml-6 h-full overflow-hidden">
+            {sharedTransaction.transaction.TransactionsTags.map(({ tag }) => {
+              return (
+                <Badge key={tag.id} className="pointer-events-none mx-0.5 mt-1.5 inline-block" variant="secondary">
+                  {tag.name}
+                </Badge>
+              );
+            })}
           </div>
         </BlockListItemBody>
       </BlockListItem>

@@ -14,7 +14,21 @@ export const groupExpensesRouter = createTRPCRouter({
           groupId: group.id,
         },
         include: {
-          transaction: true,
+          transaction: {
+            include: {
+              TransactionsTags: {
+                select: {
+                  tagId: true,
+                  tag: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
           TransactionSplit: {
             include: {
               user: {
@@ -38,7 +52,7 @@ export const groupExpensesRouter = createTRPCRouter({
       await db.sharedTransaction.delete({ where: { id: sharedTransactionId, groupId: group.id } });
     }),
 
-  upsert: groupProcedure.input(groupExpenseFormSchema).mutation(async ({ ctx: { db }, input }) => {
+  upsert: groupProcedure.input(groupExpenseFormSchema).mutation(async ({ ctx: { db, user, group }, input }) => {
     const expense = input.expenseId ? await db.sharedTransaction.findUnique({ where: { id: input.expenseId } }) : null;
 
     const transaction = await db.transaction.upsert({
@@ -55,6 +69,28 @@ export const groupExpensesRouter = createTRPCRouter({
         description: input.description,
         type: TransactionType.EXPENSE,
       },
+    });
+
+    // delete all the tags the transaction has
+    await db.transactionsTags.deleteMany({ where: { transactionId: transaction.id } });
+
+    // ensure all the tags for this transaction exist
+    await db.tag.createMany({
+      data: input.tags.map(({ text }) => ({ name: text, createdById: user.id })),
+      skipDuplicates: true,
+    });
+
+    const dbTags = await db.tag.findMany({
+      where: {
+        createdById: {
+          in: group.UserGroup.map(({ userId }) => userId),
+        },
+        name: { in: input.tags.map(({ text }) => text) },
+      },
+    });
+
+    await db.transactionsTags.createMany({
+      data: dbTags.map((tag) => ({ tagId: tag.id, transactionId: transaction.id })),
     });
 
     const sharedTransaction = await db.sharedTransaction.upsert({
@@ -133,7 +169,15 @@ export const groupExpensesRouter = createTRPCRouter({
           groupId: group.id,
         },
         include: {
-          transaction: true,
+          transaction: {
+            include: {
+              TransactionsTags: {
+                include: {
+                  tag: true,
+                },
+              },
+            },
+          },
           group: {
             select: {
               id: true,

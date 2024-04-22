@@ -13,11 +13,13 @@ export default async function GroupExpenseOverview({ params }: { params: { group
   const expense = await api.groups.expenses.get.query({ groupId: group.id, expenseId: params.expenseId });
   if (!expense) return notFound();
 
+  const tags = await api.groups.tags.query({ groupId: group.id });
+
   return (
     <BlockBody className="flex grow flex-col">
       <BlockTitle>Edit expense</BlockTitle>
       <BlockBody className="flex grow flex-col">
-        <GroupExpenseForm {...{ group, user, expense }} />
+        <GroupExpenseForm {...{ group, user, expense, tags }} />
       </BlockBody>
     </BlockBody>
   );
