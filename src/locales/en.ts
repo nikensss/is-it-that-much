@@ -21,4 +21,9 @@ export default {
   'navbar.groups': 'Groups',
   'navbar.friends': 'Friends',
   'navbar.settings': 'Settings',
+  footer: 'All rights reserved',
+  'settings.username': 'Username',
+  'settings.timezone': 'Timezone',
+  'settings.currency': 'Currency',
+  'settings.weekStartsOn': 'Week Starts On',
 } as const;

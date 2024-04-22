@@ -12,7 +12,7 @@ export default {
   'home.features.categoryWiseSorting.description': 'Clasifica tus gastos basándote en las categorías.',
   'home.features.visualRepresentation.title': 'Representación Visual',
   'home.features.visualRepresentation.description': 'Obtén una representación visual de tus gastos.',
-  'navbar.title': 'Tanto he gastado?',
+  'navbar.title': 'Is It That Much?',
   'navbar.features': 'Características',
   'navbar.pricing': 'Precios',
   'navbar.about': 'Acerca de',
@@ -21,4 +21,9 @@ export default {
   'navbar.groups': 'Grupos',
   'navbar.friends': 'Amigos',
   'navbar.settings': 'Ajustes',
+  footer: 'Todos los derechos reservados',
+  'settings.username': 'Nombre de usuario',
+  'settings.timezone': 'Zona horaria',
+  'settings.currency': 'Moneda',
+  'settings.weekStartsOn': 'Inicio de la semana',
 } as const;

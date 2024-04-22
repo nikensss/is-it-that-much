@@ -15,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { cn, displayCurrency, displayTimezone } from '~/lib/utils.client';
+import { useScopedI18n } from '~/locales/client';
 import { api } from '~/trpc/react.client';
 
 export type SettingsFormProps = {
@@ -25,6 +26,7 @@ export type SettingsFormProps = {
 };
 
 export default function SettingsForm({ username, timezone, currency, weekStartsOn }: SettingsFormProps) {
+  const t = useScopedI18n('settings');
   const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
 
   const router = useRouter();
@@ -106,7 +108,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
           name="username"
           render={({ field }) => (
             <FormItem className="w-full pb-4 md:w-[360px]">
-              <FormLabel className="block text-center md:text-left">Username</FormLabel>
+              <FormLabel className="block text-center md:text-left">{t('username')}</FormLabel>
               <FormControl>
                 <div
                   className={cn(
