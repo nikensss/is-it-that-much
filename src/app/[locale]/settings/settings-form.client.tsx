@@ -27,6 +27,7 @@ export type SettingsFormProps = {
 
 export default function SettingsForm({ username, timezone, currency, weekStartsOn }: SettingsFormProps) {
   const t = useScopedI18n('settings');
+
   const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
 
   const router = useRouter();
@@ -180,7 +181,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
           name="timezone"
           render={({ field }) => (
             <FormItem className="w-full pb-4">
-              <FormLabel className="block text-center md:text-left">Timezone</FormLabel>
+              <FormLabel className="block text-center md:text-left">{t('timezone')}</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl className="w-full md:w-[360px]">
@@ -232,7 +233,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
           name="currency"
           render={({ field }) => (
             <FormItem className="w-full pb-4">
-              <FormLabel className="block text-center md:text-left">Currency</FormLabel>
+              <FormLabel className="block text-center md:text-left">{t('currency')}</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl className="w-full md:w-[360px]">
@@ -281,7 +282,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
           name="weekStartsOn"
           render={({ field }) => (
             <FormItem className="w-full pb-4">
-              <FormLabel className="block text-center md:text-left">Week starts on</FormLabel>
+              <FormLabel className="block text-center md:text-left">{t('weekStartsOn')}</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl className="w-full md:w-[360px]">
