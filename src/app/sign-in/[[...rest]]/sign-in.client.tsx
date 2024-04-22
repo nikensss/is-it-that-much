@@ -9,11 +9,7 @@ export default function SignIn() {
 
   return (
     <div className="self-center">
-      <ClerkSignIn
-        appearance={{ ...(theme === 'dark' ? { baseTheme: dark } : {}) }}
-        afterSignInUrl="/dashboard"
-        afterSignUpUrl="/dashboard"
-      />
+      <ClerkSignIn appearance={{ ...(theme === 'dark' ? { baseTheme: dark } : {}) }} />
     </div>
   );
 }
