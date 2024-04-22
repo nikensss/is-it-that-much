@@ -1,9 +1,11 @@
 import { TransactionType } from '@prisma/client';
+import { TRPCError } from '@trpc/server';
 import { log } from 'next-axiom';
 import { z } from 'zod';
 import { toCents } from '~/lib/utils.client';
 import {
   createTRPCRouter,
+  groupProcedure,
   personalTransactionPeriodProcedure,
   personalTransactionProcedure,
   privateProcedure,
@@ -293,5 +295,48 @@ export const personalTransactionsRouter = createTRPCRouter({
           },
         });
       }
+    }),
+
+  transfer: groupProcedure
+    .input(
+      z.object({
+        transactionId: z.string().cuid(),
+        groupId: z.string().cuid(),
+      }),
+    )
+    .mutation(async ({ ctx: { db, user, group }, input: { transactionId } }) => {
+      const transaction = await db.transaction.findUnique({
+        where: {
+          id: transactionId,
+          PersonalTransaction: {
+            userId: user.id,
+          },
+        },
+      });
+
+      if (!transaction) throw new TRPCError({ code: 'NOT_FOUND' });
+
+      await db.personalTransaction.delete({ where: { transactionId: transaction.id } });
+
+      const sharedTransaction = await db.sharedTransaction.create({
+        data: {
+          transactionId: transaction.id,
+          groupId: group.id,
+          createdById: user.id,
+          TransactionSplit: {
+            createMany: {
+              data: group.UserGroup.map(({ userId }) => {
+                return {
+                  userId,
+                  paid: userId === user.id ? transaction.amount : 0,
+                  owed: userId === user.id ? transaction.amount : 0,
+                };
+              }),
+            },
+          },
+        },
+      });
+
+      return { sharedTransactionId: sharedTransaction.id, groupId: group.id };
     }),
 });

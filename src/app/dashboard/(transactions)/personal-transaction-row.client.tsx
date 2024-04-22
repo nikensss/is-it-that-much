@@ -25,6 +25,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { Input, InputWithCurrency } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
 import { TableCell, TableRow } from '~/components/ui/table';
 import { type Tag, TagInput } from '~/components/ui/tag-input/tag-input';
 import { cn } from '~/lib/utils.client';
@@ -37,6 +38,7 @@ export type UpdateTransactionProps = {
   weekStartsOn: number;
   transaction: RouterOutputs['transactions']['personal']['period']['list'][number];
   tags: RouterOutputs['tags']['all'];
+  groups: RouterOutputs['groups']['all']['get'];
 };
 
 export function PersonalTransactionRow({
@@ -45,10 +47,16 @@ export function PersonalTransactionRow({
   weekStartsOn,
   transaction,
   tags,
+  groups,
 }: UpdateTransactionProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [isConvertToGroupExpenseOpen, setIsConvertToGroupExpenseOpen] = useState(false);
+  const [isConvertingToGroupExpense, setIsConvertingToGroupExpense] = useState(false);
+  const [groupId, setGroupId] = useState<string | null>(null);
   const calendarTrigger = useRef<HTMLButtonElement>(null);
 
   const resetForm = () => {
@@ -69,6 +77,17 @@ export function PersonalTransactionRow({
     onMutate: () => setIsLoading(true),
     onSettled: () => setIsOpen(false),
     onSuccess: () => router.refresh(),
+  });
+
+  const transfer = api.transactions.personal.transfer.useMutation({
+    onMutate: () => setIsConvertingToGroupExpense(true),
+    onSettled: () => {
+      setIsConvertingToGroupExpense(false);
+      setIsOpen(false);
+    },
+    onSuccess: ({ groupId, sharedTransactionId }) => {
+      router.push(`/groups/${groupId}/expenses/${sharedTransactionId}`);
+    },
   });
 
   const formSchema = z.object({
@@ -243,6 +262,44 @@ export function PersonalTransactionRow({
                 </FormItem>
               )}
             />
+            {groups.length > 0 ? (
+              <Dialog open={isConvertToGroupExpenseOpen} onOpenChange={setIsConvertToGroupExpenseOpen}>
+                <DialogTrigger asChild type={undefined}>
+                  <Button type="button" variant="secondary">
+                    Convert to group expense
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">
+                  <DialogHeader>
+                    <DialogTitle>Send &ldquo;{transaction.description}&rdquo; to a group</DialogTitle>
+                  </DialogHeader>
+                  <Select onValueChange={setGroupId}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a group" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {groups.map((group) => (
+                        <SelectItem value={group.id} key={group.id}>
+                          {group.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <DialogFooter>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => {
+                        if (!groupId) throw new Error('Group ID is missing');
+                        transfer.mutate({ transactionId: transaction.id, groupId });
+                      }}
+                    >
+                      {isConvertingToGroupExpense ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Send'}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            ) : null}
             <DialogFooter className="flex flex-col gap-4">
               <DeleteTransaction transaction={transaction} onDelete={() => setIsOpen(false)} />
               <Button className="grow" disabled={isLoading} type="submit">

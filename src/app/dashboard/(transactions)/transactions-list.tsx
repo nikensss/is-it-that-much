@@ -14,7 +14,7 @@ export type TransactionOverviewProps = {
 };
 
 export async function TransactionList({ type, searchParams }: TransactionOverviewProps) {
-  const user = await api.users.get.query();
+  const [user, groups] = await Promise.all([api.users.get.query(), api.groups.all.get.query()]);
   const weekStartsOn = user?.weekStartsOn ?? 1;
   const timezone = user?.timezone ?? 'Europe/Amsterdam';
   const currencySymbol = currencySymbolMap[user?.currency ?? 'EUR'] ?? '€';
@@ -34,7 +34,7 @@ export async function TransactionList({ type, searchParams }: TransactionOvervie
       date: t.date,
       element: (
         <PersonalTransactionRow
-          {...{ currency, key: `personal-${t.id}`, transaction: t, weekStartsOn, timezone, tags }}
+          {...{ currency, key: `personal-${t.id}`, transaction: t, weekStartsOn, timezone, tags, groups }}
         />
       ),
     })),
