@@ -89,10 +89,12 @@ export function SharedTransactionView({
           </div>
           <div className="flex flex-col">
             <p>
-              <span className="inline-block first-letter:uppercase">{formatter.format(payersNames)}</span> paid{' '}
+              <span className="mr-2 inline-block font-bold first-letter:uppercase">
+                {sharedTransaction.transaction.description}:
+              </span>
               {sharedTransaction.transaction.amount / 100}
-              {currencySymbolMap[user.currency ?? 'EUR']} for{' '}
-              <span className="inline-block first-letter:lowercase">{sharedTransaction.transaction.description}</span>
+              {currencySymbolMap[user.currency ?? 'EUR']}
+              <span className="ml-2 inline-block first-letter:uppercase">({formatter.format(payersNames)})</span>
             </p>
             <div className="text-xs text-gray-500">
               <DateDisplay timezone={user.timezone} date={sharedTransaction.transaction.date} />
@@ -117,7 +119,7 @@ export function RegisteredSettlementView({
 }) {
   const parts: string[] = [];
   if (settlement.from.id === user.id) {
-    parts.push(`You paid ${settlement.to.firstName} ${settlement.to.lastName}`);
+    parts.push(`You paid`);
   } else {
     parts.push(`${settlement.from.firstName} ${settlement.from.lastName} paid`);
   }
