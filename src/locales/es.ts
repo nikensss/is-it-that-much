@@ -12,4 +12,13 @@ export default {
   'home.features.categoryWiseSorting.description': 'Clasifica tus gastos basándote en las categorías.',
   'home.features.visualRepresentation.title': 'Representación Visual',
   'home.features.visualRepresentation.description': 'Obtén una representación visual de tus gastos.',
+  'navbar.title': 'Tanto he gastado?',
+  'navbar.features': 'Características',
+  'navbar.pricing': 'Precios',
+  'navbar.about': 'Acerca de',
+  'navbar.contact': 'Contacto',
+  'navbar.dashboard': 'Panel de Control',
+  'navbar.groups': 'Grupos',
+  'navbar.friends': 'Amigos',
+  'navbar.settings': 'Ajustes',
 } as const;

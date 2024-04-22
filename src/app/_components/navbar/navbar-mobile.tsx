@@ -9,8 +9,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { AvatarIcon } from '@radix-ui/react-icons';
 import { ModeToggle } from '~/app/_components/mode-toggle.client';
 import NavBarLink from '~/app/_components/navbar/navbar-link.client';
+import { getScopedI18n } from '~/locales/server';
 
-export default function MobileNavbar() {
+export default async function MobileNavbar() {
+  const t = await getScopedI18n('navbar');
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -19,17 +21,17 @@ export default function MobileNavbar() {
       <SheetContent className="flex w-9/12 flex-col items-end pt-6 text-xl">
         <SignedOut>
           <ModeToggle />
-          <SheetLinkClose href={'#'}>Features</SheetLinkClose>
-          <SheetLinkClose href={'#'}>Pricing</SheetLinkClose>
-          <SheetLinkClose href={'#'}>About</SheetLinkClose>
-          <SheetLinkClose href={'#'}>Contact</SheetLinkClose>
+          <SheetLinkClose href={'#'}>{t('features')}</SheetLinkClose>
+          <SheetLinkClose href={'#'}>{t('pricing')}</SheetLinkClose>
+          <SheetLinkClose href={'#'}>{t('about')}</SheetLinkClose>
+          <SheetLinkClose href={'#'}>{t('contact')}</SheetLinkClose>
         </SignedOut>
         <SignedIn>
           <ModeToggle />
-          <SheetLinkClose href={'/dashboard'}>Dashboard</SheetLinkClose>
-          <SheetLinkClose href={'/groups'}>Groups</SheetLinkClose>
-          <SheetLinkClose href={'/friends'}>Friends</SheetLinkClose>
-          <SheetLinkClose href={'/settings'}>Settings</SheetLinkClose>
+          <SheetLinkClose href={'/dashboard'}>{t('dashboard')}</SheetLinkClose>
+          <SheetLinkClose href={'/groups'}>{t('groups')}</SheetLinkClose>
+          <SheetLinkClose href={'/friends'}>{t('friends')}</SheetLinkClose>
+          <SheetLinkClose href={'/settings'}>{t('settings')}</SheetLinkClose>
           <AccordionUserButton />
         </SignedIn>
       </SheetContent>
