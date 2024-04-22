@@ -1,9 +1,18 @@
 import { authMiddleware } from '@clerk/nextjs';
+import { createI18nMiddleware } from 'next-international/middleware';
+
+const I18nMiddleware = createI18nMiddleware({
+  locales: ['en', 'es'],
+  defaultLocale: 'en',
+});
 
 // This example protects all routes including api/trpc routes
 // Please edit this to allow other routes to be public as needed.
 // See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your Middleware
-export default authMiddleware({ publicRoutes: ['/', '/sign-in', '/api/webhooks(.*)'] });
+export default authMiddleware({
+  publicRoutes: ['/:locale', '/:locale/sign-in', '/api/webhooks(.*)'],
+  beforeAuth: (req) => I18nMiddleware(req),
+});
 
 export const config = {
   matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
