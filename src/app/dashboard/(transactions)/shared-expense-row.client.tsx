@@ -13,6 +13,7 @@ export function SharedExpenseRow({
   shared: RouterOutputs['groups']['all']['expenses']['period']['list'][number];
 }) {
   const router = useRouter();
+  const amount = shared.TransactionSplit.reduce((acc, { userId, paid }) => acc + (userId === user.id ? paid : 0), 0);
 
   return (
     <TableRow className="cursor-pointer" onClick={() => router.push(`/groups/${shared.groupId}/expenses/${shared.id}`)}>
@@ -20,7 +21,7 @@ export function SharedExpenseRow({
         {formatInTimeZone(shared.transaction.date, user.timezone ?? 'Europe/Amsterdam', 'LLLL d, yyyy')}
       </TableCell>
       <TableCell>{`${shared.transaction.description} (${shared.group.name})`}</TableCell>
-      <TableCell>{shared.transaction.amount / 100}</TableCell>
+      <TableCell>{amount / 100}</TableCell>
       <TableCell>{shared.transaction.TransactionsTags.map((e) => e.tag.name).join(', ')}</TableCell>
     </TableRow>
   );

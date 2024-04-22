@@ -54,7 +54,7 @@ export const allGroupsExpensesRouter = createTRPCRouter({
               ? {
                   TransactionSplit: {
                     some: {
-                      userId: user.id,
+                      user,
                       paid: {
                         gt: 0,
                       },
@@ -96,15 +96,11 @@ export const allGroupsExpensesRouter = createTRPCRouter({
               ...(input.onlyWhereUserPaid
                 ? {
                     where: {
-                      userId: user.id,
-                      paid: {
-                        gt: 0,
-                      },
+                      user,
                     },
                   }
                 : {}),
-              select: {
-                paid: true,
+              include: {
                 user: {
                   select: {
                     id: true,
@@ -164,6 +160,13 @@ export const allGroupsExpensesRouter = createTRPCRouter({
             },
           },
           TransactionSplit: {
+            ...(input.onlyWhereUserPaid
+              ? {
+                  where: {
+                    user,
+                  },
+                }
+              : {}),
             include: {
               user: {
                 select: {
