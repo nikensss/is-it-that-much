@@ -180,7 +180,11 @@ export default function RegisterSettlement({ group, user, children, settlement }
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
-                        <Button variant="outline" ref={calendarTrigger} className="w-full text-left font-normal">
+                        <Button
+                          variant="outline"
+                          ref={calendarTrigger}
+                          className="w-full text-left font-normal dark:bg-primary-600"
+                        >
                           {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>

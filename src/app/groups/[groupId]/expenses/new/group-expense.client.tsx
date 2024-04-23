@@ -159,7 +159,7 @@ export default function GroupExpenseForm({ group, user, expense, tags }: GroupEx
                 <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                   <PopoverTrigger asChild>
                     <FormControl>
-                      <Button variant="outline" className="w-full text-left font-normal">
+                      <Button variant="outline" className="w-full text-left font-normal dark:bg-primary-600">
                         {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>

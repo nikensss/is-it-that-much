@@ -60,7 +60,7 @@ export default function DateRangePicker({ timezone, from, to, weekStartsOn = 1 }
             id="date"
             variant={'outline'}
             className={cn(
-              'w-full justify-center gap-2 text-left font-normal shadow-primary-400',
+              'w-full justify-center gap-2 text-left font-normal dark:bg-primary-600',
               !period && 'text-muted-foreground',
             )}
           >

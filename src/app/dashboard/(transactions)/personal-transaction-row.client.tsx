@@ -194,7 +194,7 @@ export function PersonalTransactionRow({
                             variant={'outline'}
                             ref={calendarTrigger}
                             className={cn(
-                              'ml-0.5 min-w-[240px] pl-3 text-left font-normal',
+                              'ml-0.5 min-w-[240px] pl-3 text-left font-normal dark:bg-primary-600',
                               !field.value && 'text-muted-foreground',
                               'w-full py-0',
                             )}
