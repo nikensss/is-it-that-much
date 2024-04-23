@@ -22,7 +22,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   children,
 }) => {
   return (
-    <Command className="border">
+    <Command className="border border-transparent dark:border-white dark:bg-primary-700">
       {children}
       <CommandList>
         <CommandGroup heading="Previously used">
@@ -36,7 +36,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
               }}
               key={option.id}
             >
-              <CommandItem className="cursor-pointer">
+              <CommandItem className="cursor-pointer rounded-md transition-all dark:text-white">
                 <div>{option.text}</div>
               </CommandItem>
             </div>

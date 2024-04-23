@@ -118,6 +118,7 @@ export const Tag: React.FC<TagProps> = ({
           'justify-between': direction === 'column',
           'cursor-pointer': draggable,
         },
+        'dark:bg-primary-600',
       )}
       onClick={() => onTagClick?.(tagObj)}
     >
@@ -129,9 +130,9 @@ export const Tag: React.FC<TagProps> = ({
           e.stopPropagation(); // Prevent event from bubbling up to the tag span
           onRemoveTag(tagObj.id);
         }}
-        className={cn('h-full px-3 py-1 hover:bg-transparent')}
+        className={cn('group ml-2 h-full rounded-l-none px-2 py-1  hover:bg-transparent')}
       >
-        <X size={14} />
+        <X size={14} className="transition-all group-hover:rotate-[90deg]" />
       </Button>
     </span>
   );
