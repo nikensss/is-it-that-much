@@ -30,6 +30,8 @@ export type GroupExpenseFormProps = {
   tags: RouterOutputs['groups']['tags'];
 };
 
+const buttonClasses =
+  'justify-self-end bg-primary-300 hover:bg-primary-800 hover:text-primary-200 dark:bg-primary-800 dark:text-primary-200 dark:hover:bg-primary-300 hover:dark:text-primary-800';
 export default function GroupExpenseForm({ group, user, expense, tags }: GroupExpenseFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -316,7 +318,7 @@ export default function GroupExpenseForm({ group, user, expense, tags }: GroupEx
 
                 form.setValue('splits', splits);
               }}
-              className="justify-self-end bg-primary-300 hover:bg-primary-800 hover:text-primary-200 dark:bg-primary-800 dark:hover:bg-primary-300 hover:dark:text-primary-800"
+              className={buttonClasses}
             >
               Split equally
             </Button>
@@ -435,7 +437,7 @@ function SplitInput({
                 {onPaidForEverything ? (
                   <Button
                     type="button"
-                    className="justify-self-end bg-primary-300 hover:bg-primary-800 hover:text-primary-200 dark:bg-primary-800 dark:hover:bg-primary-300 hover:dark:text-primary-800"
+                    className={buttonClasses}
                     variant="secondary"
                     onClick={() => onPaidForEverything(u)}
                   >
@@ -445,7 +447,7 @@ function SplitInput({
                 {onPaidRemainingAmount ? (
                   <Button
                     type="button"
-                    className="justify-self-end bg-primary-300 hover:bg-primary-800 hover:text-primary-200 dark:bg-primary-800 dark:hover:bg-primary-300 hover:dark:text-primary-800"
+                    className={buttonClasses}
                     variant="secondary"
                     onClick={() => onPaidRemainingAmount(u)}
                   >
