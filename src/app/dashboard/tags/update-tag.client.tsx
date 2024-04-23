@@ -89,7 +89,7 @@ export function UpdateTag({ tag }: UpdateTagProps) {
                 </FormItem>
               )}
             />
-            <DialogFooter className="flex flex-col gap-4">
+            <DialogFooter>
               <DeleteTag tag={tag} onDelete={() => setIsOpen(false)} />
               <Button className="grow" disabled={isLoading} type="submit">
                 {isLoading ? (

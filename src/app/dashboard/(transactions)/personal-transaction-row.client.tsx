@@ -262,55 +262,57 @@ export function PersonalTransactionRow({
                 </FormItem>
               )}
             />
-            {groups.length > 0 ? (
-              <Dialog open={isConvertToGroupExpenseOpen} onOpenChange={setIsConvertToGroupExpenseOpen}>
-                <DialogTrigger asChild type={undefined}>
-                  <Button type="button" variant="secondary">
-                    Convert to group expense
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">
-                  <DialogHeader>
-                    <DialogTitle>Send &ldquo;{transaction.description}&rdquo; to a group</DialogTitle>
-                  </DialogHeader>
-                  <Select onValueChange={setGroupId}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a group" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {groups.map((group) => (
-                        <SelectItem value={group.id} key={group.id}>
-                          {group.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <DialogFooter>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => {
-                        if (!groupId) throw new Error('Group ID is missing');
-                        transfer.mutate({ transactionId: transaction.id, groupId });
-                      }}
-                    >
-                      {isConvertingToGroupExpense ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Send'}
+            <DialogFooter className="flex lg:flex-col">
+              {groups.length > 0 ? (
+                <Dialog open={isConvertToGroupExpenseOpen} onOpenChange={setIsConvertToGroupExpenseOpen}>
+                  <DialogTrigger asChild type={undefined}>
+                    <Button type="button" variant="secondary">
+                      Convert to group expense
                     </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            ) : null}
-            <DialogFooter className="flex flex-col gap-4">
-              <DeleteTransaction transaction={transaction} onDelete={() => setIsOpen(false)} />
-              <Button className="grow" disabled={isLoading} type="submit">
-                {isLoading ? (
-                  <Loader2 className="m-4 h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    <Save className="mr-2" /> Save
-                  </>
-                )}
-              </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-md max-sm:w-11/12">
+                    <DialogHeader>
+                      <DialogTitle>Send &ldquo;{transaction.description}&rdquo; to a group</DialogTitle>
+                    </DialogHeader>
+                    <Select onValueChange={setGroupId}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a group" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {groups.map((group) => (
+                          <SelectItem value={group.id} key={group.id}>
+                            {group.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <DialogFooter>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => {
+                          if (!groupId) throw new Error('Group ID is missing');
+                          transfer.mutate({ transactionId: transaction.id, groupId });
+                        }}
+                      >
+                        {isConvertingToGroupExpense ? <Loader2 className="m-4 h-4 w-4 animate-spin" /> : 'Send'}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              ) : null}
+              <div className="flex flex-col gap-2 lg:flex-row">
+                <DeleteTransaction transaction={transaction} onDelete={() => setIsOpen(false)} />
+                <Button className="grow" disabled={isLoading} type="submit">
+                  {isLoading ? (
+                    <Loader2 className="m-4 h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Save className="mr-2" /> Save
+                    </>
+                  )}
+                </Button>
+              </div>
             </DialogFooter>
           </form>
         </Form>
@@ -341,7 +343,7 @@ function DeleteTransaction({ transaction, onDelete }: DeleteTransactionProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="mt-2 min-w-[70px] grow md:mt-0" variant="destructive">
+        <Button className="min-w-[70px] grow md:mt-0" variant="destructive">
           <Trash2 className="mr-2" /> Delete
         </Button>
       </DialogTrigger>
