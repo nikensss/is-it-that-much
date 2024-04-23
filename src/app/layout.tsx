@@ -4,7 +4,6 @@ import { TRPCReactProvider } from '~/trpc/react.client';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Footer } from '~/app/_components/footer';
 import { NavBar } from '~/app/_components/navbar/navbar';
-import { Analytics } from '@vercel/analytics/react';
 import { cn } from '~/lib/utils.client';
 import { ThemeProvider } from '~/app/_components/theme-provider.client';
 
@@ -37,7 +36,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </main>
               <Footer />
             </div>
-            <Analytics />
           </ThemeProvider>
         </body>
       </html>
