@@ -94,7 +94,7 @@ export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }
               id="file"
               type="file"
               className="hidden"
-              onChange={async () => {
+              onChange={() => {
                 const file = fileInput.current?.files?.[0];
                 if (!file) {
                   console.error('No file selected');
@@ -360,5 +360,5 @@ function getColumns(records: Record<string, unknown>[]): string[] {
     }
   }
 
-  return [...columns];
+  return [...columns].filter((c) => typeof c === 'string' && c.length > 0);
 }
