@@ -1,6 +1,9 @@
 import { db } from '~/server/db';
 
 export async function reset() {
+  await db.friendRequest.deleteMany({});
+  await db.settlement.deleteMany({});
+  await db.usernameLocks.deleteMany({});
   await db.transactionsTags.deleteMany({});
   await db.tag.deleteMany({});
   await db.transactionSplit.deleteMany({});

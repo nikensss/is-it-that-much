@@ -1,3 +1,0 @@
-DROP DATABASE IF EXISTS "is-it-that-much-dev-db";
-ALTER DATABASE "verceldb" RENAME TO "is-it-that-much-dev-db";
-

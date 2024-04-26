@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+from_csv() {
+  while IFS= read -r TABLE_NAME; do
+    echo "importing from $TABLE_NAME.csv"
+    COLS=$(head -1 scripts/csv/$TABLE_NAME.csv | tr -d '\n' | perl -pe 's/([\w]+)/"\1"/g;s/;/,/g')
+    psql $DATABASE_URL -c "ALTER TABLE $TABLE_NAME DISABLE TRIGGER ALL;"
+    output=$(psql $DATABASE_URL -c "\COPY $TABLE_NAME ($COLS) FROM './scripts/csv/$TABLE_NAME.csv' WITH csv DELIMITER ';' HEADER;")
+    psql $DATABASE_URL -c "ALTER TABLE $TABLE_NAME ENABLE TRIGGER ALL;"
+    echo " ($output)"
+  done
+}
+
+ls -1 ./scripts/csv | perl -pe 's/^(.*).csv$/\1/' | from_csv

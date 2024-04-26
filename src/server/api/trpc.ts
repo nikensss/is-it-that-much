@@ -92,6 +92,11 @@ export const privateProcedure = t.procedure.use(async ({ ctx, next }) => {
     await clerk.users.updateUser(clerkUser.id, { externalId: user.id });
   }
 
+  if (user.externalId !== userId) {
+    await ctx.db.user.update({ where: { id: user.id }, data: { externalId: userId } });
+    return next({ ctx: { user: await ctx.db.user.findUnique({ where: { email } }) } });
+  }
+
   return next({ ctx: { user } });
 });
 

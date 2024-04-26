@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-
-echo "enter snapshot name: "
-read SNAPSHOT_NAME
-TARGET="./scripts/snapshots/$(date -u +%Y-%m-%dT%H:%M:%SZ)__"$SNAPSHOT_NAME""
-
-pg_dump -d "$DATABASE_URL" -j 8 -Fd -f "$TARGET"
