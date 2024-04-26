@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+to_csv() {
+  TABLE_NAME=$1
+  echo -n "exporting $TABLE_NAME to csv"
+  output=$(psql $DATABASE_URL -c "\copy (select * from $TABLE_NAME) to ./scripts/csv/$TABLE_NAME.csv with csv delimiter ';' header;")
+  echo " ($output)"
+}
+
+export -f to_csv
+
+psql $DATABASE_URL -t -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public';" | xargs -I {} bash -c 'to_csv "$@"' _ {}
+
