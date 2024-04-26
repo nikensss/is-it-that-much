@@ -3,10 +3,9 @@ import { log } from 'next-axiom';
 import { db } from '~/server/db';
 
 export async function processUserUpdated(user: UserJSON) {
-  const email = user.email_addresses[0]?.email_address;
+  const email = user.email_addresses.find((e) => e.id === user.primary_email_address_id)?.email_address;
   const emailParts = email?.split('@') ?? [];
-  emailParts.pop();
-  const emailLocalPart = emailParts.join('@').toLowerCase();
+  const emailLocalPart = emailParts.slice(0, -1).join('@').toLowerCase();
 
   const userData = {
     username: user.username,

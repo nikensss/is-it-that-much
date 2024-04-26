@@ -6,7 +6,7 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient as clerk } from '@clerk/nextjs/server';
 import { TransactionType, type User } from '@prisma/client';
 import { TRPCError, initTRPC } from '@trpc/server';
 import { endOfMonth, startOfMonth } from 'date-fns';
@@ -79,10 +79,20 @@ export const privateProcedure = t.procedure.use(async ({ ctx, next }) => {
   const { userId } = auth();
   if (!userId) throw new TRPCError({ code: 'FORBIDDEN' });
 
-  const user = await ctx.db.user.findUnique({ where: { externalId: userId } });
-  if (user) return next({ ctx: { user } });
+  const clerkUser = await clerk.users.getUser(userId);
+  if (!clerkUser) throw new TRPCError({ code: 'FORBIDDEN' });
 
-  return next({ ctx: { user: await createUserInDatabase(userId) } });
+  const email = clerkUser.primaryEmailAddress?.emailAddress;
+  if (!email) throw new TRPCError({ code: 'FORBIDDEN' });
+
+  const user = await ctx.db.user.findUnique({ where: { email } });
+  if (!user) return next({ ctx: { user: await createUserInDatabase(userId) } });
+
+  if (clerkUser.externalId !== user.id) {
+    await clerk.users.updateUser(clerkUser.id, { externalId: user.id });
+  }
+
+  return next({ ctx: { user } });
 });
 
 export const personalTransactionProcedure = privateProcedure
