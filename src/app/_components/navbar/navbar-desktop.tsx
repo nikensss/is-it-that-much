@@ -19,7 +19,7 @@ export default function DesktopNavbar() {
       </SignedIn>
       <SignedIn>
         <div className="px-2">
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         </div>
       </SignedIn>
       <ModeToggle />
