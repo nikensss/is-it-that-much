@@ -12,6 +12,8 @@
     "db:reset": "ls -1a | grep \"^.env*\" | fzf | xargs -I {} dotenv -e {} -- tsx prisma/reset.ts",
     "db:export": "ls -1a | grep \"^.env*\" | fzf | xargs -I {} dotenv -e {} -- ./scripts/export-to-csv",
     "db:import": "ls -1a | grep \"^.env*\" | fzf | xargs -I {} dotenv -e {} -- ./scripts/import-from-csv",
+    "db:migrate:dev": "dotenv -e .env -- prisma migrate dev",
+    "db:migrate:deploy": "ls -1a | grep \"^.env*\" | fzf | xargs -I {} dotenv -e {} -- prisma migrate deploy",
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
