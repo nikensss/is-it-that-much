@@ -9,8 +9,8 @@ import { createTRPCRouter, groupProcedure, privateProcedure } from '~/server/api
 export const groupsRouter = createTRPCRouter({
   get: groupProcedure.query(async ({ ctx: { group } }) => group),
 
-  tags: groupProcedure.query(async ({ ctx: { db, group } }) => {
-    return db.tag.findMany({
+  tags: groupProcedure.query(async ({ ctx: { db, user, group } }) => {
+    const tags = await db.tag.findMany({
       where: {
         TransactionsTags: {
           some: {
@@ -25,7 +25,22 @@ export const groupsRouter = createTRPCRouter({
       select: {
         id: true,
         name: true,
+        createdById: true,
       },
+      orderBy: { name: 'asc' },
+    });
+
+    const tagsByName = new Map<string, typeof tags>();
+    for (const tag of tags) {
+      const current = tagsByName.get(tag.name) ?? [];
+      current.push(tag);
+      tagsByName.set(tag.name, current);
+    }
+
+    return tags.filter((tag) => {
+      const tagsWithCurrentName = tagsByName.get(tag.name) ?? [];
+      if (tagsWithCurrentName.length === 1) return true;
+      return tag.createdById === user.id;
     });
   }),
 

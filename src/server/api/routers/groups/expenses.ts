@@ -89,8 +89,21 @@ export const groupExpensesRouter = createTRPCRouter({
       },
     });
 
+    const dbTagsByName = new Map<string, typeof dbTags>();
+    for (const dbTag of dbTags) {
+      const current = dbTagsByName.get(dbTag.name) ?? [];
+      current.push(dbTag);
+      dbTagsByName.set(dbTag.name, current);
+    }
+
+    const dedupedDbTags = dbTags.filter((dbTag) => {
+      const dbTagsWithCurrentName = dbTagsByName.get(dbTag.name) ?? [];
+      if (dbTagsWithCurrentName.length === 1) return true;
+      return dbTag.createdById === user.id;
+    });
+
     await db.transactionsTags.createMany({
-      data: dbTags.map((tag) => ({ tagId: tag.id, transactionId: transaction.id })),
+      data: dedupedDbTags.map((tag) => ({ tagId: tag.id, transactionId: transaction.id })),
     });
 
     const sharedTransaction = await db.sharedTransaction.upsert({
