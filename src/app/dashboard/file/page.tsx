@@ -1,9 +1,17 @@
-import { api } from '~/trpc/server';
-import { FileProcessing } from '~/app/dashboard/file/file-processing';
+import { BlockBody } from '~/app/_components/block';
+import Link from 'next/link';
+import { Button } from '~/components/ui/button';
 
 export default async function FilePage() {
-  const user = await api.users.get.query();
-  return <FileProcessing user={user} />;
+  return (
+    <>
+      <BlockBody className="flex grow flex-col">
+        <Button asChild variant="outline">
+          <Link href="/dashboard/file/parse">Parse file</Link>
+        </Button>
+      </BlockBody>
+    </>
+  );
 }
 
 export const dynamic = 'force-dynamic';
