@@ -50,7 +50,7 @@ export const groupSettlementFormSchema = z
 
 export const groupExpenseFormSchema = z.object({
   expenseId: z.string().cuid().nullable(),
-  description: z.string().min(3, 'Description must be at least 3 characters'),
+  description: z.string().min(1, 'Description must be at least 1 character'),
   amount: z.number().positive('Amount must be greater than 0'),
   date: z.date(),
   groupId: z.string().cuid(),
@@ -58,7 +58,7 @@ export const groupExpenseFormSchema = z.object({
   tags: z.array(
     z.object({
       id: z.string(),
-      text: z.string().min(3, 'Tag must be at least 3 characters').max(20, 'Tag must be at most 20 characters'),
+      text: z.string().min(1, 'Tag must be at least 1 character').max(20, 'Tag must be at most 20 characters'),
     }),
   ),
   splits: z.array(
@@ -68,4 +68,30 @@ export const groupExpenseFormSchema = z.object({
       owed: z.number().min(0),
     }),
   ),
+});
+
+export const triggersFormSchema = z.object({
+  triggers: z
+    .array(
+      z.object({
+        triggerId: z.string().cuid().nullable(),
+        target: z.string().min(1, 'Target must be at least 1 character'),
+        description: z.string().min(1, 'Description must be at least 1 character'),
+        tags: z.string().min(1, 'Tag must be at least 1 character').max(20, 'Tag must be at most 20 characters'),
+      }),
+    )
+    .superRefine((triggers, context) => {
+      for (let i = 0; i < triggers.length; i++) {
+        for (let j = i + 1; j < triggers.length; j++) {
+          if (triggers[i]?.target === triggers[j]?.target) {
+            // return { message: 'target must be unique', path: [j, 'target'] };
+            context.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Target must be unique',
+              path: [j, 'target'],
+            });
+          }
+        }
+      }
+    }),
 });

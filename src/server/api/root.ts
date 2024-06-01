@@ -1,5 +1,6 @@
 import { friendsRouters } from '~/server/api/routers/friends/friends';
 import { groupsRouter } from '~/server/api/routers/groups/groups';
+import { parsingRouter } from '~/server/api/routers/parsing/parsing';
 import { tagsRouter } from '~/server/api/routers/tags';
 import { transactionsRouter } from '~/server/api/routers/transactions/transactions';
 import { usersRouter } from '~/server/api/routers/users';
@@ -13,6 +14,7 @@ import { createTRPCRouter } from '~/server/api/trpc';
 export const appRouter = createTRPCRouter({
   friends: friendsRouters,
   groups: groupsRouter,
+  parsing: parsingRouter,
   tags: tagsRouter,
   transactions: transactionsRouter,
   users: usersRouter,

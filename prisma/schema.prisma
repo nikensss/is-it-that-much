@@ -219,6 +219,7 @@ model Tag {
   TriggersTags     TriggersTags[]
 
   @@unique([createdById, name])
+  @@unique([name, createdById])
   @@index([name])
   @@index([createdById])
   @@map("tags")
@@ -268,7 +269,7 @@ model FriendRequest {
 
 model Trigger {
   id          String @id @default(cuid())
-  target      String
+  target      String @unique
   description String
 
   createdAt DateTime @default(now())
