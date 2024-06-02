@@ -72,40 +72,6 @@ export default function GroupExpenseForm({ group, user, expense, tags }: GroupEx
   });
 
   function onSubmit(data: z.infer<typeof groupExpenseFormSchema>) {
-    const { totalPaid, totalOwed } = data.splits.reduce(
-      (acc, { paid, owed }) => {
-        acc.totalPaid += paid;
-        acc.totalOwed += owed;
-
-        return acc;
-      },
-      { totalPaid: 0, totalOwed: 0 },
-    );
-
-    if (totalPaid !== data.amount) {
-      form.setError('amount', {
-        type: 'validate',
-        message: 'The paid amount does not match the total amount',
-      });
-
-      return form.setError('splits', {
-        type: 'validate',
-        message: 'The paid amount does not match the total amount',
-      });
-    }
-
-    if (totalOwed !== data.amount) {
-      form.setError('amount', {
-        type: 'validate',
-        message: 'The owed amount does not match the total amount',
-      });
-
-      return form.setError('splits', {
-        type: 'validate',
-        message: 'The owed amount does not match the total amount',
-      });
-    }
-
     if (user.timezone) {
       // little hack to make sure the date used is timezoned to the user's preference
       // the calendar component cannot be timezoned
@@ -228,6 +194,7 @@ export default function GroupExpenseForm({ group, user, expense, tags }: GroupEx
         <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2">
           <SplitInput
             form={form}
+            errors={(form.formState.errors.splits as { paid: { message: string; type: string } })?.paid}
             open={isPaidOpen}
             onOpenChange={setIsPaidOpen}
             group={group}
@@ -255,6 +222,7 @@ export default function GroupExpenseForm({ group, user, expense, tags }: GroupEx
           />
           <SplitInput
             form={form}
+            errors={(form.formState.errors.splits as { owed: { message: string; type: string } })?.owed}
             open={isOwedOpen}
             onOpenChange={setIsOwedOpen}
             group={group}
@@ -362,6 +330,7 @@ export default function GroupExpenseForm({ group, user, expense, tags }: GroupEx
 
 type SplitInputProps = {
   form: ReturnType<typeof useForm<z.infer<typeof groupExpenseFormSchema>>>;
+  errors: { message: string; type: string };
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
@@ -380,6 +349,7 @@ type SplitInputProps = {
 function SplitInput({
   value,
   form,
+  errors,
   open,
   onOpenChange,
   title,
@@ -390,6 +360,8 @@ function SplitInput({
   onInputChange,
   children,
 }: SplitInputProps) {
+  const currency = currencySymbolMap[user.currency ?? 'EUR'] ?? '€';
+
   return (
     <FormField
       control={form.control}
@@ -405,10 +377,15 @@ function SplitInput({
                 <ChevronRight className={cn(open ? 'rotate-90' : 'rotate-0', 'transition-all')} />
                 <span className="sr-only">Toggle</span>
               </Button>
-              <FormLabel className="cursor-pointer">{title}</FormLabel>
+              <FormLabel className="cursor-pointer text-primary-900 dark:text-primary-100">{title}</FormLabel>
             </div>
           </CollapsibleTrigger>
-          <FormMessage />
+          {errors?.message ? (
+            <p className="text-center text-sm text-red-500 dark:text-red-500">
+              {errors.message}
+              {currency}
+            </p>
+          ) : null}
           <CollapsibleContent className="flex flex-col gap-2">
             {group.UserGroup.sort((a, b) => a.user.id.localeCompare(b.user.id)).map(({ user: u }) => (
               <div

@@ -1,6 +1,7 @@
 import { type inferRouterInputs, type inferRouterOutputs } from '@trpc/server';
 import superjson from 'superjson';
 import { z } from 'zod';
+import { toCents } from '~/lib/utils.client';
 
 import { type AppRouter } from '~/server/api/root';
 
@@ -48,27 +49,54 @@ export const groupSettlementFormSchema = z
     }
   });
 
-export const groupExpenseFormSchema = z.object({
-  expenseId: z.string().cuid().nullable(),
-  description: z.string().min(1, 'Description must be at least 1 character'),
-  amount: z.number().positive('Amount must be greater than 0'),
-  date: z.date(),
-  groupId: z.string().cuid(),
-  createdById: z.string().cuid(),
-  tags: z.array(
-    z.object({
-      id: z.string(),
-      text: z.string().min(1, 'Tag must be at least 1 character').max(20, 'Tag must be at most 20 characters'),
-    }),
-  ),
-  splits: z.array(
-    z.object({
-      userId: z.string().cuid(),
-      paid: z.number().min(0),
-      owed: z.number().min(0),
-    }),
-  ),
-});
+export const groupExpenseFormSchema = z
+  .object({
+    expenseId: z.string().cuid().nullable(),
+    description: z.string().min(1, 'Description must be at least 1 character'),
+    amount: z.number().positive('Amount must be greater than 0'),
+    date: z.date(),
+    groupId: z.string().cuid(),
+    createdById: z.string().cuid(),
+    tags: z.array(
+      z.object({
+        id: z.string(),
+        text: z.string().min(1, 'Tag must be at least 1 character').max(20, 'Tag must be at most 20 characters'),
+      }),
+    ),
+    splits: z.array(
+      z.object({
+        userId: z.string().cuid(),
+        paid: z.number().min(0),
+        owed: z.number().min(0),
+      }),
+    ),
+  })
+  .superRefine((data, ctx) => {
+    const totalPaid = data.splits.reduce((acc, split) => acc + toCents(split.paid), 0);
+    const totalOwed = data.splits.reduce((acc, split) => acc + toCents(split.owed), 0);
+
+    if (totalPaid !== toCents(data.amount)) {
+      const missingAmount = (toCents(data.amount) - totalPaid) / 100;
+      const stringAmount = Math.abs(missingAmount).toFixed(2);
+      const message = missingAmount > 0 ? `Missing ${stringAmount}` : `Overpaid ${stringAmount}`;
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Total paid does not match equal the total amount. ${message}`,
+        path: ['splits', 'paid'],
+      });
+    }
+
+    if (totalOwed !== toCents(data.amount)) {
+      const missingAmount = (toCents(data.amount) - totalOwed) / 100;
+      const stringAmount = Math.abs(missingAmount).toFixed(2);
+      const message = missingAmount > 0 ? `Missing ${stringAmount}` : `Overpaid ${stringAmount}`;
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Total owed does not match the total amount. ${message}`,
+        path: ['splits', 'owed'],
+      });
+    }
+  });
 
 export const triggersFormSchema = z.object({
   triggers: z
