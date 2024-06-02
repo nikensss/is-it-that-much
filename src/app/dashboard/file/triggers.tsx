@@ -68,8 +68,8 @@ export default function Triggers({ triggers = [] }: TriggersProps) {
 
   return (
     <Form {...form}>
-      <form className="flex flex-grow flex-col gap-2" onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="relative flex w-full items-center gap-2 *:grow *:text-center">
+      <form className="relative flex flex-grow flex-col gap-2" onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="sticky top-16 flex w-full items-center gap-2 bg-white py-1 *:grow *:text-center dark:bg-primary-700">
           <Button
             type="button"
             className="absolute left-0 max-w-12"
