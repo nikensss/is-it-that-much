@@ -35,7 +35,12 @@ type Delimiter = (typeof delimiters)[number];
 const dateFormats = ['yyyyMMdd', 'yyyy-MM-dd', 'dd/MM/yyyy', 'MM/dd/yyyy'] as const;
 type DateFormat = (typeof dateFormats)[number];
 
-export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }) {
+type FileProcessingProps = {
+  user: RouterOutputs['users']['get'];
+  triggers: RouterOutputs['parsing']['triggers']['all'];
+};
+
+export function FileProcessing({ user, triggers }: FileProcessingProps) {
   const router = useRouter();
 
   const fileInput = useRef<HTMLInputElement>(null);
@@ -212,14 +217,22 @@ export function FileProcessing({ user }: { user: RouterOutputs['users']['get'] }
             onClick={() => {
               for (const record of records) {
                 const amount = parseFloat((record[`${amountColumn}`] ?? '0').replace(/,/g, '.'));
-                transactions.push({
+                const transaction = {
                   amount: Math.abs(amount),
                   checked: true,
                   date: parseDate(record[`${dateColumn}`] ?? '', dateFormat, new Date()),
                   description: record[`${descriptionColumn}`] ?? '',
                   tags: '',
                   type: amount > 0 ? TransactionType.INCOME : TransactionType.EXPENSE,
-                });
+                };
+
+                for (const trigger of triggers) {
+                  if (!transaction.description.toLowerCase().includes(trigger.target.toLowerCase())) continue;
+                  transaction.description = trigger.description;
+                  transaction.tags = trigger.TriggersTags.map((t) => t.tag.name).join(', ');
+                }
+
+                transactions.push(transaction);
               }
               setStage('edit-rows');
             }}

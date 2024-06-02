@@ -76,12 +76,26 @@ export const triggersFormSchema = z.object({
       z.object({
         triggerId: z.string().cuid().nullable(),
         target: z.string().min(1, 'Target must be at least 1 character'),
-        description: z.string().min(1, 'Description must be at least 1 character'),
-        tags: z.string().min(1, 'Tag must be at least 1 character').max(20, 'Tag must be at most 20 characters'),
+        description: z.string(),
+        tags: z.string().max(300, 'Too many tags'),
       }),
     )
     .superRefine((triggers, context) => {
       for (let i = 0; i < triggers.length; i++) {
+        if (triggers[i]?.description.trim().length === 0 && triggers[i]?.tags.trim().length === 0) {
+          context.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Description or tags must be provided',
+            path: [i, 'description'],
+          });
+
+          context.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Description or tags must be provided',
+            path: [i, 'tags'],
+          });
+        }
+
         for (let j = i + 1; j < triggers.length; j++) {
           if (triggers[i]?.target === triggers[j]?.target) {
             // return { message: 'target must be unique', path: [j, 'target'] };
