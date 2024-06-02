@@ -228,7 +228,7 @@ export function FileProcessing({ user, triggers }: FileProcessingProps) {
 
                 for (const trigger of triggers) {
                   if (!transaction.description.toLowerCase().includes(trigger.target.toLowerCase())) continue;
-                  transaction.description = trigger.description;
+                  transaction.description = trigger.description ?? transaction.description;
                   transaction.tags = trigger.TriggersTags.map((t) => t.tag.name).join(', ');
                 }
 
