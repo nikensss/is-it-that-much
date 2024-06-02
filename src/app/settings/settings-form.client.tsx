@@ -11,7 +11,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '~/components/ui/button';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '~/components/ui/command';
+import { Command, CommandEmpty, CommandInput, CommandItem } from '~/components/ui/command';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
