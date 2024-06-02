@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
+import { CommandList } from 'cmdk';
 import currencySymbolMap from 'currency-symbol-map/map';
 import { Check, Dot, Loader2, Save, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -197,7 +198,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                   <Command>
                     <CommandInput placeholder="Search timezone..." className="h-9" />
                     <CommandEmpty>No timezone found.</CommandEmpty>
-                    <CommandGroup>
+                    <CommandList>
                       {timezones.map((timezone) => (
                         <CommandItem
                           value={displayTimezone(timezone)}
@@ -217,7 +218,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                           />
                         </CommandItem>
                       ))}
-                    </CommandGroup>
+                    </CommandList>
                   </Command>
                 </PopoverContent>
               </Popover>
@@ -249,7 +250,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                   <Command>
                     <CommandInput placeholder="Search currency..." className="h-9" />
                     <CommandEmpty>No currency found.</CommandEmpty>
-                    <CommandGroup>
+                    <CommandList>
                       {currencies.map((currency, idx) => (
                         <CommandItem
                           value={displayCurrency(currency)}
@@ -266,7 +267,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                           />
                         </CommandItem>
                       ))}
-                    </CommandGroup>
+                    </CommandList>
                   </Command>
                 </PopoverContent>
               </Popover>
@@ -296,7 +297,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                 </PopoverTrigger>
                 <PopoverContent className="max-h-[30vh] overflow-y-auto p-0" style={{ width: weekStartsOnWidth }}>
                   <Command>
-                    <CommandGroup>
+                    <CommandList>
                       {weekDays.map((day, idx) => (
                         <CommandItem
                           value={day}
@@ -313,7 +314,7 @@ export default function SettingsForm({ username, timezone, currency, weekStartsO
                           />
                         </CommandItem>
                       ))}
-                    </CommandGroup>
+                    </CommandList>
                   </Command>
                 </PopoverContent>
               </Popover>
