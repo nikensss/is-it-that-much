@@ -86,7 +86,8 @@ export function PersonalTransactionRow({
       setIsOpen(false);
     },
     onSuccess: ({ groupId, sharedTransactionId }) => {
-      router.push(`/groups/${groupId}/expenses/${sharedTransactionId}`);
+      const target = `/groups/${groupId}/expenses/${sharedTransactionId}`;
+      window.open(`${window.location.origin}${target}`, '_blank');
     },
   });
 
