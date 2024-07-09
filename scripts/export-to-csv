@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 
+NOW=$(date -u +%Y%m%dT%H%M%SZ)
+
+mkdir ./scripts/csv/$NOW
+
 to_csv() {
   TABLE_NAME=$1
-  echo -n "exporting $TABLE_NAME to csv"
-  output=$(psql $DATABASE_URL -c "\copy (select * from $TABLE_NAME) to ./scripts/csv/$TABLE_NAME.csv with csv delimiter ';' header;")
+  NOW=$2
+  echo -n "exporting $TABLE_NAME to csv/$NOW"
+  output=$(psql $DATABASE_URL -c "\copy (select * from $TABLE_NAME) to ./scripts/csv/$NOW/$TABLE_NAME.csv with csv delimiter ';' header;")
   echo " ($output)"
 }
 
 export -f to_csv
 
-psql $DATABASE_URL -t -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public';" | xargs -I {} bash -c 'to_csv "$@"' _ {}
+psql $DATABASE_URL -t -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public';" | xargs -I {} bash -c 'to_csv "$@"' _ {} $NOW
 
