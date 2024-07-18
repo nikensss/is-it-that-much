@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 
 from_csv() {
-  while IFS= read -r TABLE_NAME; do
-    echo -n "importing from $TABLE_NAME.csv"
-    COLS=$(head -1 scripts/csv/$TABLE_NAME.csv | tr -d '\n' | perl -pe 's/([\w]+)/"\1"/g;s/;/,/g')
+  while IFS= read -r FILE; do
+    TABLE_NAME=$(echo $FILE | perl -pe 's/^.*\/(.*)\.csv$/\1/')
+    echo -n "importing from $TABLE_NAME"
+    COLS=$(head -1 $FILE | tr -d '\n' | perl -pe 's/([\w]+)/"\1"/g;s/;/,/g')
+
     psql $DATABASE_URL -c "DELETE FROM _prisma_migrations WHERE 1 = 1;" > /dev/null 2>&1
     psql $DATABASE_URL -c "ALTER TABLE $TABLE_NAME DISABLE TRIGGER ALL;" > /dev/null 2>&1
-    output=$(psql $DATABASE_URL -c "\COPY $TABLE_NAME ($COLS) FROM './scripts/csv/$TABLE_NAME.csv' WITH csv DELIMITER ';' HEADER;")
+    output=$(psql $DATABASE_URL -c "\COPY $TABLE_NAME ($COLS) FROM '$FILE' WITH csv DELIMITER ';' HEADER;")
     psql $DATABASE_URL -c "ALTER TABLE $TABLE_NAME ENABLE TRIGGER ALL;" > /dev/null 2>&1
     echo " ($output)"
   done
 }
 
-ls -1 ./scripts/csv | perl -pe 's/^(.*).csv$/\1/' | from_csv
+BACKUP_DIR=$(ls -1d scripts/csv/* | fzf)
+ls -1 "$BACKUP_DIR" | xargs -I _ echo "$BACKUP_DIR"/_ | from_csv
