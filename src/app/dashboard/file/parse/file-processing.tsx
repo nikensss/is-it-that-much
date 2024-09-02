@@ -66,13 +66,15 @@ export function FileProcessing({ user, triggers }: FileProcessingProps) {
   });
 
   function submit() {
-    const data = transactions.map((t) => ({
-      type: t.type,
-      amount: t.amount,
-      description: t.description,
-      tags: t.tags.split(',').map((tag) => tag.trim()),
-      date: user.timezone ? fromZonedTime(format(t.date, 'yyyy-MM-dd'), user.timezone) : t.date,
-    }));
+    const data = transactions
+      .filter((t) => t.checked)
+      .map((t) => ({
+        type: t.type,
+        amount: t.amount,
+        description: t.description,
+        tags: t.tags.split(',').map((tag) => tag.trim()),
+        date: user.timezone ? fromZonedTime(format(t.date, 'yyyy-MM-dd'), user.timezone) : t.date,
+      }));
 
     bulk.mutate({ data });
   }
