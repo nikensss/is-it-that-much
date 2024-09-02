@@ -155,42 +155,6 @@ export default function GroupExpenseForm({ group, user, expense, tags }: GroupEx
             )}
           />
         </div>
-        <FormField
-          control={form.control}
-          name="tags"
-          render={({ field }) => (
-            <FormItem className="flex flex-col items-start">
-              <FormLabel className="text-left">Tags</FormLabel>
-              <FormControl>
-                <TagInput
-                  // enable autocomplete if there are unselected suggestions
-                  enableAutocomplete={
-                    !tags.every((t) => {
-                      return form.getValues('tags').some((tag) => tag.text === t.name);
-                    })
-                  }
-                  autocompleteFilter={(tag) => {
-                    // only shows tags that are not already selected
-                    return !form.getValues('tags').some(({ text }) => text === tag);
-                  }}
-                  autocompleteOptions={tags.map((t) => ({ id: t.id, text: t.name }))}
-                  maxTags={10}
-                  shape={'rounded'}
-                  textCase={'lowercase'}
-                  animation={'fadeIn'}
-                  {...field}
-                  placeholder="Enter a tag"
-                  tags={form.getValues('tags').map((t) => ({ id: `${t.id}`, text: t.text }))}
-                  className="max-w-[100%]"
-                  setTags={(tags) => {
-                    form.setValue('tags', tags as Tag[]);
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2">
           <SplitInput
             form={form}
@@ -292,6 +256,42 @@ export default function GroupExpenseForm({ group, user, expense, tags }: GroupEx
             </Button>
           </SplitInput>
         </div>
+        <FormField
+          control={form.control}
+          name="tags"
+          render={({ field }) => (
+            <FormItem className="flex flex-col items-start">
+              <FormLabel className="text-left">Tags</FormLabel>
+              <FormControl>
+                <TagInput
+                  // enable autocomplete if there are unselected suggestions
+                  enableAutocomplete={
+                    !tags.every((t) => {
+                      return form.getValues('tags').some((tag) => tag.text === t.name);
+                    })
+                  }
+                  autocompleteFilter={(tag) => {
+                    // only shows tags that are not already selected
+                    return !form.getValues('tags').some(({ text }) => text === tag);
+                  }}
+                  autocompleteOptions={tags.map((t) => ({ id: t.id, text: t.name }))}
+                  maxTags={3}
+                  shape={'rounded'}
+                  textCase={'lowercase'}
+                  animation={'fadeIn'}
+                  {...field}
+                  placeholder="Enter a tag"
+                  tags={form.getValues('tags').map((t) => ({ id: `${t.id}`, text: t.text }))}
+                  className="max-w-[100%]"
+                  setTags={(tags) => {
+                    form.setValue('tags', tags as Tag[]);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className={cn('mt-auto grid grid-rows-1 gap-2', expense ? 'grid-cols-2' : 'grid-cols-1')}>
           {expense ? (
             <ButtonWithDialog
